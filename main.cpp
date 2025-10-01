@@ -1,11 +1,13 @@
 #include "threepp/threepp.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-
-
+#include "Tank.hpp"
+#include <iostream>
 
 using namespace threepp;
+
+
 int main() {
-    Canvas canvas{Canvas::Parameters().title("Youbot").size({1280, 720}).antialiasing(8)};
+    Canvas canvas{Canvas::Parameters().title("Tank").size({1280, 720}).antialiasing(8)};
     GLRenderer renderer{canvas.size()};
     renderer.autoClear = false;
 
@@ -26,7 +28,19 @@ int main() {
 
     auto light2 = AmbientLight::create(0xffffff, 1.f);
     scene->add(light2);
-
+    try {
+        auto tank = Tank::create(std::filesystem::path("Data/Models/m26.dae"));
+        if (tank) {
+            tank->position.set(0, 0, 0);
+            scene->add(tank);
+        } else {
+            std::cerr << "Failed to load `Data/Models/m26.dae`\n";
+        }
+    } catch (const std::exception& ex) {
+        std::cerr << "Exception during tank loading: " << ex.what() << std::endl;
+    } catch (...) {
+        std::cerr << "Unknown exception during tank loading." << std::endl;
+    }
 
     Clock clock;
     canvas.animate([&]() {

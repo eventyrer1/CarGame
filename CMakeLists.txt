@@ -6,8 +6,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
 include(FetchContent)
 
-set(THREEPP_BUILD_TESTS OFF)
-set(THREEPP_BUILD_EXAMPLES OFF)
+# threepp
+set(THREEPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(THREEPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
         threepp
         GIT_REPOSITORY https://github.com/markaren/threepp.git
@@ -15,7 +16,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(threepp)
 
-add_executable(main main.cpp
-        Tank.hpp)
-target_link_libraries(main PRIVATE threepp::threepp)
+# Assimp (fetched and built as part of the configure step)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+        assimp
+        GIT_REPOSITORY https://github.com/assimp/assimp.git
+        GIT_TAG v5.2.5
+)
+FetchContent_MakeAvailable(assimp)
 
+add_executable(main main.cpp Tank.hpp Tank.cpp)
+
+# link threepp and assimp
+target_link_libraries(main PRIVATE threepp::threepp assimp::assimp)
