@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 4.0)
-project(threepp_fetchcontent_demo)
-
+project(CarGame)
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
+
+file(COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
+
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 include(FetchContent)
 
@@ -25,9 +27,11 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/assimp/assimp.git
         GIT_TAG v5.2.5
 )
+
+
 FetchContent_MakeAvailable(assimp)
 
-add_executable(main main.cpp Tank.hpp Tank.cpp)
 
-# link threepp and assimp
-target_link_libraries(main PRIVATE threepp::threepp assimp::assimp)
+
+add_subdirectory(src)
+add_subdirectory(tests)

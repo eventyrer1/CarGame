@@ -1,5 +1,5 @@
 
-#include "Tank.hpp"
+#include "../../include/models/Tank.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
 
 using namespace threepp;

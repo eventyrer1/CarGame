@@ -1,6 +1,6 @@
 #include "threepp/threepp.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-#include "Tank.hpp"
+#include "../include/models/Tank.hpp"
 #include <iostream>
 
 using namespace threepp;
@@ -74,7 +74,7 @@ int main() {
 
         const auto mesh = createMesh(params);
         scene->add(mesh);
-       mesh->rotation.set(-math::PI / 2, 0, 0);
+        mesh->rotateX(90);
     Clock clock;
     canvas.animate([&]() {
         const auto dt = clock.getDelta();
