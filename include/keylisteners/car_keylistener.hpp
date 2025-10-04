@@ -4,27 +4,37 @@
 
 #ifndef CARGAME_CAR_KEYLISTENER_HPP
 #define CARGAME_CAR_KEYLISTENER_HPP
+
 #include "threepp/threepp.hpp"
 #include <set>
+#include <map>
 
-class CarKeylistener : public threepp::KeyListener {
+class CarKeyListener : public threepp::KeyListener {
 
 public:
+    enum class CarAction {
+        ACCELERATE,
+        DECELERATE,
+        TURN_LEFT,
+        TURN_RIGHT
+    };
+
+    CarKeyListener();
+
     void onKeyPressed(threepp::KeyEvent evt) override;
     void onKeyReleased(threepp::KeyEvent evt) override;
+
     bool isKeyPressed(threepp::Key key) const;
     bool isKeyReleased(threepp::Key key) const;
 
-enum class CarAction {
-    ACCELERATE,
-    DECELERATE,
-    TURN_LEFT,
-    TURN_RIGHT
-};
-std::set<CarAction> determine_action();
+    std::set<CarAction> determine_action();
+
+    void bindKey(threepp::Key key, CarAction action);
 
 private:
     std::set<threepp::Key> keys_pressed;
     std::set<threepp::Key> keys_released;
+    std::map<threepp::Key, CarAction> keymap;
 };
-#endif //CARGAME_CAR_KEYLISTENER_HPP
+
+#endif // CARGAME_CAR_KEYLISTENER_HPP
