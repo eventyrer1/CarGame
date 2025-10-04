@@ -2,7 +2,7 @@
 set(models_include_dir "${CMAKE_SOURCE_DIR}/include/models")
 
 set(models_src_files
-        "${models_include_dir}/Tank.hpp" "Tank.cpp")
+        "${models_include_dir}/car.hpp" "car.cpp")
 
 add_library(models ${models_src_files})
 

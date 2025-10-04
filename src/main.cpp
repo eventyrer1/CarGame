@@ -1,6 +1,6 @@
 #include "threepp/threepp.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-#include "../include/models/Tank.hpp"
+#include "../include/models/car.hpp"
 #include <iostream>
 
 using namespace threepp;
@@ -35,7 +35,7 @@ namespace {
 }
 
 int main() {
-    // Tull
+
     Canvas canvas{Canvas::Parameters().title("Tank").size({1280, 720}).antialiasing(8)};
     GLRenderer renderer{canvas.size()};
     renderer.autoClear = false;
@@ -59,7 +59,7 @@ int main() {
     scene->add(light2);
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
-        auto tank = Tank::create(carModelPath);
+        auto tank = car::create(carModelPath);
         if (tank) {
             tank->position.set(0, 5, 0);
             scene->add(tank);

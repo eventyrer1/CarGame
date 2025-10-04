@@ -6,10 +6,10 @@
 #include "threepp/threepp.hpp"
 using namespace threepp;
 //used ai for much of this code
-class Tank : public Object3D {
+class car : public Object3D {
 public:
-    explicit Tank(std::shared_ptr<Object3D> model);
-    static std::shared_ptr<Tank> create(const std::filesystem::path& path);
+    explicit car(std::shared_ptr<Object3D> model);
+    static std::shared_ptr<car> create(const std::filesystem::path& path);
 
     std::shared_ptr<Object3D> getModel() const { return model_; }
 
