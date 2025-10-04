@@ -14,6 +14,6 @@ std::shared_ptr<Tank> Tank::create(const std::filesystem::path& path) {
     AssimpLoader loader;
     auto model = loader.load(path);
     if (!model) return nullptr;
-    model->scale.multiplyScalar(3);
+    model->scale.multiplyScalar(1);
     return std::make_shared<Tank>(model);
 }

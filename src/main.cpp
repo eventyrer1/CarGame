@@ -57,7 +57,8 @@ int main() {
     auto light2 = AmbientLight::create(0xffffff, 1.f);
     scene->add(light2);
     try {
-        auto tank = Tank::create(std::filesystem::path("Data/Models/Car.dae"));
+        std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
+        auto tank = Tank::create(carModelPath);
         if (tank) {
             tank->position.set(0, 5, 0);
             scene->add(tank);

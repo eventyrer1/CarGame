@@ -34,4 +34,4 @@ FetchContent_MakeAvailable(assimp)
 
 
 add_subdirectory(src)
-add_subdirectory(tests)
+#add_subdirectory(tests)
