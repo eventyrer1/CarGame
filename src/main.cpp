@@ -35,6 +35,7 @@ namespace {
 }
 
 int main() {
+    // Tull
     Canvas canvas{Canvas::Parameters().title("Tank").size({1280, 720}).antialiasing(8)};
     GLRenderer renderer{canvas.size()};
     renderer.autoClear = false;
