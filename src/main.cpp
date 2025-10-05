@@ -1,6 +1,6 @@
 #include "threepp/threepp.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-#include "../include/models/Tank.hpp"
+#include "../include/models/Car.hpp"
 #include <iostream>
 
 using namespace threepp;
@@ -35,6 +35,7 @@ namespace {
 }
 
 int main() {
+
     Canvas canvas{Canvas::Parameters().title("Tank").size({1280, 720}).antialiasing(8)};
     GLRenderer renderer{canvas.size()};
     renderer.autoClear = false;
@@ -56,12 +57,13 @@ int main() {
 
     auto light2 = AmbientLight::create(0xffffff, 1.f);
     scene->add(light2);
+    std::shared_ptr<Car> car;
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
-        auto tank = Tank::create(carModelPath);
-        if (tank) {
-            tank->position.set(0, 5, 0);
-            scene->add(tank);
+        car = Car::create(carModelPath);
+        if (car) {
+            car->position.set(0, 5, 0);
+            scene->add(car);
         } else {
             std::cerr << "Failed to load `Data/Models/Car.dae`\n";
         }
@@ -76,9 +78,14 @@ int main() {
         const auto mesh = createMesh(params);
         scene->add(mesh);
         mesh->rotateX(90);
+
+    CarKeyListener carKeyListener;
+    canvas.addKeyListener(carKeyListener);
     Clock clock;
+
     canvas.animate([&]() {
         const auto dt = clock.getDelta();
+        car->update(dt, carKeyListener.determine_action());
         renderer.clear();
                 renderer.render(*scene, *camera);
     });
