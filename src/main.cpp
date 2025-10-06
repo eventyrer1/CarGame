@@ -5,38 +5,9 @@
 
 using namespace threepp;
 
-namespace {
-    auto createWireframe(const BufferGeometry& geometry) {
-
-        const auto material = LineBasicMaterial::create({{"color", Color::black}});
-        return LineSegments::create(WireframeGeometry::create(geometry), material);
-    }
-
-    void updateGroupGeometry(Mesh& mesh, const PlaneGeometry::Params& params) {
-
-        const auto geometry = PlaneGeometry::create(params);
-        mesh.setGeometry(geometry);
-
-        mesh.children[0]->removeFromParent();
-        mesh.add(createWireframe(*geometry));
-    }
-
-    auto createMesh(const PlaneGeometry::Params& params) {
-
-        const auto geometry = PlaneGeometry::create(params);
-        const auto material = MeshBasicMaterial::create();
-        material->side = Side::Double;
-
-        auto mesh = Mesh::create(geometry, material);
-        mesh->add(createWireframe(*geometry));
-
-        return mesh;
-    }
-}
-
 int main() {
 
-    Canvas canvas{Canvas::Parameters().title("Tank").size({1280, 720}).antialiasing(8)};
+    Canvas canvas{Canvas::Parameters().title("Car").size({1280, 720}).antialiasing(8)};
     GLRenderer renderer{canvas.size()};
     renderer.autoClear = false;
 
@@ -62,7 +33,7 @@ int main() {
         std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
         car = Car::create(carModelPath);
         if (car) {
-            car->position.set(0, 5, 0);
+            car->position.set(0, 0, 0);
             scene->add(car);
         } else {
             std::cerr << "Failed to load `Data/Models/Car.dae`\n";
@@ -73,11 +44,9 @@ int main() {
         std::cerr << "Unknown exception during tank loading." << std::endl;
     }
 
-        PlaneGeometry::Params params{1000,1000};
 
-        const auto mesh = createMesh(params);
-        scene->add(mesh);
-        mesh->rotateX(90);
+
+
 
     CarKeyListener carKeyListener;
     canvas.addKeyListener(carKeyListener);

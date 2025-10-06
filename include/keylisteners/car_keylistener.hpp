@@ -9,7 +9,6 @@
 
 
 class CarKeyListener : public threepp::KeyListener {
-
 public:
     enum class CarActionMove {
         ACCELERATE,
@@ -24,15 +23,15 @@ public:
     };
 
     void onKeyPressed(threepp::KeyEvent evt) override;
+
     void onKeyReleased(threepp::KeyEvent evt) override;
 
 
-    std::pair<CarActionMove,CarActionTurn> determine_action();
+    std::pair<CarActionMove, CarActionTurn> determine_action();
 
 private:
-    CarActionTurn turn=CarActionTurn::NOTHING;
-    CarActionMove move=CarActionMove::NOTHING;
-
+    CarActionTurn turn = CarActionTurn::NOTHING;
+    CarActionMove move = CarActionMove::NOTHING;
 };
 
 #endif // CARGAME_CAR_KEYLISTENER_HPP

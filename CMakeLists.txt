@@ -32,6 +32,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(assimp)
 
 
-
 add_subdirectory(src)
 #add_subdirectory(tests)
