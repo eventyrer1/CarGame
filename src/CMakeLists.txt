@@ -1,6 +1,7 @@
 
 
-add_executable(CarGame main.cpp)
+add_executable(CarGame main.cpp
+        setups/setup.cpp)
 
 
 target_include_directories(CarGame PRIVATE ${CMAKE_SOURCE_DIR}/include)
@@ -10,8 +11,10 @@ target_link_libraries(CarGame PRIVATE
         assimp::assimp
         models
         keylisteners
+        setups
 )
 
 
 add_subdirectory(models)
 add_subdirectory(keylisteners)
+add_subdirectory(setups)

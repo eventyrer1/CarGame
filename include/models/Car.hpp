@@ -7,7 +7,7 @@
 #include "../keylisteners/car_keylistener.hpp"
 using namespace threepp;
 
-//used ai for much of this code
+
 class Car : public Object3D {
 public:
     explicit Car(std::shared_ptr<Object3D> model);
@@ -19,6 +19,8 @@ public:
     );
 
     std::shared_ptr<Object3D> getModel() const { return model_; }
+    //inspirert av sphero.hpp fra threepp eksempel
+    PerspectiveCamera &camera();
 //valgte å definere datamedlemene her i stedenfor å gjør det på Car.cpp siden jeg syns det er mere ryddig
 private:
     int speed_ = 10;
@@ -27,6 +29,7 @@ private:
     int rotationSpeed_ = 2;
     float angle_ = 0.0;
     std::shared_ptr<Object3D> model_;
+    std::unique_ptr<PerspectiveCamera> camera_;
 };
 
 #endif // TANK_HPP
