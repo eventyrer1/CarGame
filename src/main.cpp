@@ -19,7 +19,7 @@ int main() {
 
     OrbitControls controls(*camera, canvas);
 
-    auto grid = GridHelper::create(20, 10, Color::yellowgreen);
+    auto grid = GridHelper::create(2000, 5000, Color::yellowgreen);
     scene->add(grid);
 
     auto light1 = DirectionalLight::create(0xffffff, 1.f);

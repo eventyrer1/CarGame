@@ -19,11 +19,11 @@ public:
     );
 
     std::shared_ptr<Object3D> getModel() const { return model_; }
-
+//valgte å definere datamedlemene her i stedenfor å gjør det på Car.cpp siden jeg syns det er mere ryddig
 private:
     int speed_ = 10;
     int maxSpeed_ = 50;
-    int acceleration_ = 400;
+    int acceleration_ = 100;
     int rotationSpeed_ = 2;
     float angle_ = 0.0;
     std::shared_ptr<Object3D> model_;
