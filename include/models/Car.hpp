@@ -4,7 +4,7 @@
 #include <memory>
 #include <filesystem>
 #include "threepp/threepp.hpp"
-#include "../keylisteners/car_keylistener.hpp"
+#include <keylisteners/car_keylistener.hpp>
 using namespace threepp;
 
 
@@ -24,7 +24,7 @@ public:
 //valgte å definere datamedlemene her i stedenfor å gjør det på Car.cpp siden jeg syns det er mere ryddig
 private:
     int speed_ = 10;
-    int maxSpeed_ = 50;
+    int maxSpeed_ = 100;
     int acceleration_ = 100;
     int rotationSpeed_ = 2;
     float angle_ = 0.0;

@@ -13,7 +13,8 @@ Car::Car(std::shared_ptr<Object3D> model)
         add(model_);
     }
 
-    camera_ = std::make_unique<PerspectiveCamera>(90.f, 1.f, 0.1f, 100.f);
+    camera_ = std::make_unique<PerspectiveCamera>(65.f,1.f, 0.1f, 100.f);
+    camera_->rotation.x = 0.f * math::DEG2RAD; // tilt down 10 degrees
 
     // Attach camera to the model instead of the Car object
     if (model_) {
@@ -21,7 +22,7 @@ Car::Car(std::shared_ptr<Object3D> model)
 
 
         // Position the camera relative to the model
-        camera_->position.set(0, 10, -15); // 1 unit above, 3 units behind the model
+        camera_->position.set(0, 5, -13);
         camera_->lookAt(model_->position);
 
     }

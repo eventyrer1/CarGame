@@ -19,6 +19,7 @@ int main() {
 
     PerspectiveCamera camera(60, canvas.aspect(), 0.1f, 1000);
     camera.position.set(-15, 8, 15);
+
     std::shared_ptr<Car> car = std::make_shared<Car>(nullptr);
 
 
