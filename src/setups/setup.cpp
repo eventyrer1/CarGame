@@ -12,7 +12,7 @@ void setupScene(Scene &scene) {
     light1->intensity = 0.8f;
     scene.add(light1);
 
-    auto grid = GridHelper::create(1000, 500);
+    auto grid = GridHelper::create(100, 50);
     scene.add(grid);
     scene.background = Color::aliceblue;
 

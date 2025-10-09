@@ -1,7 +1,6 @@
 
 
-add_executable(CarGame main.cpp
-        setups/setup.cpp)
+add_executable(CarGame main.cpp)
 
 
 target_include_directories(CarGame PRIVATE ${CMAKE_SOURCE_DIR}/include)

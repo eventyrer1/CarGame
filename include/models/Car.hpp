@@ -5,10 +5,11 @@
 #include <filesystem>
 #include "threepp/threepp.hpp"
 #include <keylisteners/car_keylistener.hpp>
+#include "Physics/Collision.hpp"
 using namespace threepp;
 
 
-class Car : public Object3D {
+class Car : public Object3D, public CollisionObject {
 public:
     explicit Car(std::shared_ptr<Object3D> model);
 
