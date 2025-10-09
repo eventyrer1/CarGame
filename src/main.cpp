@@ -1,34 +1,44 @@
 #include "threepp/threepp.hpp"
+#include "threepp/helpers/CameraHelper.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-#include "../include/models/Car.hpp"
+#include "models/Car.hpp"
 #include <iostream>
-
+#include "threepp/cameras/PerspectiveCamera.hpp"
+#include "setups/setup.hpp"
+#include <memory>
+#include "models/Tree.hpp"
+#include "setups/TreeManager.cpp"
 using namespace threepp;
 
 int main() {
-
     Canvas canvas{Canvas::Parameters().title("Car").size({1280, 720}).antialiasing(8)};
+    auto size = canvas.size();
     GLRenderer renderer{canvas.size()};
     renderer.autoClear = false;
 
     auto scene = Scene::create();
-    scene->background = Color::aliceblue;
+    setupScene(*scene);
 
-    auto camera = PerspectiveCamera::create(60, canvas.aspect(), 0.01, 100);
-    camera->position.set(-15, 8, 15);
+    PerspectiveCamera camera(60, canvas.aspect(), 0.1f, 1000);
+    camera.position.set(-15, 8, 15);
 
-    OrbitControls controls(*camera, canvas);
-
-    auto grid = GridHelper::create(2000, 5000, Color::yellowgreen);
-    scene->add(grid);
-
-    auto light1 = DirectionalLight::create(0xffffff, 1.f);
-    light1->position.set(1, 1, 1);
-    scene->add(light1);
-
-    auto light2 = AmbientLight::create(0xffffff, 1.f);
-    scene->add(light2);
     std::shared_ptr<Car> car;
+
+
+    //OrbitControls controls(camera, canvas);
+    //controls.enableKeys = false;
+    //controls.enableZoom = false;
+    //controls.enablePan = false;
+
+    canvas.onWindowResize([&](WindowSize newSize) {
+        camera.aspect = newSize.aspect();
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(newSize);
+        size = newSize;
+    });
+
+// Load the car model
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
         car = Car::create(carModelPath);
@@ -38,25 +48,35 @@ int main() {
         } else {
             std::cerr << "Failed to load `Data/Models/Car.dae`\n";
         }
-    } catch (const std::exception& ex) {
+    } catch (const std::exception &ex) {
         std::cerr << "Exception during tank loading: " << ex.what() << std::endl;
     } catch (...) {
-        std::cerr << "Unknown exception during tank loading." << std::endl;
+        std::cerr << "Unknown exception during car loading." << std::endl;
     }
-
-
-
+    TreeManager treeMgr(scene, std::string(DATA_DIR)+"/Models/Tree.dae", 20);
+    treeMgr.spawnTrees();
+    auto &carCamera = car->camera(); // car-attached camera
+    auto cameraHelper = CameraHelper::create(carCamera);
+    scene->add(cameraHelper);
 
 
     CarKeyListener carKeyListener;
     canvas.addKeyListener(carKeyListener);
     Clock clock;
 
+    int c = 0;
     canvas.animate([&]() {
         const auto dt = clock.getDelta();
         car->update(dt, carKeyListener.determine_action());
+        //controls.update();
+        for (const auto& tree : treeMgr.getTrees()) {
+            if (car->isColliding(*tree)) {
+                std::cout << "Collision detected with a tree!" << c++ << std::endl;
+            }
+        }
+
         renderer.clear();
-                renderer.render(*scene, *camera);
+        renderer.render(*scene, carCamera);
     });
     return 0;
 }

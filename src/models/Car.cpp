@@ -1,15 +1,31 @@
-#include "../../include/models/Car.hpp"
-
-#include <iostream>
-
+#include "models/Car.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
 
 using namespace threepp;
 
 Car::Car(std::shared_ptr<Object3D> model)
-    : model_(std::move(model)) {
-    if (model_) add(model_);
-}
+    : model_(std::move(model))
+{
+    if (model_) {
+        add(model_);
+    }
+
+    size_ = { 0.5, 0.5, 0.5 };
+    camera_ = std::make_unique<PerspectiveCamera>(65.f,(16/9.f), 0.1f, 100.f);
+    camera_->rotation.x = 0.f * math::DEG2RAD; // tilt down 10 degrees
+
+    // Attach camera to the model instead of the Car object
+    if (model_) {
+        model_->add(*camera_);
+
+
+        // Position the camera relative to the model
+        camera_->position.set(0, 5, -13);
+        camera_->lookAt(model_->position);
+
+    }
+    }
+
 
 // Factory method
 std::shared_ptr<Car> Car::create(const std::filesystem::path &path) {
@@ -18,6 +34,13 @@ std::shared_ptr<Car> Car::create(const std::filesystem::path &path) {
     if (!model) return nullptr;
     model->scale.multiplyScalar(1.0f);
     return std::make_shared<Car>(model);
+
+
+}
+
+PerspectiveCamera &Car::camera()        {
+
+    return *camera_;
 }
 
 void Car::update(double deltaTime,
@@ -46,7 +69,10 @@ void Car::update(double deltaTime,
             break;
     }
     model_->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
-    // Update position based on speed and direction
+
     model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} * static_cast<float>(
                              deltaTime));
+
+    position_ = model_->position;
+
 }
