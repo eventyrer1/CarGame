@@ -10,8 +10,10 @@ target_link_libraries(CarGame PRIVATE
         assimp::assimp
         models
         keylisteners
+        setups
 )
 
 
 add_subdirectory(models)
 add_subdirectory(keylisteners)
+add_subdirectory(setups)

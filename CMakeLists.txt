@@ -20,7 +20,6 @@ FetchContent_MakeAvailable(threepp)
 
 # Assimp (fetched and built as part of the configure step)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
         assimp
