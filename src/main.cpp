@@ -6,6 +6,8 @@
 #include "threepp/cameras/PerspectiveCamera.hpp"
 #include "setups/setup.hpp"
 #include <memory>
+#include "models/Tree.hpp"
+#include "setups/TreeManager.cpp"
 using namespace threepp;
 
 int main() {
@@ -20,13 +22,13 @@ int main() {
     PerspectiveCamera camera(60, canvas.aspect(), 0.1f, 1000);
     camera.position.set(-15, 8, 15);
 
-    std::shared_ptr<Car> car = std::make_shared<Car>(nullptr);
+    std::shared_ptr<Car> car;
 
 
-    OrbitControls controls(camera, canvas);
-    controls.enableKeys = false;
-    controls.enableZoom = false;
-    controls.enablePan = false;
+    //OrbitControls controls(camera, canvas);
+    //controls.enableKeys = false;
+    //controls.enableZoom = false;
+    //controls.enablePan = false;
 
     canvas.onWindowResize([&](WindowSize newSize) {
         camera.aspect = newSize.aspect();
@@ -36,7 +38,7 @@ int main() {
         size = newSize;
     });
 
-
+// Load the car model
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
         car = Car::create(carModelPath);
@@ -49,10 +51,10 @@ int main() {
     } catch (const std::exception &ex) {
         std::cerr << "Exception during tank loading: " << ex.what() << std::endl;
     } catch (...) {
-        std::cerr << "Unknown exception during tank loading." << std::endl;
+        std::cerr << "Unknown exception during car loading." << std::endl;
     }
-
-
+    TreeManager treeMgr(scene, std::string(DATA_DIR)+"/Models/Tree.dae", 20);
+    treeMgr.spawnTrees();
     auto &carCamera = car->camera(); // car-attached camera
     auto cameraHelper = CameraHelper::create(carCamera);
     scene->add(cameraHelper);
@@ -62,9 +64,16 @@ int main() {
     canvas.addKeyListener(carKeyListener);
     Clock clock;
 
+    int c = 0;
     canvas.animate([&]() {
         const auto dt = clock.getDelta();
         car->update(dt, carKeyListener.determine_action());
+        //controls.update();
+        for (const auto& tree : treeMgr.getTrees()) {
+            if (car->isColliding(*tree)) {
+                std::cout << "Collision detected with a tree!" << c++ << std::endl;
+            }
+        }
 
         renderer.clear();
         renderer.render(*scene, carCamera);

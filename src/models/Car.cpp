@@ -1,7 +1,4 @@
 #include "models/Car.hpp"
-
-
-
 #include "threepp/loaders/AssimpLoader.hpp"
 
 using namespace threepp;
@@ -13,7 +10,8 @@ Car::Car(std::shared_ptr<Object3D> model)
         add(model_);
     }
 
-    camera_ = std::make_unique<PerspectiveCamera>(65.f,1.f, 0.1f, 100.f);
+    size_ = { 0.5, 0.5, 0.5 };
+    camera_ = std::make_unique<PerspectiveCamera>(65.f,(16/9.f), 0.1f, 100.f);
     camera_->rotation.x = 0.f * math::DEG2RAD; // tilt down 10 degrees
 
     // Attach camera to the model instead of the Car object
@@ -71,11 +69,10 @@ void Car::update(double deltaTime,
             break;
     }
     model_->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
-    // Update position based on speed and direction
+
     model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} * static_cast<float>(
                              deltaTime));
 
-    //tatt fra sphero.cpp
-
+    position_ = model_->position;
 
 }
