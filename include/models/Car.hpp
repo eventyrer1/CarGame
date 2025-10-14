@@ -5,7 +5,7 @@
 #include <filesystem>
 #include "threepp/threepp.hpp"
 #include <keylisteners/car_keylistener.hpp>
-#include "Physics/Collision.hpp"
+#include "physics/Collision.hpp"
 using namespace threepp;
 
 
