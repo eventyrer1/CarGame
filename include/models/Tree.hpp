@@ -7,7 +7,7 @@
 #include "threepp/threepp.hpp"
 
 #include <memory>
-#include "Physics/Collision.hpp"
+#include "physics/Collision.hpp"
 
 
 namespace threepp {

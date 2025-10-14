@@ -8,6 +8,7 @@
 #include <memory>
 #include "models/Tree.hpp"
 #include "setups/TreeManager.cpp"
+
 using namespace threepp;
 
 int main() {
@@ -64,14 +65,14 @@ int main() {
     canvas.addKeyListener(carKeyListener);
     Clock clock;
 
-    int c = 0;
+
     canvas.animate([&]() {
         const auto dt = clock.getDelta();
         car->update(dt, carKeyListener.determine_action());
         //controls.update();
         for (const auto& tree : treeMgr.getTrees()) {
             if (car->isColliding(*tree)) {
-                std::cout << "Collision detected with a tree!" << c++ << std::endl;
+                std::cout << "Collision detected with a tree!" << std::endl;
             }
         }
 
