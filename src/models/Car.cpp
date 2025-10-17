@@ -1,6 +1,6 @@
 #include "models/Car.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-
+#include "BoundingBoxHelper.hpp"
 using namespace threepp;
 
 Car::Car(std::shared_ptr<Object3D> model)
@@ -8,38 +8,33 @@ Car::Car(std::shared_ptr<Object3D> model)
 {
     if (model_) {
         add(model_);
+
+        // Compute local bounding box once (in model's local space)
+        localBoundingBox_ = BoundingBoxHelper::computeBoundingBox(*model_);
+
+        // Initialize world bounding box
+        updateBoundingBox();
     }
 
-    size_ = { 0.5, 0.5, 0.5 };
-    camera_ = std::make_unique<PerspectiveCamera>(65.f,(16/9.f), 0.1f, 100.f);
-    camera_->rotation.x = 0.f * math::DEG2RAD; // tilt down 10 degrees
+    camera_ = std::make_unique<PerspectiveCamera>(65.f, (16/9.f), 0.1f, 100.f);
+    camera_->rotation.x = 0.f * math::DEG2RAD;
 
-    // Attach camera to the model instead of the Car object
     if (model_) {
         model_->add(*camera_);
-
-
-        // Position the camera relative to the model
         camera_->position.set(0, 5, -13);
         camera_->lookAt(model_->position);
-
     }
-    }
+}
 
-
-// Factory method
 std::shared_ptr<Car> Car::create(const std::filesystem::path &path) {
     AssimpLoader loader;
     auto model = loader.load(path);
     if (!model) return nullptr;
     model->scale.multiplyScalar(1.0f);
     return std::make_shared<Car>(model);
-
-
 }
 
-PerspectiveCamera &Car::camera()        {
-
+PerspectiveCamera &Car::camera() {
     return *camera_;
 }
 
@@ -52,11 +47,10 @@ void Car::update(double deltaTime,
             break;
         case CarKeyListener::CarActionMove::DECELERATE:
             speed_ -= acceleration_ * deltaTime;
-            if (speed_ < -maxSpeed_ / 2) speed_ = -maxSpeed_ / 2; // Allow some reverse speed
+            if (speed_ < -maxSpeed_ / 2) speed_ = -maxSpeed_ / 2;
             break;
         case CarKeyListener::CarActionMove::NOTHING:
-            speed_ *= 1 - 0.10 * deltaTime; // Friction factor
-
+            speed_ *= 1 - 0.10 * deltaTime;
             break;
     }
 
@@ -68,11 +62,20 @@ void Car::update(double deltaTime,
             angle_ -= rotationSpeed_ * deltaTime;
             break;
     }
+
     model_->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
+    model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} *
+                        static_cast<float>(deltaTime));
 
-    model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} * static_cast<float>(
-                             deltaTime));
+    // Efficient bounding box update - just transform the local box
+    updateBoundingBox();
+}
 
-    position_ = model_->position;
-
+// Private helper to update the world-space bounding box
+void Car::updateBoundingBox() {
+    boundingBox_.copy(localBoundingBox_);
+    // Apply the car's world transformation to the local bounding box
+    Matrix4 matrix;
+    matrix.compose(model_->position, model_->quaternion, model_->scale);
+    boundingBox_.applyMatrix4(matrix);
 }

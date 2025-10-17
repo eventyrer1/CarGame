@@ -5,11 +5,11 @@
 #include <filesystem>
 #include "threepp/threepp.hpp"
 #include <keylisteners/car_keylistener.hpp>
-#include "physics/Collision.hpp"
+
 using namespace threepp;
 
 
-class Car : public Object3D, public CollisionObject {
+class Car : public Object3D {
 public:
     explicit Car(std::shared_ptr<Object3D> model);
 
@@ -22,6 +22,15 @@ public:
     std::shared_ptr<Object3D> getModel() const { return model_; }
     //inspirert av sphero.hpp fra threepp eksempel
     PerspectiveCamera &camera();
+
+    Box3 getBoundingBox() const {
+        return boundingBox_;
+    }
+
+    bool collidesWith(const Box3& otherBox) const {
+        return boundingBox_.intersectsBox(otherBox);
+    }
+
 //valgte å definere datamedlemene her i stedenfor å gjør det på Car.cpp siden jeg syns det er mere ryddig
 private:
     int speed_ = 10;
@@ -31,6 +40,12 @@ private:
     float angle_ = 0.0;
     std::shared_ptr<Object3D> model_;
     std::unique_ptr<PerspectiveCamera> camera_;
+
+    Box3 localBoundingBox_;
+    Box3 boundingBox_;
+
+
+    void updateBoundingBox();
 };
 
 #endif // TANK_HPP
