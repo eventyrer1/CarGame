@@ -1,28 +1,28 @@
-//
-// Created by evest on 08.10.2025.
-//
-
 #ifndef CARGAME_TREE_HPP
 #define CARGAME_TREE_HPP
+
 #include "threepp/threepp.hpp"
-
 #include <memory>
-#include "physics/Collision.hpp"
-
+#include <random>
 
 namespace threepp {
 
-    class Tree : public Object3D, public CollisionObject {
+    class Tree : public Object3D {
     public:
-        explicit Tree(std::shared_ptr<Object3D> model);
-
+        explicit Tree(std::shared_ptr<Object3D> model, const Vector3& position = Vector3());
         static std::shared_ptr<Tree> create(std::shared_ptr<Object3D> model);
-
-        // Optional: set a random position within a range
         void setRandomPosition(float minX, float maxX, float minZ, float maxZ);
 
+        Box3 getBoundingBox() const { return boundingBox_; }
+        bool collidesWith(const Box3& otherBox) const {
+            return boundingBox_.intersectsBox(otherBox);
+        }
+
     private:
+        std::shared_ptr<Object3D> model_;
+        Box3 boundingBox_;
     };
+
 } // namespace threepp
 
 #endif //CARGAME_TREE_HPP
