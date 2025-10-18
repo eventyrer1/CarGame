@@ -1,3 +1,4 @@
+
 #ifndef CARGAME_TREE_HPP
 #define CARGAME_TREE_HPP
 
@@ -17,10 +18,12 @@ namespace threepp {
         bool collidesWith(const Box3& otherBox) const {
             return boundingBox_.intersectsBox(otherBox);
         }
-
+        void setHitboxVisualization(bool enabled);
+        
     private:
         std::shared_ptr<Object3D> model_;
         Box3 boundingBox_;
+        std::shared_ptr<Box3Helper> boundingBoxHelper_;
     };
 
 } // namespace threepp

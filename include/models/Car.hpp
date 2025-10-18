@@ -31,7 +31,11 @@ public:
         return boundingBox_.intersectsBox(otherBox);
     }
 
-//valgte å definere datamedlemene her i stedenfor å gjør det på Car.cpp siden jeg syns det er mere ryddig
+    // Add method to enable/update debug visualization
+    void setHitboxVisualization(bool enabled);
+    void updateHitboxVisualization();
+
+    //valgte å definere datamedlemene her i stedenfor å gjør det på Car.cpp siden jeg syns det er mere ryddig
 private:
     int speed_ = 10;
     int maxSpeed_ = 100;
@@ -44,6 +48,7 @@ private:
     Box3 localBoundingBox_;
     Box3 boundingBox_;
 
+    std::shared_ptr<Box3Helper> boundingBoxHelper_;
 
     void updateBoundingBox();
 };

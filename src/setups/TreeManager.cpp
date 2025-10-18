@@ -25,13 +25,13 @@ void TreeManager::spawnTrees() {
 
     if (baseModel) {
         for (int i = 0; i < numTrees_; ++i) {
-            // Clone the model for each tree
+
             auto treeModel = baseModel->clone();
 
-            // Create the tree first
+
             auto tree = Tree::create(treeModel);
 
-            // Set random position using the tree's method
+
             tree->setRandomPosition(-50.0f, 50.0f, -50.0f, 50.0f);
 
             trees_.emplace_back(tree);

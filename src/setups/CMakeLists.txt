@@ -9,5 +9,6 @@ set(setups_files
 add_library(setups ${setups_files})
 
 target_link_libraries(setups PUBLIC threepp::threepp
-assimp::assimp)
+        assimp::assimp
+        models)
 target_include_directories(setups PUBLIC ${setups_include_dir})
