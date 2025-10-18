@@ -18,12 +18,14 @@ namespace threepp {
         bool collidesWith(const Box3& otherBox) const {
             return boundingBox_.intersectsBox(otherBox);
         }
-        void setHitboxVisualization(bool enabled);
+        void setHitboxVisualization(bool enabled, Scene* scene = nullptr);
+        void updateHitboxVisualization();
         
     private:
         std::shared_ptr<Object3D> model_;
         Box3 boundingBox_;
         std::shared_ptr<Box3Helper> boundingBoxHelper_;
+        Scene* scene_ = nullptr;  // Keep reference to scene for helper management
     };
 
 } // namespace threepp

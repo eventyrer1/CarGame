@@ -37,7 +37,7 @@ int main() {
         car = Car::create(carModelPath);
         if (car) {
             car->position.set(0, 0, 0);
-            car->setHitboxVisualization(true);  // Enable bounding box visualization
+            car->setHitboxVisualization(true, scene.get());  // Pass scene reference
             scene->add(car);
         } else {
             std::cerr << "Failed to load `Data/Models/Car.dae`\n";
@@ -54,7 +54,7 @@ int main() {
     
     // Enable debug visualization for all trees
     for (auto& tree : treeManager->getTrees()) {
-        tree->setHitboxVisualization(true);
+        tree->setHitboxVisualization(true, scene.get());  // Pass scene reference
     }
 
     auto &carCamera = car->camera(); // car-attached camera

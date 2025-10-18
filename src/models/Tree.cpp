@@ -31,14 +31,24 @@ void Tree::setRandomPosition(float minX, float maxX, float minZ, float maxZ) {
 
     // Update bounding box after position change
     boundingBox_ = BoundingBoxHelper::computeBoundingBox(*this);
+    updateHitboxVisualization();
 }
 
-void Tree::setHitboxVisualization(bool enabled) {
-    if (enabled && !boundingBoxHelper_) {
+void Tree::setHitboxVisualization(bool enabled, Scene* scene) {
+    scene_ = scene;
+    if (enabled && !boundingBoxHelper_ && scene_) {
         boundingBoxHelper_ = BoundingBoxHelper::createHelper(boundingBox_, Color::green);
-        add(boundingBoxHelper_);
-    } else if (!enabled && boundingBoxHelper_) {
-        remove(*boundingBoxHelper_);
+        scene_->add(boundingBoxHelper_);
+    } else if (!enabled && boundingBoxHelper_ && scene_) {
+        scene_->remove(*boundingBoxHelper_);
         boundingBoxHelper_.reset();
+    }
+}
+
+void Tree::updateHitboxVisualization() {
+    if (boundingBoxHelper_ && scene_) {
+        scene_->remove(*boundingBoxHelper_);
+        boundingBoxHelper_ = BoundingBoxHelper::createHelper(boundingBox_, Color::green);
+        scene_->add(boundingBoxHelper_);
     }
 }
