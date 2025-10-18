@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 4.0)
 project(CarGame)
 set(CMAKE_CXX_STANDARD 20)
 enable_testing()
+
 file(COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -20,6 +21,7 @@ FetchContent_MakeAvailable(threepp)
 
 # Assimp (fetched and built as part of the configure step)
 #i dont need the tests and samples so i dont fetch them
+set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(

@@ -12,7 +12,7 @@ using namespace threepp;
 
 int main() {
     Canvas canvas{Canvas::Parameters().title("Car").size({1280, 720}).antialiasing(8)};
-    auto size = canvas.size();
+
     GLRenderer renderer{canvas.size()};
     renderer.autoClear = false;
 
@@ -24,11 +24,11 @@ int main() {
 
     std::shared_ptr<Car> car;
 
-    canvas.onWindowResize([&](WindowSize newSize) {
+    canvas.onWindowResize([&](const WindowSize &newSize) {
         camera.aspect = newSize.aspect();
         camera.updateProjectionMatrix();
         renderer.setSize(newSize);
-        size = newSize;
+
     });
 
     // Load the car model
@@ -37,6 +37,7 @@ int main() {
         car = Car::create(carModelPath);
         if (car) {
             car->position.set(0, 0, 0);
+            car->setHitboxVisualization(true);  // Enable bounding box visualization
             scene->add(car);
         } else {
             std::cerr << "Failed to load `Data/Models/Car.dae`\n";
@@ -47,10 +48,14 @@ int main() {
         std::cerr << "Unknown exception during car loading." << std::endl;
     }
 
-    // CHANGED: Use correct tree model path and fix tree manager usage
-    std::string treeModelPath = std::string(DATA_DIR) + "/models/tree.model"; // Adjust extension if needed
+    std::string treeModelPath = std::string(DATA_DIR) + "/models/Tree.dae";
     auto treeManager = std::make_shared<TreeManager>(scene, treeModelPath, 10);
     treeManager->spawnTrees();
+    
+    // Enable debug visualization for all trees
+    for (auto& tree : treeManager->getTrees()) {
+        tree->setHitboxVisualization(true);
+    }
 
     auto &carCamera = car->camera(); // car-attached camera
     auto cameraHelper = CameraHelper::create(carCamera);
@@ -64,11 +69,11 @@ int main() {
         const auto dt = clock.getDelta();
         car->update(dt, carKeyListener.determine_action());
 
-        // CHANGED: Improved collision detection
-        bool collision = false;
+
+
         for (auto& tree : treeManager->getTrees()) {
             if (car->collidesWith(tree->getBoundingBox())) {
-                collision = true;
+
                 std::cout << "Collision with tree detected!" << std::endl;
                 // Add collision response here (stop car, bounce back, etc.)
                 break;

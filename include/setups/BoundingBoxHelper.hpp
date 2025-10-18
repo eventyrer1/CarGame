@@ -1,5 +1,5 @@
 #pragma once
-
+//much AI was used here
 #include <threepp/threepp.hpp>
 
 using namespace threepp;
@@ -31,7 +31,7 @@ public:
                         // Transform local box into world space
                         geometryBox.applyMatrix4(*mesh->matrixWorld);
 
-                        // Expand the global box - FIXED: use union_ instead of expandByObject
+                        // Expand the global box-
                         box.union_(geometryBox);
                     }
                 }
