@@ -38,23 +38,24 @@ PerspectiveCamera &Car::camera() {
     return *camera_;
 }
 
-void Car::setHitboxVisualization(bool enabled) {
-    if (enabled && !boundingBoxHelper_) {
+void Car::setHitboxVisualization(bool enabled, Scene* scene) {
+    scene_ = scene;
+    if (enabled && !boundingBoxHelper_ && scene_) {
         boundingBoxHelper_ = BoundingBoxHelper::createHelper(boundingBox_, Color::red);
-        add(boundingBoxHelper_);
-    } else if (!enabled && boundingBoxHelper_) {
-        remove(*boundingBoxHelper_);
+        scene_->add(boundingBoxHelper_);
+    } else if (!enabled && boundingBoxHelper_ && scene_) {
+        scene_->remove(*boundingBoxHelper_);
         boundingBoxHelper_.reset();
     }
 }
 
 void Car::updateHitboxVisualization() {
-    if (boundingBoxHelper_) {
+    if (boundingBoxHelper_ && scene_) {
         // Remove old helper
-        remove(*boundingBoxHelper_);
+        scene_->remove(*boundingBoxHelper_);
         // Create new one with updated bounding box
         boundingBoxHelper_ = BoundingBoxHelper::createHelper(boundingBox_, Color::red);
-        add(boundingBoxHelper_);
+        scene_->add(boundingBoxHelper_);
     }
 }
 

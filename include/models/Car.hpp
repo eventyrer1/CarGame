@@ -32,7 +32,7 @@ public:
     }
 
     // Add method to enable/update debug visualization
-    void setHitboxVisualization(bool enabled);
+    void setHitboxVisualization(bool enabled, Scene* scene = nullptr);
     void updateHitboxVisualization();
 
     //valgte å definere datamedlemene her i stedenfor å gjør det på Car.cpp siden jeg syns det er mere ryddig
@@ -49,6 +49,7 @@ private:
     Box3 boundingBox_;
 
     std::shared_ptr<Box3Helper> boundingBoxHelper_;
+    Scene* scene_ = nullptr;  // Keep reference to scene
 
     void updateBoundingBox();
 };
