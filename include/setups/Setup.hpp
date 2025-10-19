@@ -2,7 +2,7 @@
 // Created by evest on 06.10.2025.
 //
 
-// setup.hpp
+// Setup.hpp
 #pragma once
 
 #include "threepp/threepp.hpp"

@@ -6,7 +6,7 @@
 #include "collision/CollisionManager.hpp"
 #include <iostream>
 #include "threepp/cameras/PerspectiveCamera.hpp"
-#include "setups/setup.hpp"
+#include "setups/Setup.hpp"
 #include <memory>
 
 using namespace threepp;

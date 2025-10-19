@@ -1,6 +1,6 @@
 #pragma once
 
-#include "collidable.hpp"
+#include "Collidable.hpp"
 #include <vector>
 
 #include <functional>

@@ -3,7 +3,7 @@
 #define CARGAME_TREE_HPP
 
 #include "threepp/threepp.hpp"
-#include "../collision/collidable.hpp"
+#include "../collision/Collidable.hpp"
 #include <memory>
 #include <random>
 
