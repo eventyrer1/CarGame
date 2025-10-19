@@ -3,7 +3,7 @@ project(CarGame)
 set(CMAKE_CXX_STANDARD 20)
 enable_testing()
 
-file(COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
+file(COPY ${CMAKE_SOURCE_DIR}/Data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
