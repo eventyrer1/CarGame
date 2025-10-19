@@ -23,19 +23,25 @@ public:
     //inspirert av sphero.hpp fra threepp eksempel
     PerspectiveCamera &camera();
 
-    Box3 getBoundingBox() const {
-        return boundingBox_;
+    // CHANGED: Return Sphere instead of Box3
+    Sphere getBoundingSphere() const {
+        return boundingSphere_;
     }
 
+    // CHANGED: Collision with Box3 (for trees)
     bool collidesWith(const Box3& otherBox) const {
-        return boundingBox_.intersectsBox(otherBox);
+        return boundingSphere_.intersectsBox(otherBox);
+    }
+
+    // ADDED: Collision with other sphere (for future car-to-car)
+    bool collidesWith(const Sphere& otherSphere) const {
+        return boundingSphere_.intersectsSphere(otherSphere);
     }
 
     // Add method to enable/update debug visualization
     void setHitboxVisualization(bool enabled, Scene* scene = nullptr);
     void updateHitboxVisualization();
 
-    //valgte å definere datamedlemene her i stedenfor å gjør det på Car.cpp siden jeg syns det er mere ryddig
 private:
     int speed_ = 10;
     int maxSpeed_ = 100;
@@ -45,13 +51,14 @@ private:
     std::shared_ptr<Object3D> model_;
     std::unique_ptr<PerspectiveCamera> camera_;
 
-    Box3 localBoundingBox_;
-    Box3 boundingBox_;
+    // CHANGED: Use Sphere instead of Box3
+    Sphere boundingSphere_;
 
-    std::shared_ptr<Box3Helper> boundingBoxHelper_;
-    Scene* scene_ = nullptr;  // Keep reference to scene
+    // For visualization - we'll create a sphere mesh
+    std::shared_ptr<Mesh> boundingSphereHelper_;
+    Scene* scene_ = nullptr;
 
-    void updateBoundingBox();
+    void updateBoundingSphere();
 };
 
 #endif // TANK_HPP

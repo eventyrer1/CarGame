@@ -56,6 +56,23 @@ public:
         return treeBox;
     }
 
+
+    static Sphere computeBoundingSphere(Object3D &object, float radiusScale = 1.0f) {
+        Box3 box = computeBoundingBox(object);
+        Sphere sphere;
+        box.getBoundingSphere(sphere);
+        
+
+        sphere.radius *= radiusScale;
+        
+        return sphere;
+    }
+
+
+    static void updateBoundingSphere(Object3D &object, Sphere &sphere, float radiusScale = 1.0f) {
+        sphere = computeBoundingSphere(object, radiusScale);
+    }
+
     static void updateBoundingBox(Object3D &object, Box3 &box) {
         box = computeBoundingBox(object);
     }

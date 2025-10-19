@@ -1,6 +1,7 @@
 #include "models/Car.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
 #include "BoundingBoxHelper.hpp"
+
 using namespace threepp;
 
 Car::Car(std::shared_ptr<Object3D> model)
@@ -8,12 +9,6 @@ Car::Car(std::shared_ptr<Object3D> model)
 {
     if (model_) {
         add(model_);
-
-        // Compute local bounding box once (in model's local space)
-        localBoundingBox_ = BoundingBoxHelper::computeBoundingBox(*model_);
-
-        // Initialize world bounding box
-        updateBoundingBox();
     }
 
     camera_ = std::make_unique<PerspectiveCamera>(65.f, (16/9.f), 0.1f, 100.f);
@@ -23,6 +18,9 @@ Car::Car(std::shared_ptr<Object3D> model)
         model_->add(*camera_);
         camera_->position.set(0, 5, -13);
         camera_->lookAt(model_->position);
+        
+        // Initialize bounding sphere (80% size for tighter collision)
+        boundingSphere_ = BoundingBoxHelper::computeBoundingSphere(*model_, 0.8f);
     }
 }
 
@@ -40,27 +38,31 @@ PerspectiveCamera &Car::camera() {
 
 void Car::setHitboxVisualization(bool enabled, Scene* scene) {
     scene_ = scene;
-    if (enabled && !boundingBoxHelper_ && scene_) {
-        boundingBoxHelper_ = BoundingBoxHelper::createHelper(boundingBox_, Color::red);
-        scene_->add(boundingBoxHelper_);
-    } else if (!enabled && boundingBoxHelper_ && scene_) {
-        scene_->remove(*boundingBoxHelper_);
-        boundingBoxHelper_.reset();
+    if (enabled && !boundingSphereHelper_ && scene_) {
+        auto sphereGeometry = SphereGeometry::create(boundingSphere_.radius, 16, 16);
+        auto material = MeshBasicMaterial::create();
+        material->wireframe = true;
+        material->color = Color::blue;
+        
+        boundingSphereHelper_ = Mesh::create(sphereGeometry, material);
+        boundingSphereHelper_->position.copy(boundingSphere_.center);
+        scene_->add(boundingSphereHelper_);
+    } else if (!enabled && boundingSphereHelper_ && scene_) {
+        scene_->remove(*boundingSphereHelper_);
+        boundingSphereHelper_.reset();
     }
 }
 
 void Car::updateHitboxVisualization() {
-    if (boundingBoxHelper_ && scene_) {
-        // Remove old helper
-        scene_->remove(*boundingBoxHelper_);
-        // Create new one with updated bounding box
-        boundingBoxHelper_ = BoundingBoxHelper::createHelper(boundingBox_, Color::red);
-        scene_->add(boundingBoxHelper_);
+    if (boundingSphereHelper_ && scene_) {
+        // Just update position - no need to recreate
+        boundingSphereHelper_->position.copy(boundingSphere_.center);
     }
 }
 
 void Car::update(double deltaTime,
                  std::pair<CarKeyListener::CarActionMove, CarKeyListener::CarActionTurn> actions) {
+    // YOUR ORIGINAL MOVEMENT CODE - UNCHANGED
     switch (actions.first) {
         case CarKeyListener::CarActionMove::ACCELERATE:
             speed_ += acceleration_ * deltaTime;
@@ -88,18 +90,15 @@ void Car::update(double deltaTime,
     model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} *
                         static_cast<float>(deltaTime));
 
-    // Efficient bounding box update - just transform the local box
-    updateBoundingBox();
+    // Update sphere collision (only center changes, radius stays same!)
+    updateBoundingSphere();
+}
+
+void Car::updateBoundingSphere() {
+    // Update sphere center to match car's current position
+    boundingSphere_.center.copy(model_->position);
+    // Radius never changes - sphere doesn't grow when rotating!
     
     // Update debug visualization if enabled
     updateHitboxVisualization();
-}
-
-// Private helper to update the world-space bounding box
-void Car::updateBoundingBox() {
-    boundingBox_.copy(localBoundingBox_);
-    // Apply the car's world transformation to the local bounding box
-    Matrix4 matrix;
-    matrix.compose(model_->position, model_->quaternion, model_->scale);
-    boundingBox_.applyMatrix4(matrix);
 }
