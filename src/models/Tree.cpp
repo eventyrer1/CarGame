@@ -10,7 +10,7 @@ Tree::Tree(std::shared_ptr<Object3D> model, const Vector3& position)
     if (model_) {
         add(model_);
         this->position.copy(position);
-        boundingBox_ = BoundingBoxHelper::computeBoundingBox(*this);
+        boundingBox_ = BoundingBoxHelper::computeTreeCollisionBox(*this);
     }
 }
 
@@ -29,8 +29,8 @@ void Tree::setRandomPosition(float minX, float maxX, float minZ, float maxZ) {
 
     position.set(distX(gen), 0.0f, distZ(gen));
 
-    // Update bounding box after position change
-    boundingBox_ = BoundingBoxHelper::computeBoundingBox(*this);
+
+    boundingBox_ = BoundingBoxHelper::computeTreeCollisionBox(*this);
     updateHitboxVisualization();
 }
 
