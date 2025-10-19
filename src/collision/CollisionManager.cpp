@@ -1,5 +1,5 @@
-
-#include "../../include/collision/CollisionManager.hpp"
+//much AI was used to decipher how to make this
+#include "collision/CollisionManager.hpp"
 #include <algorithm>
 
 void CollisionManager::registerCollidable(Collidable* object) {

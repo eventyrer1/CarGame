@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../setups/Collidable.hpp"
+#include "collidable.hpp"
 #include <vector>
-#include <memory>
+
 #include <functional>
 
 /**

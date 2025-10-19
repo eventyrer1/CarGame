@@ -2,6 +2,7 @@
 #include "threepp/loaders/AssimpLoader.hpp"
 #include "BoundingBoxHelper.hpp"
 
+
 using namespace threepp;
 
 Car::Car(std::shared_ptr<Object3D> model)
@@ -19,7 +20,6 @@ Car::Car(std::shared_ptr<Object3D> model)
         camera_->position.set(0, 5, -13);
         camera_->lookAt(model_->position);
         
-        // Initialize bounding sphere (80% size for tighter collision)
         boundingSphere_ = BoundingBoxHelper::computeBoundingSphere(*model_, 0.8f);
     }
 }
@@ -27,7 +27,10 @@ Car::Car(std::shared_ptr<Object3D> model)
 std::shared_ptr<Car> Car::create(const std::filesystem::path &path) {
     AssimpLoader loader;
     auto model = loader.load(path);
-    if (!model) return nullptr;
+    if (!model) {
+
+        return std::make_shared<Car>(nullptr);
+    }
     model->scale.multiplyScalar(1.0f);
     return std::make_shared<Car>(model);
 }
@@ -55,14 +58,14 @@ void Car::setHitboxVisualization(bool enabled, Scene* scene) {
 
 void Car::updateHitboxVisualization() {
     if (boundingSphereHelper_ && scene_) {
-        // Just update position - no need to recreate
         boundingSphereHelper_->position.copy(boundingSphere_.center);
     }
 }
 
 void Car::update(double deltaTime,
                  std::pair<CarKeyListener::CarActionMove, CarKeyListener::CarActionTurn> actions) {
-    // YOUR ORIGINAL MOVEMENT CODE - UNCHANGED
+
+    // Apply speed logic (works even if model_ is nullptr)
     switch (actions.first) {
         case CarKeyListener::CarActionMove::ACCELERATE:
             speed_ += acceleration_ * deltaTime;
@@ -86,19 +89,51 @@ void Car::update(double deltaTime,
             break;
     }
 
-    model_->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
-    model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} *
-                        static_cast<float>(deltaTime));
+    // Only update model if it exists
+    if (model_) {
+        model_->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
+        model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} *
+                             static_cast<float>(deltaTime));
+    }
 
-    // Update sphere collision (only center changes, radius stays same!)
     updateBoundingSphere();
 }
 
 void Car::updateBoundingSphere() {
-    // Update sphere center to match car's current position
-    boundingSphere_.center.copy(model_->position);
-    // Radius never changes - sphere doesn't grow when rotating!
+    if (model_) {
+        boundingSphere_.center.copy(model_->position);
+        updateHitboxVisualization();
+    }
+}
+
+// Implement Collidable interface
+bool Car::checkCollision(const Collidable& other) const {
+    if (other.getBox()) {
+        return boundingSphere_.intersectsBox(*other.getBox());
+    }
+    if (other.getSphere()) {
+        return boundingSphere_.intersectsSphere(*other.getSphere());
+    }
+    return false;
+}
+
+void Car::onCollision(Collidable* other) {
+
+    handleCollisionResponse(other);
+}
+
+void Car::handleCollisionResponse(Collidable* other) {
+    // Push car away from collision
+    Vector3 pushDirection = getPosition() - other->getPosition();
+
+    pushDirection.normalize();
     
-    // Update debug visualization if enabled
-    updateHitboxVisualization();
+
+    model_->position.add(pushDirection.multiplyScalar(0.5f));
+    
+
+    speed_ *= 0.5f;
+    
+    // Update collision sphere
+    updateBoundingSphere();
 }

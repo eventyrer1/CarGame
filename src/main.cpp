@@ -2,7 +2,8 @@
 #include "threepp/helpers/CameraHelper.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
 #include "models/Car.hpp"
-#include "setups/TreeManager.hpp" // CHANGED: Include .hpp, not .cpp
+#include "setups/TreeManager.hpp"
+#include "collision/CollisionManager.hpp"
 #include <iostream>
 #include "threepp/cameras/PerspectiveCamera.hpp"
 #include "setups/setup.hpp"
@@ -23,12 +24,14 @@ int main() {
     camera.position.set(-15, 8, 15);
 
     std::shared_ptr<Car> car;
+    
+    // CREATE COLLISION MANAGER
+    auto collisionManager = std::make_unique<CollisionManager>();
 
     canvas.onWindowResize([&](const WindowSize &newSize) {
         camera.aspect = newSize.aspect();
         camera.updateProjectionMatrix();
         renderer.setSize(newSize);
-
     });
 
     // Load the car model
@@ -37,8 +40,11 @@ int main() {
         car = Car::create(carModelPath);
         if (car) {
             car->position.set(0, 0, 0);
-            car->setHitboxVisualization(true, scene.get());  // Shows blue sphere
+            car->setHitboxVisualization(true, scene.get());
             scene->add(car);
+            
+            // REGISTER CAR FOR COLLISION
+            collisionManager->registerCollidable(car.get());
         } else {
             std::cerr << "Failed to load `Data/Models/Car.dae`\n";
         }
@@ -52,9 +58,10 @@ int main() {
     auto treeManager = std::make_shared<TreeManager>(scene, treeModelPath, 10);
     treeManager->spawnTrees();
     
-    // Enable debug visualization for all trees (shows green boxes)
+    // Enable debug visualization and REGISTER TREES FOR COLLISION
     for (auto& tree : treeManager->getTrees()) {
         tree->setHitboxVisualization(true, scene.get());
+        collisionManager->registerCollidable(tree.get());  // ADD THIS
     }
 
     auto &carCamera = car->camera();
@@ -69,26 +76,8 @@ int main() {
         const auto dt = clock.getDelta();
         car->update(dt, carKeyListener.determine_action());
 
-        // COLLISION DETECTION: Sphere (car) vs Box (trees)
-        bool collisionDetected = false;
-        for (auto& tree : treeManager->getTrees()) {
-            // Car's sphere intersects with tree's box
-            if (car->collidesWith(tree->getBoundingBox())) {
-                std::cout << "Collision with tree detected!" << std::endl;
-                collisionDetected = true;
-                
-                // OPTIONAL: Add collision response here
-                // Example 1: Stop the car
-                // car->position.copy(previousPosition);
-                
-                // Example 2: Push car back
-                // Vector3 pushBack = car->position - tree->position;
-                // pushBack.normalize();
-                // car->position.add(pushBack.multiplyScalar(0.1f));
-                
-                break; // Exit loop after first collision
-            }
-        }
+        // CHECK ALL COLLISIONS WITH ONE LINE!
+        collisionManager->checkCollisions();
 
         renderer.clear();
         renderer.render(*scene, carCamera);

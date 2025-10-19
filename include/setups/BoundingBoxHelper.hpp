@@ -37,7 +37,7 @@ public:
         return box;
     }
 
-    // Add this new method for tree collision boxes
+
     static Box3 computeTreeCollisionBox(Object3D &object, float trunkRadiusFraction = 0.2f) {
         Box3 fullBox = computeBoundingBox(object);
         

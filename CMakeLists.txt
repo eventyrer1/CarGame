@@ -41,3 +41,5 @@ FetchContent_MakeAvailable(catch2)
 
 add_subdirectory(src)
 add_subdirectory(tests)
+set(DATA_DIR "${CMAKE_SOURCE_DIR}/Data")
+target_compile_definitions(CarGame PRIVATE DATA_DIR="${DATA_DIR}")
