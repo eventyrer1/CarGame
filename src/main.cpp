@@ -37,7 +37,7 @@ int main() {
         car = Car::create(carModelPath);
         if (car) {
             car->position.set(0, 0, 0);
-            car->setHitboxVisualization(true, scene.get());  // Pass scene reference
+            car->setHitboxVisualization(true, scene.get());  // Shows blue sphere
             scene->add(car);
         } else {
             std::cerr << "Failed to load `Data/Models/Car.dae`\n";
@@ -52,12 +52,12 @@ int main() {
     auto treeManager = std::make_shared<TreeManager>(scene, treeModelPath, 10);
     treeManager->spawnTrees();
     
-    // Enable debug visualization for all trees
+    // Enable debug visualization for all trees (shows green boxes)
     for (auto& tree : treeManager->getTrees()) {
-        tree->setHitboxVisualization(true, scene.get());  // Pass scene reference
+        tree->setHitboxVisualization(true, scene.get());
     }
 
-    auto &carCamera = car->camera(); // car-attached camera
+    auto &carCamera = car->camera();
     auto cameraHelper = CameraHelper::create(carCamera);
     scene->add(cameraHelper);
 
@@ -69,19 +69,30 @@ int main() {
         const auto dt = clock.getDelta();
         car->update(dt, carKeyListener.determine_action());
 
-
-
+        // COLLISION DETECTION: Sphere (car) vs Box (trees)
+        bool collisionDetected = false;
         for (auto& tree : treeManager->getTrees()) {
+            // Car's sphere intersects with tree's box
             if (car->collidesWith(tree->getBoundingBox())) {
-
                 std::cout << "Collision with tree detected!" << std::endl;
-                // Add collision response here (stop car, bounce back, etc.)
-                break;
+                collisionDetected = true;
+                
+                // OPTIONAL: Add collision response here
+                // Example 1: Stop the car
+                // car->position.copy(previousPosition);
+                
+                // Example 2: Push car back
+                // Vector3 pushBack = car->position - tree->position;
+                // pushBack.normalize();
+                // car->position.add(pushBack.multiplyScalar(0.1f));
+                
+                break; // Exit loop after first collision
             }
         }
 
         renderer.clear();
         renderer.render(*scene, carCamera);
     });
+    
     return 0;
 }
