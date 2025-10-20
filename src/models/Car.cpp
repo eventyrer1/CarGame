@@ -42,7 +42,7 @@ PerspectiveCamera &Car::camera() {
 void Car::setHitboxVisualization(bool enabled, Scene* scene) {
     scene_ = scene;
     if (enabled && !boundingSphereHelper_ && scene_) {
-        auto sphereGeometry = SphereGeometry::create(boundingSphere_.radius, 16, 16);
+        auto sphereGeometry = SphereGeometry::create(boundingSphere_.radius, 5, 5);
         auto material = MeshBasicMaterial::create();
         material->wireframe = true;
         material->color = Color::blue;
@@ -115,6 +115,9 @@ bool Car::checkCollision(const Collidable& other) const {
         return boundingSphere_.intersectsSphere(*other.getSphere());
     }
     return false;
+}
+void Car::resetPosition() {
+    model_->position.set(0, 0, 0);
 }
 
 void Car::onCollision(Collidable* other) {
