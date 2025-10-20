@@ -1,4 +1,5 @@
 #include "UiManager.hpp"
+#include "models/Car.hpp"
 
 UiManager::UiManager(GLFWwindow* window) {
     IMGUI_CHECKVERSION();
@@ -23,6 +24,7 @@ void UiManager::beginFrame() {
 }
 
 void UiManager::renderUI() {
+    ImGui::Text("car ptr = %p", car);
     ImGui::Begin("Car Controls");
 
     if (car) {

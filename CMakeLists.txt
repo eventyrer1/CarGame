@@ -19,8 +19,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(threepp)
 
-# Assimp (fetched and built as part of the configure step)
-#i dont need the tests and samples so i dont fetch them
+
+
 set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
@@ -39,13 +39,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(catch2)
 
-FetchContent_Declare(
-        glfw
-        GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG        3.3.10   # or the latest stable version
-)
 
-FetchContent_MakeAvailable(glfw)
 
 add_subdirectory(src)
 add_subdirectory(tests)

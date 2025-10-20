@@ -25,7 +25,7 @@ int main() {
     camera.position.set(-15, 8, 15);
 
     std::shared_ptr<Car> car;
-    
+
     // CREATE COLLISION MANAGER
     auto collisionManager = std::make_unique<CollisionManager>();
 
@@ -43,7 +43,7 @@ int main() {
             car->position.set(0, 0, 0);
             car->setHitboxVisualization(true, scene.get());
             scene->add(car);
-            
+
             // REGISTER CAR FOR COLLISION
             collisionManager->registerCollidable(car.get());
         } else {
@@ -58,11 +58,11 @@ int main() {
     std::string treeModelPath = std::string(DATA_DIR) + "/models/Tree.dae";
     auto treeManager = std::make_shared<TreeManager>(scene, treeModelPath, 10);
     treeManager->spawnTrees();
-    
+
     // Enable debug visualization and REGISTER TREES FOR COLLISION
-    for (auto& tree : treeManager->getTrees()) {
+    for (auto &tree: treeManager->getTrees()) {
         tree->setHitboxVisualization(true, scene.get());
-        collisionManager->registerCollidable(tree.get());  // ADD THIS
+        collisionManager->registerCollidable(tree.get()); // ADD THIS
     }
 
     auto &carCamera = car->camera();
@@ -73,7 +73,8 @@ int main() {
     canvas.addKeyListener(carKeyListener);
     Clock clock;
 
-    UiManager ui(static_cast<GLFWwindow*>(canvas.windowPtr()));
+    UiManager ui(static_cast<GLFWwindow *>(canvas.windowPtr()));
+    ui.setCar(car.get());
     canvas.animate([&]() {
         const auto dt = clock.getDelta();
         car->update(dt, carKeyListener.determine_action());
@@ -87,6 +88,6 @@ int main() {
         renderer.render(*scene, carCamera);
         ui.endFrame();
     });
-    
+
     return 0;
 }
