@@ -4,6 +4,7 @@ set(keylistener_include_dir "${CMAKE_SOURCE_DIR}/include/keylisteners")
 
 set(keylistener_files
         "${keylistener_include_dir}/Car_keylistener.hpp" "Car_keylistener.cpp"
+        "${keylistener_include_dir}/WorldKeylistener.hpp" "WorldKeylistener.cpp"
 )
 add_library(keylisteners ${keylistener_files})
 

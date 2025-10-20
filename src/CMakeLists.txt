@@ -12,6 +12,7 @@ target_link_libraries(CarGame PRIVATE
         keylisteners
         setups
         collision
+        imgui::imgui
 )
 
 

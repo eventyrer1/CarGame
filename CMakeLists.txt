@@ -8,7 +8,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/Data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 include(FetchContent)
-
+add_subdirectory(libs)
 # dont need tests and examples so i dont fetch them
 set(THREEPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(THREEPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -38,6 +38,14 @@ FetchContent_Declare(
         GIT_TAG v3.11.0
 )
 FetchContent_MakeAvailable(catch2)
+
+FetchContent_Declare(
+        glfw
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG        3.3.10   # or the latest stable version
+)
+
+FetchContent_MakeAvailable(glfw)
 
 add_subdirectory(src)
 add_subdirectory(tests)

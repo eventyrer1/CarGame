@@ -48,7 +48,7 @@ public:
     const Sphere* getSphere() const override { return &boundingSphere_; }
     Vector3 getPosition() const override { return model_ ? model_->position : Vector3(); }
     void onCollision(Collidable* other) override;
-
+    void resetPosition();
 
     //since this is only for testing and is very small i decided to have the entire getter and setter in the header
     float getSpeed() const { return speed_; }
@@ -57,7 +57,7 @@ public:
 
 private:
     int speed_ = 10;
-    int maxSpeed_ = 200;
+    int maxSpeed_ = 100;
     int acceleration_ = 100;
     int rotationSpeed_ = 2;
     float angle_ = 0.0;

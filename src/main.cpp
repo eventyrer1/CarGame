@@ -8,6 +8,7 @@
 #include "threepp/cameras/PerspectiveCamera.hpp"
 #include "setups/Setup.hpp"
 #include <memory>
+#include "Uimanager.hpp"
 
 using namespace threepp;
 
@@ -72,15 +73,19 @@ int main() {
     canvas.addKeyListener(carKeyListener);
     Clock clock;
 
+    UiManager ui(static_cast<GLFWwindow*>(canvas.windowPtr()));
     canvas.animate([&]() {
         const auto dt = clock.getDelta();
         car->update(dt, carKeyListener.determine_action());
 
         // CHECK ALL COLLISIONS WITH ONE LINE!
         collisionManager->checkCollisions();
+        ui.beginFrame();
+        ui.renderUI();
 
         renderer.clear();
         renderer.render(*scene, carCamera);
+        ui.endFrame();
     });
     
     return 0;
