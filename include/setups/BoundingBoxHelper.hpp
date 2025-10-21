@@ -38,19 +38,19 @@ public:
     }
 
 
-    static Box3 computeTreeCollisionBox(Object3D &object, float trunkRadiusFraction = 0.2f) {
+    static Box3 computeTreeCollisionBox(Object3D &object, float height=5.0f) {
         Box3 fullBox = computeBoundingBox(object);
-        
+
         Vector3 center = getCenter(fullBox);
         Vector3 size = getSize(fullBox);
-        
-        // Reduce horizontal collision to trunk size
-        float trunkRadius = std::max(size.x, size.z) * trunkRadiusFraction;
+
+
         
         Box3 treeBox;
         treeBox.set(
-            Vector3(center.x - trunkRadius, fullBox.min().y, center.z - trunkRadius),
-            Vector3(center.x + trunkRadius, fullBox.max().y, center.z + trunkRadius)
+            //reduce max y since the branches of the tree makes the collision box way to big at the bottom
+            Vector3(center.x, fullBox.min().y, center.z),
+            Vector3(center.x, fullBox.min().y+height, center.z)
         );
         
         return treeBox;
