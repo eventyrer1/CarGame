@@ -132,7 +132,7 @@ void Car::handleCollisionResponse(Collidable* other) {
     pushDirection.normalize();
     
 
-    model_->position.add(pushDirection.multiplyScalar(0.5f));
+    model_->position.add(pushDirection.multiplyScalar(0.1f));
     
 
     speed_ *= 0.5f;

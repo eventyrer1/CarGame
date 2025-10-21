@@ -56,7 +56,7 @@ public:
     void setSpeed(float speed) { speed_ = speed; }
 
 private:
-    int speed_ = 10;
+    int speed_ = 0;
     int maxSpeed_ = 100;
     int acceleration_ = 100;
     int rotationSpeed_ = 2;
