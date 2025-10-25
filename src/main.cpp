@@ -9,7 +9,7 @@
 #include "setups/Setup.hpp"
 #include <memory>
 #include "Uimanager.hpp"
-
+#include "keylisteners/CarKeylistener.hpp"
 using namespace threepp;
 
 int main() {
@@ -69,15 +69,20 @@ int main() {
     auto cameraHelper = CameraHelper::create(carCamera);
     scene->add(cameraHelper);
 
-    CarKeyListener carKeyListener;
-    canvas.addKeyListener(carKeyListener);
+
+    CarKeyListener controller;
+    canvas.addKeyListener(controller);
+
     Clock clock;
 
     UiManager ui(static_cast<GLFWwindow *>(canvas.windowPtr()));
     ui.setCar(car.get());
     canvas.animate([&]() {
         const auto dt = clock.getDelta();
-        car->update(dt, carKeyListener.determine_action());
+
+
+        auto [move, turn] = controller.getActions();
+        car->update(dt, move, turn);
 
         // CHECK ALL COLLISIONS WITH ONE LINE!
         collisionManager->checkCollisions();

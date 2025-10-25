@@ -63,29 +63,35 @@ void Car::updateHitboxVisualization() {
 }
 
 void Car::update(double deltaTime,
-                 std::pair<CarKeyListener::CarActionMove, CarKeyListener::CarActionTurn> actions) {
+                 const CarActions::Move moveAction, const CarActions::Turn turnAction) {
 
     // Apply speed logic (works even if model_ is nullptr)
-    switch (actions.first) {
-        case CarKeyListener::CarActionMove::ACCELERATE:
+    switch (moveAction) {
+        case CarActions::Move::ACCELERATE:
             speed_ += acceleration_ * deltaTime;
             if (speed_ > maxSpeed_) speed_ = maxSpeed_;
             break;
-        case CarKeyListener::CarActionMove::DECELERATE:
+        case CarActions::Move::DECELERATE:
             speed_ -= acceleration_ * deltaTime;
             if (speed_ < -maxSpeed_ / 2) speed_ = -maxSpeed_ / 2;
             break;
-        case CarKeyListener::CarActionMove::NOTHING:
-            speed_ *= 1 - 0.10 * deltaTime;
+        case CarActions::Move::NOTHING:
+
+            if (abs(speed_)>1) {
+                speed_ *= 1 - 0.10 * deltaTime*drag_;
+            }
+            else speed_*=0;
             break;
     }
 
-    switch (actions.second) {
-        case CarKeyListener::CarActionTurn::TURN_LEFT:
+    switch (turnAction) {
+        case CarActions::Turn::TURN_LEFT:
             angle_ += rotationSpeed_ * deltaTime;
             break;
-        case CarKeyListener::CarActionTurn::TURN_RIGHT:
+        case CarActions::Turn::TURN_RIGHT:
             angle_ -= rotationSpeed_ * deltaTime;
+            break;
+        case CarActions::Turn::NOTHING:
             break;
     }
 
@@ -137,7 +143,15 @@ void Car::handleCollisionResponse(Collidable* other) {
     // Update collision sphere
     updateBoundingSphere();
 }
-void Car::resetPosition() {
+void Car::reset() {
     model_->position.set(0, 0, 0);
+    speed_ = 0;
+    angle_ = 0;
+    maxSpeed_ = 100;
+    acceleration_ = 100;
+    rotationSpeed_ = 2;
+    drag_ = 10.f;
+
+
 
 }
