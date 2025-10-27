@@ -24,7 +24,7 @@ void UiManager::beginFrame() {
 }
 
 void UiManager::renderUI() {
-    ImGui::Text("car ptr = %p", car);
+
     ImGui::Begin("Car Controls");
 
     if (car) {

@@ -65,6 +65,7 @@ int main() {
         collisionManager->registerCollidable(tree.get()); // ADD THIS
     }
 
+
     auto &carCamera = car->camera();
     auto cameraHelper = CameraHelper::create(carCamera);
     scene->add(cameraHelper);
