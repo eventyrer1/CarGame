@@ -38,14 +38,14 @@ public:
     void onCollision(Collidable* other) override;
     void reset();
 
-    // Getters
+
     float getSpeed() const { return speed_; }
     float getMaxSpeed() const { return maxSpeed_; }
     float getAcceleration() const { return acceleration_; }
     float getRotationSpeed() const { return rotationSpeed_; }
     float getDrag() const { return drag_; }
 
-    // Setters
+
     void setSpeed(float v) { speed_ = v; }
     void setMaxSpeed(float v) { maxSpeed_ = v; }
     void setAcceleration(float v) { acceleration_ = v; }
