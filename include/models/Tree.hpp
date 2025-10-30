@@ -3,12 +3,13 @@
 #define CARGAME_TREE_HPP
 
 #include "threepp/threepp.hpp"
+#include "../collision/Collidable.hpp"
 #include <memory>
 #include <random>
 
 namespace threepp {
 
-    class Tree : public Object3D {
+    class Tree : public Object3D, public Collidable {  // CHANGED: inherit from Collidable
     public:
         explicit Tree(std::shared_ptr<Object3D> model, const Vector3& position = Vector3());
         static std::shared_ptr<Tree> create(std::shared_ptr<Object3D> model);
@@ -21,11 +22,17 @@ namespace threepp {
         void setHitboxVisualization(bool enabled, Scene* scene = nullptr);
         void updateHitboxVisualization();
         
+        // Implement Collidable interface
+        bool checkCollision(const Collidable& other) const override;
+        const Box3* getBox() const override { return &boundingBox_; }
+        Vector3 getPosition() const override { return position; }
+        void onCollision(Collidable* other) override;
+        
     private:
         std::shared_ptr<Object3D> model_;
         Box3 boundingBox_;
         std::shared_ptr<Box3Helper> boundingBoxHelper_;
-        Scene* scene_ = nullptr;  // Keep reference to scene for helper management
+        Scene* scene_ = nullptr;
     };
 
 } // namespace threepp

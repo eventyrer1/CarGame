@@ -3,12 +3,12 @@ project(CarGame)
 set(CMAKE_CXX_STANDARD 20)
 enable_testing()
 
-file(COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
+file(COPY ${CMAKE_SOURCE_DIR}/Data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 include(FetchContent)
-
+add_subdirectory(libs)
 # dont need tests and examples so i dont fetch them
 set(THREEPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(THREEPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -19,8 +19,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(threepp)
 
-# Assimp (fetched and built as part of the configure step)
-#i dont need the tests and samples so i dont fetch them
+
+
 set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
@@ -39,5 +39,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(catch2)
 
+
+
 add_subdirectory(src)
 add_subdirectory(tests)
+set(DATA_DIR "${CMAKE_SOURCE_DIR}/Data")
+target_compile_definitions(CarGame PRIVATE DATA_DIR="${DATA_DIR}")

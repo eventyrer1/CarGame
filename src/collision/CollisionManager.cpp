@@ -1,5 +1,5 @@
-
-#include "../../include/collision/CollisionManager.hpp"
+//much AI was used to decipher how to make this
+#include "collision/CollisionManager.hpp"
 #include <algorithm>
 
 void CollisionManager::registerCollidable(Collidable* object) {
@@ -19,7 +19,7 @@ void CollisionManager::checkCollisions() {
     for (size_t i = 0; i < collidables_.size(); ++i) {
         for (size_t j = i + 1; j < collidables_.size(); ++j) {
             if (checkCollisionPair(*collidables_[i], *collidables_[j])) {
-                // Notify both objects
+                // Notify both objects that they have collided
                 collidables_[i]->onCollision(collidables_[j]);
                 collidables_[j]->onCollision(collidables_[i]);
 

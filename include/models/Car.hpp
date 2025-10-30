@@ -1,64 +1,74 @@
-#ifndef TANK_HPP
-#define TANK_HPP
+// include/models/Car.hpp
+#ifndef CAR_HPP
+#define CAR_HPP
 
 #include <memory>
-#include <filesystem>
 #include "threepp/threepp.hpp"
-#include <keylisteners/car_keylistener.hpp>
+#include "collision/Collidable.hpp"
+#include "keylisteners/InterfaceCarKeylistener.hpp"
+#include "keylisteners/CarActions.hpp"
 
 using namespace threepp;
 
-
-class Car : public Object3D {
+class Car : public Object3D, public Collidable {
 public:
     explicit Car(std::shared_ptr<Object3D> model);
+    static std::shared_ptr<Car> create(const std::filesystem::path& path);
 
-    static std::shared_ptr<Car> create(const std::filesystem::path &path);
-
-    void update(double deltaTime,
-                std::pair<CarKeyListener::CarActionMove, CarKeyListener::CarActionTurn> actions
-    );
+    void update(double deltaTime, const CarActions::Move move, const CarActions::Turn turn);
 
     std::shared_ptr<Object3D> getModel() const { return model_; }
-    //inspirert av sphero.hpp fra threepp eksempel
-    PerspectiveCamera &camera();
+    PerspectiveCamera& camera();
 
-    // CHANGED: Return Sphere instead of Box3
-    Sphere getBoundingSphere() const {
-        return boundingSphere_;
+    static std::shared_ptr<Car> createDummyCar() {
+        return std::make_shared<Car>(nullptr);
     }
 
-    // CHANGED: Collision with Box3 (for trees)
-    bool collidesWith(const Box3& otherBox) const {
-        return boundingSphere_.intersectsBox(otherBox);
-    }
+    Sphere getBoundingSphere() const { return boundingSphere_; }
 
-    // ADDED: Collision with other sphere (for future car-to-car)
-    bool collidesWith(const Sphere& otherSphere) const {
-        return boundingSphere_.intersectsSphere(otherSphere);
-    }
+    bool collidesWith(const Box3& otherBox) const { return boundingSphere_.intersectsBox(otherBox); }
+    bool collidesWith(const Sphere& otherSphere) const { return boundingSphere_.intersectsSphere(otherSphere); }
 
-    // Add method to enable/update debug visualization
     void setHitboxVisualization(bool enabled, Scene* scene = nullptr);
     void updateHitboxVisualization();
 
+    bool checkCollision(const Collidable& other) const override;
+    const Sphere* getSphere() const override { return &boundingSphere_; }
+    Vector3 getPosition() const override { return model_ ? model_->position : Vector3(); }
+    void onCollision(Collidable* other) override;
+    void reset();
+
+
+    float getSpeed() const { return speed_; }
+    float getMaxSpeed() const { return maxSpeed_; }
+    float getAcceleration() const { return acceleration_; }
+    float getRotationSpeed() const { return rotationSpeed_; }
+    float getDrag() const { return drag_; }
+
+
+    void setSpeed(float v) { speed_ = v; }
+    void setMaxSpeed(float v) { maxSpeed_ = v; }
+    void setAcceleration(float v) { acceleration_ = v; }
+    void setRotationSpeed(float v) { rotationSpeed_ = v; }
+    void setDrag(float v) { drag_ = v; }
+
 private:
-    int speed_ = 10;
-    int maxSpeed_ = 100;
-    int acceleration_ = 100;
-    int rotationSpeed_ = 2;
+    float speed_ = 0;
+    float maxSpeed_ = 100;
+    float acceleration_ = 100;
+    float rotationSpeed_ = 2;
     float angle_ = 0.0;
+    float drag_ = 10.f;
+
     std::shared_ptr<Object3D> model_;
     std::unique_ptr<PerspectiveCamera> camera_;
 
-    // CHANGED: Use Sphere instead of Box3
     Sphere boundingSphere_;
-
-    // For visualization - we'll create a sphere mesh
     std::shared_ptr<Mesh> boundingSphereHelper_;
     Scene* scene_ = nullptr;
 
     void updateBoundingSphere();
+    void handleCollisionResponse(Collidable* other);
 };
 
-#endif // TANK_HPP
+#endif // CAR_HPP
