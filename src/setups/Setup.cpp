@@ -2,7 +2,7 @@
 // Created by evest on 06.10.2025.
 //
 
-#include "setup.hpp"
+#include "Setup.hpp"
 #include "threepp/threepp.hpp"
 using namespace threepp;
 

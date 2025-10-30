@@ -52,3 +52,18 @@ void Tree::updateHitboxVisualization() {
         scene_->add(boundingBoxHelper_);
     }
 }
+
+// Implement Collidable interface
+bool Tree::checkCollision(const Collidable& other) const {
+    if (other.getSphere()) {
+        return other.getSphere()->intersectsBox(boundingBox_);
+    }
+    if (other.getBox()) {
+        return boundingBox_.intersectsBox(*other.getBox());
+    }
+    return false;
+}
+
+void Tree::onCollision(Collidable* other) {
+    //if i ever want to make trees respond to collisions
+}

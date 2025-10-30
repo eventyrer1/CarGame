@@ -1,10 +1,20 @@
-# inspired from https://github.com/jonakselm/ais1003-prosjekt/blob/master/tests/CMakeLists.txt
+add_executable(tests Acceleration.cpp)
 
-add_executable(tests CollisionTest.cpp)
+target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
 
 target_link_libraries(tests
-        PRIVATE Catch2::Catch2WithMain
-        PUBLIC libBoard
+        PRIVATE
+        Catch2::Catch2WithMain
+        threepp::threepp
+        assimp::assimp
+        models
+        keylisteners
+        setups
+        collision
 )
 
-add_test(NAME tests COMMAND tests)
+# Enable CTest + Catch2 integration
+include(CTest)
+include(Catch)
+catch_discover_tests(tests)

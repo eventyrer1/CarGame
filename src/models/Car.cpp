@@ -2,6 +2,7 @@
 #include "threepp/loaders/AssimpLoader.hpp"
 #include "BoundingBoxHelper.hpp"
 
+
 using namespace threepp;
 
 Car::Car(std::shared_ptr<Object3D> model)
@@ -19,7 +20,6 @@ Car::Car(std::shared_ptr<Object3D> model)
         camera_->position.set(0, 5, -13);
         camera_->lookAt(model_->position);
         
-        // Initialize bounding sphere (80% size for tighter collision)
         boundingSphere_ = BoundingBoxHelper::computeBoundingSphere(*model_, 0.8f);
     }
 }
@@ -27,7 +27,10 @@ Car::Car(std::shared_ptr<Object3D> model)
 std::shared_ptr<Car> Car::create(const std::filesystem::path &path) {
     AssimpLoader loader;
     auto model = loader.load(path);
-    if (!model) return nullptr;
+    if (!model) {
+
+        return std::make_shared<Car>(nullptr);
+    }
     model->scale.multiplyScalar(1.0f);
     return std::make_shared<Car>(model);
 }
@@ -39,7 +42,7 @@ PerspectiveCamera &Car::camera() {
 void Car::setHitboxVisualization(bool enabled, Scene* scene) {
     scene_ = scene;
     if (enabled && !boundingSphereHelper_ && scene_) {
-        auto sphereGeometry = SphereGeometry::create(boundingSphere_.radius, 16, 16);
+        auto sphereGeometry = SphereGeometry::create(boundingSphere_.radius, 20, 20);
         auto material = MeshBasicMaterial::create();
         material->wireframe = true;
         material->color = Color::blue;
@@ -55,50 +58,100 @@ void Car::setHitboxVisualization(bool enabled, Scene* scene) {
 
 void Car::updateHitboxVisualization() {
     if (boundingSphereHelper_ && scene_) {
-        // Just update position - no need to recreate
         boundingSphereHelper_->position.copy(boundingSphere_.center);
     }
 }
 
 void Car::update(double deltaTime,
-                 std::pair<CarKeyListener::CarActionMove, CarKeyListener::CarActionTurn> actions) {
-    // YOUR ORIGINAL MOVEMENT CODE - UNCHANGED
-    switch (actions.first) {
-        case CarKeyListener::CarActionMove::ACCELERATE:
+                 const CarActions::Move moveAction, const CarActions::Turn turnAction) {
+
+    // Apply speed logic (works even if model_ is nullptr)
+    switch (moveAction) {
+        case CarActions::Move::ACCELERATE:
             speed_ += acceleration_ * deltaTime;
             if (speed_ > maxSpeed_) speed_ = maxSpeed_;
             break;
-        case CarKeyListener::CarActionMove::DECELERATE:
+        case CarActions::Move::DECELERATE:
             speed_ -= acceleration_ * deltaTime;
             if (speed_ < -maxSpeed_ / 2) speed_ = -maxSpeed_ / 2;
             break;
-        case CarKeyListener::CarActionMove::NOTHING:
-            speed_ *= 1 - 0.10 * deltaTime;
+        case CarActions::Move::NOTHING:
+
+            if (abs(speed_)>1) {
+                speed_ *= 1 - 0.10 * deltaTime*drag_;
+            }
+            else speed_*=0;
             break;
     }
 
-    switch (actions.second) {
-        case CarKeyListener::CarActionTurn::TURN_LEFT:
+    switch (turnAction) {
+        case CarActions::Turn::TURN_LEFT:
             angle_ += rotationSpeed_ * deltaTime;
             break;
-        case CarKeyListener::CarActionTurn::TURN_RIGHT:
+        case CarActions::Turn::TURN_RIGHT:
             angle_ -= rotationSpeed_ * deltaTime;
+            break;
+        case CarActions::Turn::NOTHING:
             break;
     }
 
-    model_->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
-    model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} *
-                        static_cast<float>(deltaTime));
+    // Only update model if it exists
+    if (model_) {
+        model_->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
+        model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} *
+                             static_cast<float>(deltaTime));
+    }
 
-    // Update sphere collision (only center changes, radius stays same!)
     updateBoundingSphere();
 }
 
 void Car::updateBoundingSphere() {
-    // Update sphere center to match car's current position
-    boundingSphere_.center.copy(model_->position);
-    // Radius never changes - sphere doesn't grow when rotating!
+    if (model_) {
+        boundingSphere_.center.copy(model_->position);
+        updateHitboxVisualization();
+    }
+}
+
+// Implement Collidable interface
+bool Car::checkCollision(const Collidable& other) const {
+    if (other.getBox()) {
+        return boundingSphere_.intersectsBox(*other.getBox());
+    }
+    if (other.getSphere()) {
+        return boundingSphere_.intersectsSphere(*other.getSphere());
+    }
+    return false;
+}
+
+void Car::onCollision(Collidable* other) {
+
+    handleCollisionResponse(other);
+}
+
+void Car::handleCollisionResponse(Collidable* other) {
+    // Push car away from collision
+    Vector3 pushDirection = getPosition() - other->getPosition();
+
+    pushDirection.normalize();
     
-    // Update debug visualization if enabled
-    updateHitboxVisualization();
+
+    model_->position.add(pushDirection.multiplyScalar(0.1f));
+    
+
+    speed_ *= 0.5f;
+    
+    // Update collision sphere
+    updateBoundingSphere();
+}
+void Car::reset() {
+    model_->position.set(0, 0, 0);
+    speed_ = 0;
+    angle_ = 0;
+    maxSpeed_ = 100;
+    acceleration_ = 100;
+    rotationSpeed_ = 2;
+    drag_ = 10.f;
+
+
+
 }
