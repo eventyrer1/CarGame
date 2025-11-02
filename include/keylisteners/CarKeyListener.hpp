@@ -1,6 +1,3 @@
-//
-// Created by evest on 04.10.2025.
-//inspired by https://github.com/Joranikus/Asteroids/blob/master/include/keylisteners/spaceship_keylistener.hpp
 
 #ifndef CARGAME_CAR_KEYLISTENER_HPP
 #define CARGAME_CAR_KEYLISTENER_HPP

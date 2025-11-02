@@ -1,4 +1,5 @@
-
+set(DATA_DIR "${CMAKE_SOURCE_DIR}/Data")
+target_compile_definitions(CarGame PRIVATE DATA_DIR="${DATA_DIR}")
 
 set(setups_include_dir "${CMAKE_SOURCE_DIR}/include/setups")
 
@@ -8,7 +9,7 @@ set(setups_files
         "Uimanager.cpp"
 )
 add_library(setups ${setups_files})
-
+target_compile_definitions(setups PUBLIC DATA_DIR="${DATA_DIR}")
 target_link_libraries(setups PUBLIC threepp::threepp
         assimp::assimp
         models

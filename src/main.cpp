@@ -21,7 +21,7 @@ int main() {
     auto scene = Scene::create();
     setupScene(*scene);
 
-    PerspectiveCamera camera(60, canvas.aspect(), 0.1f, 1000);
+    PerspectiveCamera camera(60, canvas.aspect(), 0.1f, 10000);
     camera.position.set(-15, 8, 15);
 
     std::shared_ptr<Car> car;
@@ -35,7 +35,7 @@ int main() {
         renderer.setSize(newSize);
     });
 
-    // Load the car model
+
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
         car = Car::create(carModelPath);
@@ -44,7 +44,7 @@ int main() {
             car->setHitboxVisualization(true, scene.get());
             scene->add(car);
 
-            // REGISTER CAR FOR COLLISION
+
             collisionManager->registerCollidable(car.get());
         } else {
             std::cerr << "Failed to load `Data/Models/Car.dae`\n";
@@ -62,8 +62,9 @@ int main() {
     // Enable debug visualization and REGISTER TREES FOR COLLISION
     for (auto &tree: treeManager->getTrees()) {
         tree->setHitboxVisualization(true, scene.get());
-        collisionManager->registerCollidable(tree.get()); // ADD THIS
+        collisionManager->registerCollidable(tree.get());
     }
+
 
 
     auto &carCamera = car->camera();
@@ -85,7 +86,7 @@ int main() {
         auto [move, turn] = controller.getActions();
         car->update(dt, move, turn);
 
-        // CHECK ALL COLLISIONS WITH ONE LINE!
+
         collisionManager->checkCollisions();
         ui.beginFrame();
         ui.renderUI();
