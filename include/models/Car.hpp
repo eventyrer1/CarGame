@@ -5,8 +5,8 @@
 #include <memory>
 #include "threepp/threepp.hpp"
 #include "collision/Collidable.hpp"
-#include "keylisteners/InterfaceCarKeylistener.hpp"
-#include "keylisteners/CarActions.hpp"
+#include "keyListeners/InterfaceCarKeylistener.hpp"
+#include "keyListeners/CarActions.hpp"
 
 using namespace threepp;
 
