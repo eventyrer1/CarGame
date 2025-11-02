@@ -17,6 +17,6 @@ target_link_libraries(CarGame PRIVATE
 
 
 add_subdirectory(models)
-add_subdirectory(keyListeners)
+add_subdirectory(keylisteners)
 add_subdirectory(setups)
 add_subdirectory(collision)
