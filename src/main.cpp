@@ -8,7 +8,7 @@
 #include "threepp/cameras/PerspectiveCamera.hpp"
 #include "setups/Setup.hpp"
 #include <memory>
-#include "Uimanager.hpp"
+#include "UiManager.hpp"
 #include "../include/keyListeners/CarKeyListener.hpp"
 using namespace threepp;
 

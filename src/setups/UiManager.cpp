@@ -1,7 +1,7 @@
 #include "UiManager.hpp"
 #include "models/Car.hpp"
 
-UiManager::UiManager(GLFWwindow* window) {
+UiManager::UiManager(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
@@ -15,7 +15,7 @@ UiManager::~UiManager() {
     ImGui::DestroyContext();
 }
 
-void UiManager::setCar(Car* carPtr) { car = carPtr; }
+void UiManager::setCar(Car *carPtr) { car = carPtr; }
 
 void UiManager::beginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
@@ -24,7 +24,6 @@ void UiManager::beginFrame() {
 }
 
 void UiManager::renderUI() {
-
     ImGui::Begin("Car Controls");
 
     if (car) {

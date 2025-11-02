@@ -13,12 +13,14 @@ using namespace threepp;
 class Car : public Object3D, public Collidable {
 public:
     explicit Car(std::shared_ptr<Object3D> model);
-    static std::shared_ptr<Car> create(const std::filesystem::path& path);
+
+    static std::shared_ptr<Car> create(const std::filesystem::path &path);
 
     void update(double deltaTime, const CarActions::Move move, const CarActions::Turn turn);
 
     std::shared_ptr<Object3D> getModel() const { return model_; }
-    PerspectiveCamera& camera();
+
+    PerspectiveCamera &camera();
 
     static std::shared_ptr<Car> createDummyCar() {
         return std::make_shared<Car>(nullptr);
@@ -26,16 +28,20 @@ public:
 
     Sphere getBoundingSphere() const { return boundingSphere_; }
 
-    bool collidesWith(const Box3& otherBox) const { return boundingSphere_.intersectsBox(otherBox); }
-    bool collidesWith(const Sphere& otherSphere) const { return boundingSphere_.intersectsSphere(otherSphere); }
+    bool collidesWith(const Box3 &otherBox) const { return boundingSphere_.intersectsBox(otherBox); }
+    bool collidesWith(const Sphere &otherSphere) const { return boundingSphere_.intersectsSphere(otherSphere); }
 
-    void setHitboxVisualization(bool enabled, Scene* scene = nullptr);
+    void setHitboxVisualization(bool enabled, Scene *scene = nullptr);
+
     void updateHitboxVisualization();
 
-    bool checkCollision(const Collidable& other) const override;
-    const Sphere* getSphere() const override { return &boundingSphere_; }
+    bool checkCollision(const Collidable &other) const override;
+
+    const Sphere *getSphere() const override { return &boundingSphere_; }
     Vector3 getPosition() const override { return model_ ? model_->position : Vector3(); }
-    void onCollision(Collidable* other) override;
+
+    void onCollision(Collidable *other) override;
+
     void reset();
 
 
@@ -65,10 +71,11 @@ private:
 
     Sphere boundingSphere_;
     std::shared_ptr<Mesh> boundingSphereHelper_;
-    Scene* scene_ = nullptr;
+    Scene *scene_ = nullptr;
 
     void updateBoundingSphere();
-    void handleCollisionResponse(Collidable* other);
+
+    void handleCollisionResponse(Collidable *other);
 };
 
 #endif // CAR_HPP
