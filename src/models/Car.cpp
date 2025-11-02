@@ -98,7 +98,7 @@ void Car::update(double deltaTime,
     // Only update model if it exists
     if (model_) {
         model_->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
-        model_->position += (Vector3{speed_ * std::sin(angle_), 0, speed_ * std::cos(angle_)} *
+        model_->position += (Vector3{speed_ * std::sin(angle_),0, speed_ * std::cos(angle_)} *
                              static_cast<float>(deltaTime));
     }
 

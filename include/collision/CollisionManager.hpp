@@ -14,7 +14,7 @@ public:
 
     // Register objects for collision detection
     void registerCollidable(Collidable* object);
-    void unregisterCollidable(Collidable* object);
+
 
     // Check all collisions and trigger callbacks
     void checkCollisions();

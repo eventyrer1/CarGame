@@ -8,12 +8,7 @@ void CollisionManager::registerCollidable(Collidable* object) {
     }
 }
 
-void CollisionManager::unregisterCollidable(Collidable* object) {
-    collidables_.erase(
-        std::remove(collidables_.begin(), collidables_.end(), object),
-        collidables_.end()
-    );
-}
+
 
 void CollisionManager::checkCollisions() {
     for (size_t i = 0; i < collidables_.size(); ++i) {
