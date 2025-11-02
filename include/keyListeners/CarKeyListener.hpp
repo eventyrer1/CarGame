@@ -3,10 +3,10 @@
 #define CARGAME_CAR_KEYLISTENER_HPP
 
 #include "threepp/threepp.hpp"
-#include "InterfaceCarKeylistener.hpp"
+#include "InterfaceCarKeyListener.hpp"
 #include <unordered_set>
 
-class CarKeyListener : public threepp::KeyListener, public InterfaceCarKeylistener {
+class CarKeyListener : public threepp::KeyListener, public InterfaceCarKeyListener {
 public:
     void onKeyPressed(threepp::KeyEvent evt) override;
     void onKeyReleased(threepp::KeyEvent evt) override;
