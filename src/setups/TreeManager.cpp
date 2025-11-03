@@ -13,7 +13,7 @@ TreeManager::TreeManager(std::shared_ptr<Scene> scene,
       treeGroup_(Group::create()) {
 }
 
-void TreeManager::spawnTrees() {
+void TreeManager::spawnTrees(CollisionManager& collisionManager) {
     AssimpLoader loader;
 
     std::random_device rd;
@@ -33,7 +33,7 @@ void TreeManager::spawnTrees() {
 
 
             tree->setRandomPosition(-50.0f, 50.0f, -50.0f, 50.0f);
-
+            collisionManager.registerCollidable(tree.get());
             trees_.emplace_back(tree);
             treeGroup_->add(tree);
         }

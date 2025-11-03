@@ -10,15 +10,19 @@ Tree::Tree(std::shared_ptr<Object3D> model, const Vector3& position)
     if (model_) {
         add(model_);
         this->position.copy(position);
-        boundingBox_ = BoundingBoxHelper::computeTreeCollisionBox(*this);
+        updateCollisionBox();
     }
 }
 
 std::shared_ptr<Tree> Tree::create(std::shared_ptr<Object3D> model)
 {
     if (!model) return nullptr;
-    model->scale.multiplyScalar(501.0f);
-    return std::make_shared<Tree>(model);
+    model->scale.multiplyScalar(1.0f);
+    auto tree= std::make_shared<Tree>(model);
+    tree->updateMatrixWorld(true);
+    tree->updateCollisionBox();
+    tree->updateHitboxVisualization();
+    return tree;
 }
 
 void Tree::setRandomPosition(float minX, float maxX, float minZ, float maxZ) {
@@ -29,15 +33,20 @@ void Tree::setRandomPosition(float minX, float maxX, float minZ, float maxZ) {
 
     position.set(distX(gen), 0.0f, distZ(gen));
 
-
-    boundingBox_ = BoundingBoxHelper::computeTreeCollisionBox(*this);
+    updateMatrixWorld(true);
+    updateCollisionBox();
     updateHitboxVisualization();
-}
 
+}
+void Tree::updateCollisionBox() {
+    updateMatrixWorld(true);
+    collisionBox_ = BoundingBoxHelper::computeTreeCollisionBox(*this);
+
+}
 void Tree::setHitboxVisualization(bool enabled, Scene* scene) {
     scene_ = scene;
     if (enabled && !boundingBoxHelper_ && scene_) {
-        boundingBoxHelper_ = BoundingBoxHelper::createHelper(boundingBox_, Color::green);
+        boundingBoxHelper_ = BoundingBoxHelper::createHelper(collisionBox_, Color::green);
         scene_->add(boundingBoxHelper_);
     } else if (!enabled && boundingBoxHelper_ && scene_) {
         scene_->remove(*boundingBoxHelper_);
@@ -48,7 +57,7 @@ void Tree::setHitboxVisualization(bool enabled, Scene* scene) {
 void Tree::updateHitboxVisualization() {
     if (boundingBoxHelper_ && scene_) {
         scene_->remove(*boundingBoxHelper_);
-        boundingBoxHelper_ = BoundingBoxHelper::createHelper(boundingBox_, Color::green);
+        boundingBoxHelper_ = BoundingBoxHelper::createHelper(collisionBox_, Color::green);
         scene_->add(boundingBoxHelper_);
     }
 }
@@ -56,10 +65,10 @@ void Tree::updateHitboxVisualization() {
 // Implement Collidable interface
 bool Tree::checkCollision(const Collidable& other) const {
     if (other.getSphere()) {
-        return other.getSphere()->intersectsBox(boundingBox_);
+        return other.getSphere()->intersectsBox(collisionBox_);
     }
     if (other.getBox()) {
-        return boundingBox_.intersectsBox(*other.getBox());
+        return collisionBox_.intersectsBox(*other.getBox());
     }
     return false;
 }
