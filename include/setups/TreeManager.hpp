@@ -4,16 +4,17 @@
 #include "models/Tree.hpp"  // ADDED: Include Tree header
 #include <memory>
 #include <vector>
+#include "collision/CollisionManager.hpp"
 
-// REMOVED: using namespace threepp; (causes conflicts)
+
 
 class TreeManager {
 public:
-    TreeManager(std::shared_ptr<threepp::Scene> scene,
+    TreeManager(std::shared_ptr<Scene> scene,
                 const std::string& modelPath,
                 int numTrees);
 
-    void spawnTrees();
+    void spawnTrees(CollisionManager& collisionManager);
 
     std::shared_ptr<threepp::Group> getTreeGroup() const;
     const std::vector<std::shared_ptr<threepp::Tree>>& getTrees() const; // CHANGED: threepp::Tree

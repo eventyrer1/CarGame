@@ -9,92 +9,92 @@
 #include "setups/Setup.hpp"
 #include <memory>
 #include "UiManager.hpp"
-#include "../include/keyListeners/CarKeyListener.hpp"
+#include "keyListeners/CarKeyListener.hpp"
 using namespace threepp;
 
 int main() {
-    Canvas canvas{Canvas::Parameters().title("Car").size({1280, 720}).antialiasing(8)};
 
-    GLRenderer renderer{canvas.size()};
-    renderer.autoClear = false;
+        Canvas canvas{Canvas::Parameters().title("Car").size({1280, 720}).antialiasing(8)};
 
-    auto scene = Scene::create();
-    setupScene(*scene);
+        GLRenderer renderer{canvas.size()};
+        renderer.autoClear = false;
 
-    PerspectiveCamera camera(60, canvas.aspect(), 0.1f, 10000);
-    camera.position.set(-15, 8, 15);
+        auto scene = Scene::create();
+        setupScene(*scene);
 
-    std::shared_ptr<Car> car;
+        PerspectiveCamera camera(60, canvas.aspect(), 0.1f, 10000);
+        camera.position.set(-15, 8, 15);
 
-    // CREATE COLLISION MANAGER
-    auto collisionManager = std::make_unique<CollisionManager>();
+        std::shared_ptr<Car> car;
 
-    canvas.onWindowResize([&](const WindowSize &newSize) {
-        camera.aspect = newSize.aspect();
-        camera.updateProjectionMatrix();
-        renderer.setSize(newSize);
-    });
+        // CREATE COLLISION MANAGER
+        auto collisionManager = std::make_unique<CollisionManager>();
 
-
-    try {
-        std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
-        car = Car::create(carModelPath);
-        if (car) {
-            car->position.set(0, 0, 0);
-            car->setHitboxVisualization(true, scene.get());
-            scene->add(car);
+        canvas.onWindowResize([&](const WindowSize &newSize) {
+            camera.aspect = newSize.aspect();
+            camera.updateProjectionMatrix();
+            renderer.setSize(newSize);
+        });
 
 
-            collisionManager->registerCollidable(car.get());
-        } else {
-            std::cerr << "Failed to load `Data/Models/Car.dae`\n";
+        try {
+            std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
+            car = Car::create(carModelPath);
+            if (car) {
+                car->position.set(0, 0, 0);
+                car->setHitboxVisualization(true, scene.get());
+                scene->add(car);
+
+
+                collisionManager->registerCollidable(car.get());
+            } else {
+                std::cerr << "Failed to load `Data/Models/Car.dae`\n";
+            }
+        } catch (const std::exception &ex) {
+            std::cerr << "Exception during car loading: " << ex.what() << std::endl;
+        } catch (...) {
+            std::cerr << "Unknown exception during car loading." << std::endl;
         }
-    } catch (const std::exception &ex) {
-        std::cerr << "Exception during car loading: " << ex.what() << std::endl;
-    } catch (...) {
-        std::cerr << "Unknown exception during car loading." << std::endl;
-    }
 
-    std::string treeModelPath = std::string(DATA_DIR) + "/models/Tree.dae";
-    auto treeManager = std::make_shared<TreeManager>(scene, treeModelPath, 10);
-    treeManager->spawnTrees();
+        std::string treeModelPath = std::string(DATA_DIR) + "/models/CartoonTree.obj";
+        auto treeManager = std::make_shared<TreeManager>(scene, treeModelPath, 10);
+        treeManager->spawnTrees(*collisionManager);
 
-    // Enable debug visualization and REGISTER TREES FOR COLLISION
-    for (auto &tree: treeManager->getTrees()) {
-        tree->setHitboxVisualization(true, scene.get());
-        collisionManager->registerCollidable(tree.get());
-    }
+        // Enable debug visualization and REGISTER TREES FOR COLLISION
+        for (auto &tree: treeManager->getTrees()) {
+            tree->setHitboxVisualization(true, scene.get());
+            collisionManager->registerCollidable(tree.get());
+        }
 
 
 
-    auto &carCamera = car->camera();
-    auto cameraHelper = CameraHelper::create(carCamera);
-    scene->add(cameraHelper);
+        auto &carCamera = car->camera();
+        auto cameraHelper = CameraHelper::create(carCamera);
+        scene->add(cameraHelper);
 
 
-    CarKeyListener controller;
-    canvas.addKeyListener(controller);
+        CarKeyListener controller;
+        canvas.addKeyListener(controller);
 
-    Clock clock;
+        Clock clock;
 
-    UiManager ui(static_cast<GLFWwindow *>(canvas.windowPtr()));
-    ui.setCar(car.get());
-    canvas.animate([&]() {
-        const auto dt = clock.getDelta();
-
-
-        auto [move, turn] = controller.getActions();
-        car->update(dt, move, turn);
+        UiManager ui(static_cast<GLFWwindow *>(canvas.windowPtr()));
+        ui.setCar(car.get());
+        canvas.animate([&]() {
+            const auto dt = clock.getDelta();
 
 
-        collisionManager->checkCollisions();
-        ui.beginFrame();
-        ui.renderUI();
+            auto [move, turn] = controller.getActions();
+            car->update(dt, move, turn);
 
-        renderer.clear();
-        renderer.render(*scene, carCamera);
-        ui.endFrame();
-    });
 
-    return 0;
-}
+            collisionManager->checkCollisions();
+            ui.beginFrame();
+            ui.renderUI();
+
+            renderer.clear();
+            renderer.render(*scene, carCamera);
+            ui.endFrame();
+        });
+
+        return 0;}

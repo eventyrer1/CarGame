@@ -1,6 +1,4 @@
 set(DATA_DIR "${CMAKE_SOURCE_DIR}/Data")
-target_compile_definitions(CarGame PRIVATE DATA_DIR="${DATA_DIR}")
-
 set(setups_include_dir "${CMAKE_SOURCE_DIR}/include/setups")
 
 set(setups_files
@@ -15,3 +13,4 @@ target_link_libraries(setups PUBLIC threepp::threepp
         models
         imgui::imgui)
 target_include_directories(setups PUBLIC ${setups_include_dir})
+target_compile_definitions(setups PUBLIC DATA_DIR="${DATA_DIR}")
