@@ -3,8 +3,11 @@ set(models_include_dir "${CMAKE_SOURCE_DIR}/include/models")
 set(setups_include_dir "${CMAKE_SOURCE_DIR}/include/setups")
 
 set(models_src_files
-        "${models_include_dir}/Car.hpp" "${CMAKE_SOURCE_DIR}/src/models/Car.cpp"
-        "${models_include_dir}/Tree.hpp" "${CMAKE_SOURCE_DIR}/src/models/Tree.cpp"
+        "${models_include_dir}/Car.hpp" "Car.cpp"
+        "${models_include_dir}/Tree.hpp" "Tree.cpp"
+        "${models_include_dir}/SpawnableObject.hpp" "SpawnableObject.cpp"
+
+
 )
 
 add_library(models ${models_src_files})

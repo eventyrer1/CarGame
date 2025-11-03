@@ -57,7 +57,7 @@ void UiManager::renderUI() {
 
         ImGui::Separator();
 
-        auto pos = car->getPosition();
+        auto pos = car->position;
         ImGui::Text("Current Position: (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z);
     }
 
