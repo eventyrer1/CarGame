@@ -3,6 +3,8 @@
 #define CAR_HPP
 
 #include <memory>
+
+#include "SpawnableObject.hpp"
 #include "threepp/threepp.hpp"
 #include "collision/Collidable.hpp"
 #include "keyListeners/InterfaceCarKeyListener.hpp"
@@ -10,7 +12,7 @@
 
 using namespace threepp;
 
-class Car : public Object3D, public Collidable {
+class Car : public SpawnableObject {
 public:
     explicit Car(std::shared_ptr<Object3D> model);
 
@@ -18,27 +20,20 @@ public:
 
     void update(double deltaTime, const CarActions::Move move, const CarActions::Turn turn);
 
-    std::shared_ptr<Object3D> getModel() const { return model_; }
-
     PerspectiveCamera &camera();
 
     static std::shared_ptr<Car> createDummyCar() {
         return std::make_shared<Car>(nullptr);
     }
 
-    Sphere getBoundingSphere() const { return boundingSphere_; }
+    bool collidesWith(const Box3 &otherBox) const { return boundingSphere_.value().intersectsBox(otherBox); }
+    bool collidesWith(const Sphere &otherSphere) const { return boundingSphere_.value().intersectsSphere(otherSphere); }
 
-    bool collidesWith(const Box3 &otherBox) const { return boundingSphere_.intersectsBox(otherBox); }
-    bool collidesWith(const Sphere &otherSphere) const { return boundingSphere_.intersectsSphere(otherSphere); }
-
-    void setHitboxVisualization(bool enabled, Scene *scene = nullptr);
+    /*void setHitboxVisualization(bool enabled, Scene *scene = nullptr);
 
     void updateHitboxVisualization();
 
-    bool checkCollision(const Collidable &other) const override;
-
-    const Sphere *getSphere() const override { return &boundingSphere_; }
-    Vector3 getPosition() const override { return model_ ? model_->position : Vector3(); }
+    bool checkCollision(const Collidable &other) const override;*/
 
     void onCollision(Collidable *other) override;
 
@@ -66,10 +61,8 @@ private:
     float angle_ = 0.0;
     float drag_ = 10.f;
 
-    std::shared_ptr<Object3D> model_;
     std::unique_ptr<PerspectiveCamera> camera_;
 
-    Sphere boundingSphere_;
     std::shared_ptr<Mesh> boundingSphereHelper_;
     Scene *scene_ = nullptr;
 
