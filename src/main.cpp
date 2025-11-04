@@ -68,6 +68,7 @@ int main() {
     for (auto human : humanSpawner.getObjects()) {
         human->setHitboxVisualization(true, scene.get());
         human->updateHitboxVisualization();
+        collisionManager->registerCollidable(human.get());
     }
 
 

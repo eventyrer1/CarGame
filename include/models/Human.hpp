@@ -11,6 +11,11 @@ namespace threepp {
         using SpawnableObject::SpawnableObject;
         static std::shared_ptr<Human> create(std::shared_ptr<Object3D> model);
         void computeBoundingBox() override;
+        void onCollision(::Collidable* other) override;
+
+    private:
+
+        void handleCollisionResponse(Collidable *other);
     };
 
 }
