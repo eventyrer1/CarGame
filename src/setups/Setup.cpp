@@ -17,10 +17,10 @@ void setupScene(Scene &scene) {
     scene.add(grid);
     scene.background = Color::aliceblue;
 
-        auto map = loader.load(std::string(DATA_DIR) + "/models/Track.glb");
+    auto map = loader.load(std::string(DATA_DIR) + "/models/Track.glb");
 
-        scene.add(map);
-        map->scale *= 1;
+    scene.add(map);
+    map->scale *= 1;
 
 
 }

@@ -6,7 +6,7 @@ set(models_src_files
         "${models_include_dir}/Car.hpp" "Car.cpp"
         "${models_include_dir}/Tree.hpp" "Tree.cpp"
         "${models_include_dir}/SpawnableObject.hpp" "SpawnableObject.cpp"
-
+        "${models_include_dir}/Human.hpp" "Human.cpp"
 
 )
 
