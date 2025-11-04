@@ -28,25 +28,17 @@ public:
 
     bool collidesWith(const Box3 &otherBox) const { return boundingSphere_.value().intersectsBox(otherBox); }
     bool collidesWith(const Sphere &otherSphere) const { return boundingSphere_.value().intersectsSphere(otherSphere); }
-
-    /*void setHitboxVisualization(bool enabled, Scene *scene = nullptr);
-
-    void updateHitboxVisualization();
-
-    bool checkCollision(const Collidable &other) const override;*/
-
     void onCollision(Collidable *other) override;
 
     void reset();
 
-
+    //----- Getters -----
     float getSpeed() const { return speed_; }
     float getMaxSpeed() const { return maxSpeed_; }
     float getAcceleration() const { return acceleration_; }
     float getRotationSpeed() const { return rotationSpeed_; }
     float getDrag() const { return drag_; }
-
-
+    //----- Setters -----
     void setSpeed(float v) { speed_ = v; }
     void setMaxSpeed(float v) { maxSpeed_ = v; }
     void setAcceleration(float v) { acceleration_ = v; }

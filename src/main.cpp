@@ -8,6 +8,7 @@
 #include "keyListeners/CarKeyListener.hpp"
 #include "UiManager.hpp"
 #include "setups/Setup.hpp"
+#include "models/Human.hpp"
 #include <iostream>
 using namespace threepp;
 
@@ -56,17 +57,20 @@ int main() {
     std::string treeModelPath = std::string(DATA_DIR) + "/models/CartoonTree.obj";
     ObjectSpawner<threepp::Tree> treeSpawner(scene, treeModelPath, 10);
     treeSpawner.spawnObjects(*collisionManager);
-
-    // ---- Tree ----
-    std::string humanModelPath = std::string(DATA_DIR) + "/models/Human.glb";
-    ObjectSpawner<threepp::Tree> humanSpawner(scene, humanModelPath, 10);
-    humanSpawner.spawnObjects(*collisionManager);
-
-    // Hitbox visualization
     for (auto tree : treeSpawner.getObjects()) {
         tree->setHitboxVisualization(true, scene.get());
         tree->updateHitboxVisualization();
     }
+    // ---- Human ----
+    std::string humanModelPath = std::string(DATA_DIR) + "/models/Human.glb";
+    ObjectSpawner<threepp::Human> humanSpawner(scene, humanModelPath, 10);
+    humanSpawner.spawnObjects(*collisionManager);
+    for (auto human : humanSpawner.getObjects()) {
+        human->setHitboxVisualization(true, scene.get());
+        human->updateHitboxVisualization();
+    }
+
+
 
     // ---- Camera and input setup ----
     auto& carCamera = car->camera();

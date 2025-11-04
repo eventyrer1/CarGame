@@ -1,9 +1,6 @@
-//
-// Created by evest on 04.11.2025.
-//
-
 #ifndef CARGAME_HUMAN_HPP
 #define CARGAME_HUMAN_HPP
+
 #include "SpawnableObject.hpp"
 
 namespace threepp {

@@ -14,7 +14,7 @@ Car::Car(std::shared_ptr<Object3D> model) {
     this->add(*camera_);
     camera_->position.set(0, 5, -13);
     camera_->lookAt(this->position);
-    Collidable::computeBoundingSphere(0.8f);
+    Collidable::computeBoundingSphere(0.6f);
 }
 
 std::shared_ptr<Car> Car::create(const std::filesystem::path& path) {
@@ -34,28 +34,6 @@ PerspectiveCamera& Car::camera() {
     return *camera_;
 }
 
-/*void Car::setHitboxVisualization(bool enabled, Scene* scene) {
-    scene_ = scene;
-    if (enabled && !boundingSphereHelper_ && scene_) {
-        auto sphereGeometry = SphereGeometry::create(boundingSphere_.radius, 20, 20);
-        auto material = MeshBasicMaterial::create();
-        material->wireframe = true;
-        material->color = Color::blue;
-
-        boundingSphereHelper_ = Mesh::create(sphereGeometry, material);
-        boundingSphereHelper_->position.copy(boundingSphere_.center);
-        scene_->add(boundingSphereHelper_);
-    } else if (!enabled && boundingSphereHelper_ && scene_) {
-        scene_->remove(*boundingSphereHelper_);
-        boundingSphereHelper_.reset();
-    }
-}
-
-void Car::updateHitboxVisualization() {
-    if (boundingSphereHelper_ && scene_) {
-        boundingSphereHelper_->position.copy(boundingSphere_.center);
-    }
-}*/
 
 void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn) {
 
@@ -104,11 +82,6 @@ void Car::updateBoundingSphere() {
     updateHitboxVisualization();
 }
 
-/*bool Car::checkCollision(const Collidable& other) const {
-    if (other.getBox()) return boundingSphere_.intersectsBox(*other.getBox());
-    if (other.getSphere()) return boundingSphere_.intersectsSphere(*other.getSphere());
-    return false;
-}*/
 
 void Car::onCollision(Collidable* other) {
     handleCollisionResponse(other);
