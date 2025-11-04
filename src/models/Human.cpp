@@ -1,5 +1,6 @@
 #include "models/Human.hpp"
 
+
 using namespace threepp;
 
 Human::Human(std::shared_ptr<Object3D> model) {
@@ -18,4 +19,12 @@ std::shared_ptr<Human> Human::create(std::shared_ptr<Object3D> model) {
 void Human::computeBoundingBox() {
     updateMatrixWorld(true);
     collisionBox_ = std::make_optional<Box3>(BoundingBoxHelper::computeCollisionBox(*this));
+}
+void Human::onCollision(Collidable* other) {
+    handleCollisionResponse(other);
+
+}
+
+void Human::handleCollisionResponse(Collidable* other) {
+//do shit here bitch boy
 }

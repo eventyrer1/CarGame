@@ -25,9 +25,6 @@ public:
     static std::shared_ptr<Car> createDummyCar() {
         return std::make_shared<Car>(nullptr);
     }
-
-    bool collidesWith(const Box3 &otherBox) const { return boundingSphere_.value().intersectsBox(otherBox); }
-    bool collidesWith(const Sphere &otherSphere) const { return boundingSphere_.value().intersectsSphere(otherSphere); }
     void onCollision(Collidable *other) override;
 
     void reset();
