@@ -9,7 +9,7 @@ target_link_libraries(tests
         threepp::threepp
         assimp::assimp
         models
-        keylisteners
+        keyListeners
         setups
         collision
 )

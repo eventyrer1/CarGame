@@ -9,7 +9,7 @@ target_link_libraries(CarGame PRIVATE
         threepp::threepp
         assimp::assimp
         models
-        keylisteners
+        keyListeners
         setups
         collision
         imgui::imgui
@@ -17,6 +17,7 @@ target_link_libraries(CarGame PRIVATE
 
 
 add_subdirectory(models)
-add_subdirectory(keylisteners)
+add_subdirectory(keyListeners)
 add_subdirectory(setups)
 add_subdirectory(collision)
+target_compile_definitions(CarGame PRIVATE DATA_DIR="${DATA_DIR}")

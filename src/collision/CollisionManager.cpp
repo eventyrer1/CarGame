@@ -8,62 +8,44 @@ void CollisionManager::registerCollidable(Collidable* object) {
     }
 }
 
-void CollisionManager::unregisterCollidable(Collidable* object) {
-    collidables_.erase(
-        std::remove(collidables_.begin(), collidables_.end(), object),
-        collidables_.end()
-    );
-}
+
 
 void CollisionManager::checkCollisions() {
     for (size_t i = 0; i < collidables_.size(); ++i) {
         for (size_t j = i + 1; j < collidables_.size(); ++j) {
-            if (checkCollisionPair(*collidables_[i], *collidables_[j])) {
+            if (collidables_[i]->checkCollision(*collidables_[j])) {
                 // Notify both objects that they have collided
                 collidables_[i]->onCollision(collidables_[j]);
                 collidables_[j]->onCollision(collidables_[i]);
-
-                // Call global callback if set
-                if (collisionCallback_) {
-                    collisionCallback_(collidables_[i], collidables_[j]);
-                }
             }
         }
     }
 }
 
-void CollisionManager::setCollisionCallback(CollisionCallback callback) {
-    collisionCallback_ = std::move(callback);
-}
+
 
 std::vector<Collidable*> CollisionManager::getCollisions(Collidable* object) const {
     std::vector<Collidable*> collisions;
     for (auto* other : collidables_) {
-        if (other != object && checkCollisionPair(*object, *other)) {
+        if (other != object && object->checkCollision(*other)) {
             collisions.push_back(other);
         }
     }
     return collisions;
 }
 
-bool CollisionManager::checkCollisionPair(const Collidable& a, const Collidable& b) const {
-    // Sphere vs Box collision
-    if (a.getSphere() && b.getBox()) {
-        return a.getSphere()->intersectsBox(*b.getBox());
-    }
-    if (a.getBox() && b.getSphere()) {
-        return b.getSphere()->intersectsBox(*a.getBox());
-    }
+/*bool CollisionManager::checkCollisionPair(const Collidable& a, const Collidable& b) const {
+    // Let objects decide first
+    if (a.checkCollision(b) || b.checkCollision(a)) return true;
 
-    // Sphere vs Sphere collision
-    if (a.getSphere() && b.getSphere()) {
-        return a.getSphere()->intersectsSphere(*b.getSphere());
+    // Fallback: use provided shapes
+    if (const auto sa = a.getSphere()) {
+        if (const auto bb = b.getBox()) return sa->intersectsBox(*bb);
+        if (const auto sb = b.getSphere()) return sa->intersectsSphere(*sb);
     }
-
-    // Box vs Box collision
-    if (a.getBox() && b.getBox()) {
-        return a.getBox()->intersectsBox(*b.getBox());
+    if (const auto ba = a.getBox()) {
+        if (const auto sb = b.getSphere()) return sb->intersectsBox(*ba);
+        if (const auto bb = b.getBox()) return ba->intersectsBox(*bb);
     }
-
     return false;
-}
+}*/
