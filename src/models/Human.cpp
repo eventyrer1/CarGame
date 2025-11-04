@@ -15,12 +15,7 @@ std::shared_ptr<Human> Human::create(std::shared_ptr<Object3D> model) {
     }
     return nullptr;
 }
-
 void Human::computeBoundingBox() {
     updateMatrixWorld(true);
-
-    Box3 fullBox;
-    fullBox.setFromObject(*this);
-
-    collisionBox_ = std::make_optional<Box3>(fullBox);
+    collisionBox_ = std::make_optional<Box3>(BoundingBoxHelper::computeCollisionBox(*this));
 }
