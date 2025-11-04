@@ -34,7 +34,7 @@ int main() {
         renderer.setSize(newSize);
     });
 
-    // ---- Load Car ----
+    // ---- Car ----
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
         car = Car::create(carModelPath);
@@ -52,13 +52,17 @@ int main() {
         std::cerr << "Unknown exception during car loading." << std::endl;
     }
 
-    // ---- Spawn Trees using ObjectSpawner ----
+    // ---- Tree ----
     std::string treeModelPath = std::string(DATA_DIR) + "/models/CartoonTree.obj";
-
     ObjectSpawner<threepp::Tree> treeSpawner(scene, treeModelPath, 10);
     treeSpawner.spawnObjects(*collisionManager);
 
-    // Enable debug visualization (optional)
+    // ---- Tree ----
+    std::string humanModelPath = std::string(DATA_DIR) + "/models/Human.glb";
+    ObjectSpawner<threepp::Tree> humanSpawner(scene, humanModelPath, 10);
+    humanSpawner.spawnObjects(*collisionManager);
+
+    // Hitbox visualization
     for (auto tree : treeSpawner.getObjects()) {
         tree->setHitboxVisualization(true, scene.get());
         tree->updateHitboxVisualization();
