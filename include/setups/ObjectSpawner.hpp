@@ -12,12 +12,6 @@ template<typename T>
 struct ObjectTraits {
     static constexpr bool hasAudio = false;
 };
-
-namespace threepp { class Human; }
-
-template<>
-struct ObjectTraits<threepp::Human> { static constexpr bool hasAudio = true; };
-
 template<typename T>
 class ObjectSpawner {
 public:
@@ -27,11 +21,11 @@ public:
                   threepp::AudioListener* listener = nullptr,
                   const std::string &soundPath = "")
         : scene_(scene),
-          modelPath_(modelPath),
-          listener_(listener),
-          soundPath_(soundPath),
-          numObjects_(numObjects),
-          objectGroup_(threepp::Group::create()){}
+            modelPath_(modelPath),
+            listener_(*listener),
+            soundPath_(soundPath),
+            numObjects_(numObjects),
+            objectGroup_(threepp::Group::create()){}
 
     void spawnObjects(CollisionManager &collisionManager) {
         threepp::AssimpLoader loader;
@@ -44,9 +38,10 @@ public:
             // Choose a correct creation path depending on T
             std::shared_ptr<T> obj;
             if constexpr (ObjectTraits<T>::hasAudio) {
-                if (!listener_) continue; // cannot create audio-enabled objects without a listener
-                obj = T::create(model, *listener_, soundPath_);
+                // Humans use sound
+                obj = T::create(model, listener_, soundPath_);
             } else {
+                // All other objects use normal creation
                 obj = T::create(model);
             }
 
@@ -65,7 +60,7 @@ public:
 private:
     std::shared_ptr<threepp::Scene> scene_;
     std::string modelPath_;
-    threepp::AudioListener* listener_;
+    threepp::AudioListener& listener_;
     std::string soundPath_;
     int numObjects_;
     std::shared_ptr<threepp::Group> objectGroup_;
