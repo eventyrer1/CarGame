@@ -4,6 +4,7 @@
 #include "threepp/threepp.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
 #include "collision/CollisionManager.hpp"
+#include "models/Human.hpp"
 #include "threepp/audio/Audio.hpp"
 #include <memory>
 #include <vector>
@@ -11,6 +12,11 @@
 template<typename T>
 struct ObjectTraits {
     static constexpr bool hasAudio = false;
+};
+//REALLY UNSURE IF THIS IS WISE SINCE THIS INCREASES COUPLING
+template<>
+struct ObjectTraits<threepp::Human> {
+    static constexpr bool hasAudio = true;
 };
 template<typename T>
 class ObjectSpawner {
@@ -22,7 +28,7 @@ public:
                   const std::string &soundPath = "")
         : scene_(scene),
             modelPath_(modelPath),
-            listener_(*listener),
+            listener_(listener),
             soundPath_(soundPath),
             numObjects_(numObjects),
             objectGroup_(threepp::Group::create()){}
@@ -60,7 +66,7 @@ public:
 private:
     std::shared_ptr<threepp::Scene> scene_;
     std::string modelPath_;
-    threepp::AudioListener& listener_;
+    threepp::AudioListener* listener_;
     std::string soundPath_;
     int numObjects_;
     std::shared_ptr<threepp::Group> objectGroup_;

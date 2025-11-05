@@ -10,6 +10,7 @@
 #include "setups/Setup.hpp"
 #include "models/Human.hpp"
 #include <iostream>
+
 using namespace threepp;
 
 int main() {
@@ -63,19 +64,20 @@ int main() {
     }
     // ---- Human ----
     std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
-    std::string splatSoundPath = std::string(DATA_DIR) + "/Sounds/Splat.waw";
+    std::string splatSoundPath = std::string(DATA_DIR) + "/Sounds/Splat.wav";
+
     ObjectSpawner<threepp::Human> humanSpawner(scene, humanModelPath, 10, &listener, splatSoundPath);
     humanSpawner.spawnObjects(*collisionManager);
     for (auto human : humanSpawner.getObjects()) {
         human->setHitboxVisualization(true, scene.get());
         human->updateHitboxVisualization();
-        collisionManager->registerCollidable(human.get());
     }
 
 
 
     // ---- Camera and input setup ----
     auto& carCamera = car->camera();
+    carCamera.add(listener);
     auto cameraHelper = CameraHelper::create(carCamera);
     scene->add(cameraHelper);
 

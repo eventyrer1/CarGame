@@ -3,23 +3,6 @@
 
 using namespace threepp;
 
-/*SpawnableObject::SpawnableObject(std::shared_ptr<Object3D> model, const Vector3& position) {
-
-    add(shared_from_this());
-    this->position.copy(position);
-    computeBoundingBox();
-}*/
-
-/*std::shared_ptr<SpawnableObject> SpawnableObject::create(std::shared_ptr<Object3D> model) {
-    if (!model) return nullptr;
-    model->scale.multiplyScalar(1.0f);
-    auto obj = std::make_shared<SpawnableObject>(model);
-    obj->updateMatrixWorld(true);
-    obj->updateCollisionBox();
-    obj->updateHitboxVisualization();
-    return obj;
-}*/
-
 void SpawnableObject::setRandomPosition(float minX, float maxX, float minZ, float maxZ) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
