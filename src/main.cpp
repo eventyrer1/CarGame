@@ -37,7 +37,7 @@ int main() {
 
     // ---- Car ----
     try {
-        std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
+        std::string carModelPath = std::string(DATA_DIR) + "/Models/Car.dae";
         car = Car::create(carModelPath);
         if (car) {
             car->position.set(0, 0, 0);
@@ -52,9 +52,9 @@ int main() {
     } catch (...) {
         std::cerr << "Unknown exception during car loading." << std::endl;
     }
-
+    AudioListener listener;
     // ---- Tree ----
-    std::string treeModelPath = std::string(DATA_DIR) + "/models/CartoonTree.obj";
+    std::string treeModelPath = std::string(DATA_DIR) + "/Models/CartoonTree.obj";
     ObjectSpawner<threepp::Tree> treeSpawner(scene, treeModelPath, 10);
     treeSpawner.spawnObjects(*collisionManager);
     for (auto tree : treeSpawner.getObjects()) {
@@ -62,8 +62,9 @@ int main() {
         tree->updateHitboxVisualization();
     }
     // ---- Human ----
-    std::string humanModelPath = std::string(DATA_DIR) + "/models/Human.glb";
-    ObjectSpawner<threepp::Human> humanSpawner(scene, humanModelPath, 10);
+    std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
+    std::string splatSoundPath = std::string(DATA_DIR) + "/Sounds/Splat.waw";
+    ObjectSpawner<threepp::Human> humanSpawner(scene, humanModelPath, 10, &listener, splatSoundPath);
     humanSpawner.spawnObjects(*collisionManager);
     for (auto human : humanSpawner.getObjects()) {
         human->setHitboxVisualization(true, scene.get());
