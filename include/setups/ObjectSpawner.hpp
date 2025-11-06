@@ -41,7 +41,7 @@ public:
         for (int i = 0; i < numObjects_; ++i) {
             auto model = baseModel->clone();
 
-            // Choose a correct creation path depending on T
+            // Choose a correct creation path depending on if i want it to use audio or not
             std::shared_ptr<T> obj;
             if constexpr (ObjectTraits<T>::hasAudio) {
                 // Humans use sound
