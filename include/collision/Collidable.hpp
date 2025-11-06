@@ -14,8 +14,6 @@ public:
     }
 
     // Custom collision box for trees that only makes a hitbox that is 5 units tall
-
-
      virtual void computeBoundingSphere(float radiusScale = 1.0f) {
          computeBoundingBox();
          boundingSphere_ = std::make_optional<Sphere>();

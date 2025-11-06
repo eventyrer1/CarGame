@@ -12,7 +12,9 @@ Car::Car(std::shared_ptr<Object3D> model) {
     camera_ = std::make_unique<PerspectiveCamera>(65.f, 16.f / 9.f, 0.1f, 100.f);
 
     this->add(*camera_);
-    camera_->position.set(0, 5, -13);
+    camera_->position.x=0;
+    camera_->position.y=5;
+    camera_->position.z=-13;
     camera_->lookAt(this->position);
     Collidable::computeBoundingSphere(0.6f);
 }
@@ -64,8 +66,8 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
         default: break;
     }
 
+    camera_->position.z = -13 - speed_ * 0.05f;
     // Update position & rotation
-
     this->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
     this->position += Vector3{
         speed_ * std::sin(angle_),
@@ -86,13 +88,14 @@ void Car::updateBoundingSphere() {
 void Car::onCollision(Collidable* other) {
     handleCollisionResponse(other);
 }
-
+//TODO Smart måte å få bilen til å vite hvem den kolliderer med
 void Car::handleCollisionResponse(Collidable* other) {
     Vector3 pushDir = position - other->position;
     pushDir.normalize();
     position.add(pushDir.multiplyScalar(0.1f));
     speed_ *= -0.2f;
     updateBoundingSphere();
+
 }
 
 void Car::reset() {
