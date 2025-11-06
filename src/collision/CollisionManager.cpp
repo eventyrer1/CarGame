@@ -1,4 +1,4 @@
-//much AI was used to decipher how to make this
+
 #include "collision/CollisionManager.hpp"
 #include <algorithm>
 
@@ -34,18 +34,3 @@ std::vector<Collidable*> CollisionManager::getCollisions(Collidable* object) con
     return collisions;
 }
 
-/*bool CollisionManager::checkCollisionPair(const Collidable& a, const Collidable& b) const {
-    // Let objects decide first
-    if (a.checkCollision(b) || b.checkCollision(a)) return true;
-
-    // Fallback: use provided shapes
-    if (const auto sa = a.getSphere()) {
-        if (const auto bb = b.getBox()) return sa->intersectsBox(*bb);
-        if (const auto sb = b.getSphere()) return sa->intersectsSphere(*sb);
-    }
-    if (const auto ba = a.getBox()) {
-        if (const auto sb = b.getSphere()) return sb->intersectsBox(*ba);
-        if (const auto bb = b.getBox()) return ba->intersectsBox(*bb);
-    }
-    return false;
-}*/

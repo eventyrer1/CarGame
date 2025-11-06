@@ -7,17 +7,17 @@ file(COPY ${CMAKE_SOURCE_DIR}/Data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-include(FetchContent)
-add_subdirectory(libs)
-# dont need tests and examples so i dont fetch them
-set(THREEPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(THREEPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-FetchContent_Declare(
-        threepp
-        GIT_REPOSITORY https://github.com/markaren/threepp.git
-        GIT_TAG 49d9d222494431060b1571cf12352154eb4ac417
-)
-FetchContent_MakeAvailable(threepp)
+    include(FetchContent)
+    add_subdirectory(libs)
+    # dont need tests and examples so i dont fetch them
+    set(THREEPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(THREEPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(
+            threepp
+            GIT_REPOSITORY https://github.com/markaren/threepp.git
+            GIT_TAG 49d9d222494431060b1571cf12352154eb4ac417
+    )
+    FetchContent_MakeAvailable(threepp)
 
 
 
