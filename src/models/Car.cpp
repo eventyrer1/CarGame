@@ -1,12 +1,16 @@
+/*
 #include "models/Car.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-#include "BoundingBoxHelper.hpp"
+
 #include <iostream>
 using namespace threepp;
 
 Car::Car(std::shared_ptr<Object3D> model) {
 
-    if (model) this->copy(*model);
+    if (model) {
+        this->copy(*model);
+    }
+    //TODO make the visual seperate from the logic
 
     // Create follow camera
     camera_ = std::make_unique<PerspectiveCamera>(65.f, 16.f / 9.f, 0.1f, 100.f);
@@ -130,3 +134,4 @@ void Car::reset() {
     speed_ = 0;
     angle_ = 0;
 }
+*/

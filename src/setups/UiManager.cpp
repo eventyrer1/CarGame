@@ -1,7 +1,6 @@
 #include "UiManager.hpp"
-#include "models/Car.hpp"
 
-UiManager::UiManager(GLFWwindow *window) {
+UiManager::UiManager(GLFWwindow* window) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
@@ -15,7 +14,9 @@ UiManager::~UiManager() {
     ImGui::DestroyContext();
 }
 
-void UiManager::setCar(Car *carPtr) { car = carPtr; }
+void UiManager::setCarLogic(CarLogic* carLogic) {
+    this->carLogic_ = carLogic;
+}
 
 void UiManager::beginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
@@ -26,38 +27,16 @@ void UiManager::beginFrame() {
 void UiManager::renderUI() {
     ImGui::Begin("Car Controls");
 
-    if (car) {
+    if (carLogic_) {
         if (ImGui::Button("Reset Car values")) {
-            car->reset();
-        }
-        float speed = car->getSpeed();
-        if (ImGui::SliderFloat("Speed", &speed, 0.0f, car->getMaxSpeed())) {
-            car->setSpeed(speed);
+            carLogic_->reset();
         }
 
-        float maxSpeed = car->getMaxSpeed();
-        if (ImGui::SliderFloat("Max Speed", &maxSpeed, 1.0f, 500.0f)) {
-            car->setMaxSpeed(maxSpeed);
-        }
-
-        float acceleration = car->getAcceleration();
-        if (ImGui::SliderFloat("Acceleration", &acceleration, 0.0f, 500.0f)) {
-            car->setAcceleration(acceleration);
-        }
-
-        float rotationSpeed = car->getRotationSpeed();
-        if (ImGui::SliderFloat("Rotation Speed", &rotationSpeed, 0.0f, 10.0f)) {
-            car->setRotationSpeed(rotationSpeed);
-        }
-
-        float drag = car->getDrag();
-        if (ImGui::SliderFloat("Drag", &drag, 0.0f, 20.0f)) {
-            car->setDrag(drag);
-        }
+        float speed = carLogic_->getSpeed();
+        ImGui::Text("Speed: %.2f", speed);
 
         ImGui::Separator();
-
-        auto pos = car->position;
+        auto pos = carLogic_->getPosition();
         ImGui::Text("Current Position: (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z);
     }
 

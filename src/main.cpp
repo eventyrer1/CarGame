@@ -1,18 +1,24 @@
 #include "threepp/threepp.hpp"
 #include "threepp/helpers/CameraHelper.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-#include "models/Car.hpp"
+
+#include "models/CarLogic.hpp"
+#include "models/CarVisual.hpp"
 #include "models/Tree.hpp"
+#include "models/Human.hpp"
 #include "setups/ObjectSpawner.hpp"
 #include "collision/CollisionManager.hpp"
 #include "keyListeners/CarKeyListener.hpp"
 #include "UiManager.hpp"
 #include "setups/Setup.hpp"
+
 #include <iostream>
+
 using namespace threepp;
 
 int main() {
 
+    // --- Window + renderer ---
     Canvas canvas{Canvas::Parameters().title("Car").size({1280, 720}).antialiasing(8)};
     GLRenderer renderer{canvas.size()};
     renderer.autoClear = false;
@@ -20,31 +26,34 @@ int main() {
     auto scene = Scene::create();
     setupScene(*scene);
 
-    PerspectiveCamera camera(60, canvas.aspect(), 0.1f, 10000);
-    camera.position.set(-15, 8, 15);
 
-    std::shared_ptr<Car> car;
 
-    // CREATE COLLISION MANAGER
+
+    // --- Car logic and visuals ---
+    CarLogic carLogic;
+    std::shared_ptr<CarVisual> carVisual;
+
+    // --- Collision Manager ---
     auto collisionManager = std::make_unique<CollisionManager>();
+    collisionManager->registerCollidable(&carLogic);
 
     canvas.onWindowResize([&](const WindowSize& newSize) {
-        camera.aspect = newSize.aspect();
-        camera.updateProjectionMatrix();
+        if (carVisual) {
+            auto& cam = carVisual->camera();
+            cam.aspect = newSize.aspect();
+            cam.updateProjectionMatrix();
+        }
         renderer.setSize(newSize);
     });
 
-    // ---- Load Car ----
     try {
-        std::string carModelPath = std::string(DATA_DIR) + "/models/Car.dae";
-        car = Car::create(carModelPath);
-        if (car) {
-            car->position.set(0, 0, 0);
-            car->setHitboxVisualization(true, scene.get());
-            scene->add(car);
-            collisionManager->registerCollidable(car.get());
+        std::string carModelPath = std::string(DATA_DIR) + "/Models/Car.dae";
+        carVisual = CarVisual::create(carModelPath);
+        if (carVisual) {
+            scene->add(carVisual);
+            carVisual->setHitboxVisualization(true, scene.get());
         } else {
-            std::cerr << "Failed to load `Data/Models/Car.dae`\n";
+            std::cerr << "Failed to load car model from " << carModelPath << std::endl;
         }
     } catch (const std::exception& ex) {
         std::cerr << "Exception during car loading: " << ex.what() << std::endl;
@@ -52,44 +61,67 @@ int main() {
         std::cerr << "Unknown exception during car loading." << std::endl;
     }
 
-    // ---- Spawn Trees using ObjectSpawner ----
-    std::string treeModelPath = std::string(DATA_DIR) + "/models/CartoonTree.obj";
+    // --- Audio ---
+    AudioListener listener;
 
+    // --- Trees ---
+    std::string treeModelPath = std::string(DATA_DIR) + "/Models/CartoonTree.obj";
     ObjectSpawner<threepp::Tree> treeSpawner(scene, treeModelPath, 10);
     treeSpawner.spawnObjects(*collisionManager);
-
-    // Enable debug visualization (optional)
-    for (auto tree : treeSpawner.getObjects()) {
+    for (auto& tree : treeSpawner.getObjects()) {
         tree->setHitboxVisualization(true, scene.get());
         tree->updateHitboxVisualization();
     }
 
-    // ---- Camera and input setup ----
-    auto& carCamera = car->camera();
-    auto cameraHelper = CameraHelper::create(carCamera);
+    // --- Humans ---
+    std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
+    std::string splatSoundPath = std::string(DATA_DIR) + "/Sounds/Splat.wav";
+    ObjectSpawner<threepp::Human> humanSpawner(scene, humanModelPath, 10, &listener, splatSoundPath);
+    humanSpawner.spawnObjects(*collisionManager);
+    for (auto& human : humanSpawner.getObjects()) {
+        human->setHitboxVisualization(true, scene.get());
+        human->updateHitboxVisualization();
+    }
+
+    // --- Camera setup ---
+    auto& carCam = carVisual->camera();
+    carCam.add(listener);
+    auto cameraHelper = CameraHelper::create(carCam);
     scene->add(cameraHelper);
 
+    // --- Input ---
     CarKeyListener controller;
     canvas.addKeyListener(controller);
 
+    // --- UI ---
     Clock clock;
     UiManager ui(static_cast<GLFWwindow*>(canvas.windowPtr()));
-    ui.setCar(car.get());
+    ui.setCarLogic(&carLogic); // Adjust UiManager to read from CarLogic
 
-    // ---- Main loop ----
+    // --- Main loop ---
     canvas.animate([&]() {
-        const auto dt = clock.getDelta();
+        const double dt = clock.getDelta();
 
+        // Get player input
         auto [move, turn] = controller.getActions();
-        car->update(dt, move, turn);
 
+        // Update physics logic only
+        carLogic.update(dt, move, turn);
+
+        // Apply logic state to visuals
+        carVisual->syncWithLogic(carLogic);
+
+        // Check collisions
         collisionManager->checkCollisions();
 
+        // Render UI
         ui.beginFrame();
         ui.renderUI();
 
+        // Render world
         renderer.clear();
-        renderer.render(*scene, carCamera);
+        renderer.render(*scene, carCam);
+
         ui.endFrame();
     });
 
