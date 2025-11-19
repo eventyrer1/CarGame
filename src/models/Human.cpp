@@ -24,6 +24,7 @@ std::shared_ptr<Human> Human::create(std::shared_ptr<Object3D> model,
 }
 
 void Human::computeBoundingBox() {
+
     updateMatrixWorld(true);
     collisionBox_ = std::make_optional<Box3>(BoundingBoxHelper::computeCollisionBox(*this));
 }
@@ -33,7 +34,25 @@ void Human::onCollision(Collidable* other) {
 }
 
 void Human::handleCollisionResponse(Collidable* /*other*/) {
+    if (hit_) return;
+    hit_ = true;
+
+    // visual collapse
+    this->rotateX(math::degToRad(90));
+    this->position.y -= 0.5f;
+    updateMatrixWorld(true);
+
+    // move this human's hitbox far away so it never collides again
+    if (collisionBox_) {
+        collisionBox_->set(
+                Vector3(9999, 9999, 9999),
+                Vector3(10000, 10000, 10000)
+        );
+    }
+
+
     if (collisionSound_ && !collisionSound_->isPlaying()) {
         collisionSound_->play();
     }
+
 }

@@ -18,7 +18,7 @@ namespace threepp {
 
     private:
         std::shared_ptr<PositionalAudio> collisionSound_;
-
+        bool hit_ = false;
         void handleCollisionResponse(Collidable *other);
     };
 }
