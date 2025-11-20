@@ -16,6 +16,7 @@ target_link_libraries(models PUBLIC
         threepp::threepp
         assimp::assimp
         collision
+        opencv::opencv
 )
 
 # Include both models and setups directories

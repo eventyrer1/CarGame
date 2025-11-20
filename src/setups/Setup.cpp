@@ -12,15 +12,20 @@ void setupScene(Scene &scene) {
     auto light1 = HemisphereLight::create();
     light1->intensity = 0.8f;
     scene.add(light1);
+    const auto geometry = PlaneGeometry::create(200, 200, 1, 1);
+    const auto material = MeshStandardMaterial::create();
+    material->color=Color(0.0f, 1.0f, 0.5f);
 
-    auto grid = GridHelper::create(100, 50);
-    scene.add(grid);
-    scene.background = Color::aliceblue;
+    const auto plane = Mesh::create(geometry, material);
+    plane->rotation.x = -math::PI / 2; // make it horizontal
+    plane->position.y = 0;             // ground level
 
-    auto map = loader.load(std::string(DATA_DIR) + "/models/Track.glb");
+    scene.add(plane);
+
+    /*auto map = loader.load(std::string(DATA_DIR) + "/models/Track.glb");
 
     scene.add(map);
     map->scale *= 1;
 
-
+*/
 }

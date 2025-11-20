@@ -8,7 +8,7 @@
 #include "threepp/threepp.hpp"
 #include "collision/Collidable.hpp"
 #include "keyListeners/InterfaceCarKeyListener.hpp"
-#include "keyListeners/CarActions.hpp"
+#include <opencv2/opencv.hpp>
 
 using namespace threepp;
 
@@ -45,10 +45,11 @@ public:
 private:
     float speed_ = 0;
     float maxSpeed_ = 100;
-    float acceleration_ = 100;
+    float acceleration_ = 30;
     float rotationSpeed_ = 2;
     float angle_ = 0.0;
     float drag_ = 10.f;
+    bool visionEnabled_ = false;
 
     std::unique_ptr<PerspectiveCamera> camera_;
 

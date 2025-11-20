@@ -19,10 +19,46 @@ std::pair<CarActions::Move, CarActions::Turn> CarKeyListener::getActions() const
     if (pressedKeys.contains(Key::W)) move = Move::ACCELERATE;
     else if (pressedKeys.contains(Key::S)) move = Move::DECELERATE;
 
+    float finalTurn = 0.0f;
+
+    // keyboard turn
+    if (pressedKeys.contains(Key::A)) finalTurn -= 1.0f;
+    else if (pressedKeys.contains(Key::D)) finalTurn += 1.0f;
+
+    // camera turn
+    if (cameraSteeringEnabled==true) {
+        finalTurn += cameraTurnValue;
+    }
 
 
-    if (pressedKeys.contains(Key::A)) turn = Turn::TURN_LEFT;
-    else if (pressedKeys.contains(Key::D)) turn = Turn::TURN_RIGHT;
+    if (finalTurn > 0.2f)          turn = Turn::TURN_RIGHT;
+    else if (finalTurn < -0.2f)   turn = Turn::TURN_LEFT;
+    else                           turn = Turn::NOTHING;
 
     return {move, turn};
 }
+
+
+
+void CarKeyListener::updateFromCamera(const cv::Mat& frame) {
+
+    cv::Rect box;
+    int centerX;
+    int centerY;
+
+    if (!detector.detect(frame, box, centerX,centerY)) {
+        cameraTurnValue = 0.0f;
+        return;
+    }
+
+    int mid = frame.cols / 2;
+    int offset = centerX - mid;          // negative → left, positive → right
+
+    float sensitivity = 0.002f;           // adjust this
+    cameraTurnValue = offset * sensitivity;
+
+    // clamp to [-1, 1]
+    if (cameraTurnValue > 1.0f) cameraTurnValue = 1.0f;
+    if (cameraTurnValue < -1.0f) cameraTurnValue = -1.0f;
+}
+
