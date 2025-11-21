@@ -1,7 +1,5 @@
 
 add_executable(CarGame main.cpp)
-# Automatically copy OpenCV DLLs to the output folder
-#this was done by chatgpt and honestly scares me a little
 
 
 

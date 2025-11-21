@@ -1,43 +1,61 @@
 name: CarGame
 
-on: [push, workflow_dispatch]
+on: [push,workflow_dispatch]
 
 jobs:
-  linux:
+  build:
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    env:
-      CC: gcc-${{ matrix.compiler_version }}
-      CXX: g++-${{ matrix.compiler_version }}
+
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04]
-        compiler_version: [11]
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # ---- Install CMake 4 on all platforms ----
       - name: Install CMake 4
         uses: jwlawson/actions-setup-cmake@v2
         with:
           cmake-version: '4.0.0'
-      - name: Install dependencies
+
+      # ---- Setup vcpkg (manifest mode auto-detects vcpkg.json) ----
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          # Use your current vcpkg baseline:
+          vcpkgGitCommitId: 2ad7bd06128280e02bfe02361d8ffd7d465cfcf0
+
+      # ---- Install Linux-only dependencies ----
+      - name: Linux extra dependencies
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update && sudo apt-get install -y \
-          libxinerama-dev \
-          libxcursor-dev \
-          xorg-dev \
-          libglu1-mesa-dev \
-          pkg-config \
-          libglfw3 \
-          libglfw3-dev
+            libxinerama-dev \
+            libxcursor-dev \
+            xorg-dev \
+            libglu1-mesa-dev \
+            pkg-config \
+            libglfw3 \
+            libglfw3-dev
 
-      - name: Configure and build
-        run: |
-          mkdir -p build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
-          cmake --build .
+      # ---- Configure CMake using vcpkg toolchain ----
+      - name: Configure CMake
+        run: >
+          cmake -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
+          .
 
+      # ---- Build ----
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      # ---- Run tests ----
       - name: Run tests
         run: |
           cd build/tests
-          ctest --output-on-failure
+          ctest --output-on-failure --parallel
