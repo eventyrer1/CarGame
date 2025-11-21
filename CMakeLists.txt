@@ -1,10 +1,17 @@
+#suggested by ai how to use vcpkg with cmake
+if (EXISTS "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
+    set(CMAKE_TOOLCHAIN_FILE
+            "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            CACHE STRING "" FORCE)
+endif()
+
+
 cmake_minimum_required(VERSION 4.0)
 project(CarGame)
 set(CMAKE_CXX_STANDARD 20)
 enable_testing()
-#suggested by ai how to use vcpkg with cmake
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "")
+
+
 
 file(COPY ${CMAKE_SOURCE_DIR}/Data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
