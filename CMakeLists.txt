@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 4.0)
 project(CarGame)
 set(CMAKE_CXX_STANDARD 20)
 enable_testing()
+#suggested by ai how to use vcpkg with cmake
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        CACHE STRING "")
 
 file(COPY ${CMAKE_SOURCE_DIR}/Data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
@@ -41,24 +44,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(catch2)
 
 
-#This was suggested by chaGPT
-# -----------------------------------------
-# OpenCV import (put this before src/libs)
-# -----------------------------------------
-add_library(opencv SHARED IMPORTED)
-add_library(opencv::opencv ALIAS opencv)
-
-set(OPENCV_ROOT "${CMAKE_SOURCE_DIR}/libs/opencv")
-
-set_target_properties(opencv PROPERTIES
-        IMPORTED_IMPLIB_RELEASE "${OPENCV_ROOT}/opencv_world4120.lib"
-        IMPORTED_LOCATION_RELEASE "${OPENCV_ROOT}/opencv_world4120.dll"
-
-        IMPORTED_IMPLIB_DEBUG "${OPENCV_ROOT}/opencv_world4120d.lib"
-        IMPORTED_LOCATION_DEBUG "${OPENCV_ROOT}/opencv_world4120d.dll"
-
-        INTERFACE_INCLUDE_DIRECTORIES "${OPENCV_ROOT}/include"
-)
 
 add_subdirectory(libs)
 add_subdirectory(src)

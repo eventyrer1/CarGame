@@ -12,11 +12,13 @@ set(models_src_files
 
 add_library(models ${models_src_files})
 
+find_package(OpenCV REQUIRED)
+
 target_link_libraries(models PUBLIC 
         threepp::threepp
         assimp::assimp
         collision
-        opencv::opencv
+        ${OpenCV_LIBS}
 )
 
 # Include both models and setups directories

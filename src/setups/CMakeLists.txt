@@ -9,12 +9,18 @@ set(setups_files
 )
 add_library(setups ${setups_files})
 
+find_package(OpenCV REQUIRED)
+
 target_link_libraries(setups PUBLIC threepp::threepp
         assimp::assimp
         models
         imgui::imgui
-        opencv::opencv
+        ${OpenCV_LIBS}
 )
 
-target_include_directories(setups PUBLIC ${setups_include_dir})
+target_include_directories(setups PUBLIC
+        ${setups_include_dir}
+        ${OpenCV_INCLUDE_DIRS}
+)
+
 target_compile_definitions(setups PUBLIC DATA_DIR="${DATA_DIR}")

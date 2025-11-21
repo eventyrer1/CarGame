@@ -22,17 +22,3 @@ target_sources(bvh PRIVATE
 target_link_libraries(bvh PRIVATE threepp)
 target_include_directories(bvh PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/bvh")
 
-#[[
-add_library(opencv SHARED IMPORTED )
-add_library(opencv::opencv ALIAS opencv)
-
-set_target_properties(opencv PROPERTIES
-        IMPORTED_IMPLIB_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/openCV/opencv_world4120.lib"
-        IMPORTED_LOCATION_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/openCV/opencv_world4120.dll"
-
-        IMPORTED_IMPLIB_DEBUG "${CMAKE_CURRENT_SOURCE_DIR}/openCV/opencv_world4120d.lib"
-        IMPORTED_LOCATION_DEBUG "${CMAKE_CURRENT_SOURCE_DIR}/openCV/opencv_world4120d.dll"
-
-        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/opencv/include"
-)
-]]
