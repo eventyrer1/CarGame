@@ -1,6 +1,7 @@
 #include "UiManager.hpp"
 #include "models/Car.hpp"
 
+
 UiManager::UiManager(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -25,6 +26,13 @@ void UiManager::beginFrame() {
 
 void UiManager::renderUI() {
     ImGui::Begin("Car Controls");
+    if (controller) {
+        bool enabled = controller->getCameraSteeringEnabled();
+        if (ImGui::Checkbox("AI Steering", &enabled)) {
+            controller->setCameraSteeringEnabled(enabled);
+        }
+        ImGui::Separator();
+    }
 
     if (car) {
         if (ImGui::Button("Reset Car values")) {
@@ -67,6 +75,7 @@ void UiManager::renderUI() {
 
     ImGui::End();
 }
+
 
 void UiManager::endFrame() {
     ImGui::Render();

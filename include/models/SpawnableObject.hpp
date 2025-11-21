@@ -15,10 +15,6 @@ namespace threepp {
        virtual void setRandomPosition(float minX, float maxX, float minZ, float maxZ);
 
 
-       virtual void setHitboxVisualization(bool enabled, Scene* scene = nullptr);
-       virtual void updateHitboxVisualization();
-
-
     protected:
         SpawnableObject() = default;
         Scene* scene_ = nullptr;
