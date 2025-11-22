@@ -37,7 +37,7 @@ void Human::handleCollisionResponse(Collidable* /*other*/) {
     if (hit_) return;
     hit_ = true;
 
-    // visual collapse
+    // visual response
     this->rotateX(math::degToRad(90));
     this->position.y -= 0.5f;
     updateMatrixWorld(true);

@@ -20,14 +20,13 @@ bool HumanDetector::detectAll(const cv::Mat& frame, std::vector<cv::Rect>& human
     );
 
     cv::erode(mask_, mask_, cv::Mat(), cv::Point(-1,-1), 1);
-    cv::dilate(mask_, mask_, cv::Mat(), cv::Point(-1,-1), 2);
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask_, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     for (auto& c : contours) {
         cv::Rect r = cv::boundingRect(c);
-        if (r.area() > 20) {
+        if (r.area() > 2000) {
             humans.push_back(r);
         }
     }
@@ -70,8 +69,20 @@ bool HumanDetector::detect(const cv::Mat& frame, cv::Rect& outBox, int& centerX,
     }
 
     outBox = humans[bestIdx];
+
+    // --- SHRINK BOX TO AIM AT CENTER OF HUMAN ---
+    int shrinkW = outBox.width * 0.25;     // shrink 25% from both sides
+    outBox.x += shrinkW;
+    outBox.width -= shrinkW * 2;
+
+    int shrinkH = outBox.height * 0.15;    // shrink 15% top/bottom
+    outBox.y += shrinkH;
+    outBox.height -= shrinkH * 2;
+    // -------------------------------------------
+
     centerX = outBox.x + outBox.width  / 2;
     centerY = outBox.y + outBox.height / 2;
+
 
     seesHuman = true;
     return true;

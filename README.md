@@ -6,3 +6,6 @@ Jon aksel woooo
 
 For kodingen av opencv cmake https://github.com/opencv/opencv/blob/4.x/samples/cpp/example\_cmake/CMakeLists.txt
 
+!!IMPORTANT!!
+use this in cmake before loading: -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+

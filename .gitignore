@@ -11,7 +11,7 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 
-# vcpkg build artifacts (DO NOT commit)
+# vcpkg build artifacts
 vcpkg/buildtrees/
 vcpkg/packages/
 vcpkg/downloads/
