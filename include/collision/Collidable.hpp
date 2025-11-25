@@ -29,16 +29,14 @@ public:
          if (other.boundingSphere_.has_value()) {
              if (boundingSphere_.has_value()) {
                  return other.boundingSphere_.value().intersectsSphere(boundingSphere_.value());
-             } else {
-                return other.boundingSphere_.value().intersectsBox(collisionBox_.value());
              }
+             return other.boundingSphere_.value().intersectsBox(collisionBox_.value());
          }
-         else if (other.collisionBox_.has_value()) {
+         if (other.collisionBox_.has_value()) {
              if (boundingSphere_.has_value()) {
                  return other.collisionBox_.value().intersectsSphere(boundingSphere_.value());
-             } else {
-                 return other.collisionBox_.value().intersectsBox(collisionBox_.value());
              }
+             return other.collisionBox_.value().intersectsBox(collisionBox_.value());
          }
          return false;
      }

@@ -1,4 +1,5 @@
 #include "CarKeyListener.hpp"
+#include <iostream>
 using namespace threepp;
 
 void CarKeyListener::onKeyPressed(KeyEvent evt) {
@@ -16,8 +17,17 @@ std::pair<CarActions::Move, CarActions::Turn> CarKeyListener::getActions() const
     Move move = Move::NOTHING;
     Turn turn = Turn::NOTHING;
 
-    if (pressedKeys.contains(Key::W)) move = Move::ACCELERATE;
-    else if (pressedKeys.contains(Key::S)) move = Move::DECELERATE;
+
+    if (autoAccelerate==cameraSteeringEnabled) {
+        move = Move::ACCELERATE;
+    }
+    // Manual controls override only when autoAccelerate is off
+    else {
+        if (pressedKeys.contains(Key::W))
+            move = Move::ACCELERATE;
+        else if (pressedKeys.contains(Key::S))
+            move = Move::DECELERATE;
+    }
 
     float finalTurn = 0.0f;
 
@@ -31,8 +41,8 @@ std::pair<CarActions::Move, CarActions::Turn> CarKeyListener::getActions() const
     }
 
 
-    if (finalTurn > 0.2f)          turn = Turn::TURN_RIGHT;
-    else if (finalTurn < -0.2f)   turn = Turn::TURN_LEFT;
+    if (finalTurn > 0.05f)          turn = Turn::TURN_RIGHT;
+    else if (finalTurn < -0.05f)   turn = Turn::TURN_LEFT;
     else                           turn = Turn::NOTHING;
 
     return {move, turn};
@@ -47,18 +57,21 @@ void CarKeyListener::updateFromCamera(const cv::Mat& frame) {
     int centerY;
 
     if (!detector.detect(frame, box, centerX,centerY)) {
-        cameraTurnValue = 0.0f;
+        cameraTurnValue = -1.0f;
+        autoAccelerate = false;       // no human → do NOT accelerate
         return;
     }
 
-    int mid = frame.cols / 2;
-    int offset = centerX - mid;          // negative → left, positive → right
+    autoAccelerate = true;            // human seen → start accelerating
 
-    float sensitivity = 0.002f;           // adjust this
+    int middle = frame.cols / 2;
+    int offset = centerX - middle;
+
+    float sensitivity = 0.002f;
     cameraTurnValue = offset * sensitivity;
 
-    // clamp to [-1, 1]
     if (cameraTurnValue > 1.0f) cameraTurnValue = 1.0f;
     if (cameraTurnValue < -1.0f) cameraTurnValue = -1.0f;
 }
+
 

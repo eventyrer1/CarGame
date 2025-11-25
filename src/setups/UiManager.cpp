@@ -1,6 +1,6 @@
 #include "UiManager.hpp"
 #include "models/Car.hpp"
-
+#include "models/Human.hpp"
 
 UiManager::UiManager(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
@@ -17,7 +17,7 @@ UiManager::~UiManager() {
 }
 
 void UiManager::setCar(Car *carPtr) { car = carPtr; }
-
+//void UiManager::setHuman(std::vector<std::shared_ptr<threepp::Human>>* h) { humans = h; }
 void UiManager::beginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -37,6 +37,7 @@ void UiManager::renderUI() {
     if (car) {
         if (ImGui::Button("Reset Car values")) {
             car->reset();
+
         }
         float speed = car->getSpeed();
         if (ImGui::SliderFloat("Speed", &speed, 0.0f, car->getMaxSpeed())) {

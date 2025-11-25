@@ -24,6 +24,7 @@ private:
     bool cameraSteeringEnabled = false;
     HumanDetector detector;
     float cameraTurnValue = 0.0f; // -1.0 left, +1.0 right
+    bool autoAccelerate = false;
 };
 
 #endif

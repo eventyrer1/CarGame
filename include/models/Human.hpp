@@ -15,6 +15,7 @@ namespace threepp {
                                              const std::string &soundPath);
         void computeBoundingBox() override;
         void onCollision(::Collidable *other) override;
+        void reset(float minX, float maxX, float minZ, float maxZ);
 
     private:
         std::shared_ptr<PositionalAudio> collisionSound_;

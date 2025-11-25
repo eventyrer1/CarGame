@@ -44,9 +44,9 @@ public:
 
 private:
     float speed_ = 0;
-    float maxSpeed_ = 100;
-    float acceleration_ = 30;
-    float rotationSpeed_ = 2;
+    float maxSpeed_ = 30;
+    float acceleration_ = 5;
+    float rotationSpeed_ = 0.5;
     float angle_ = 0.0;
     float drag_ = 10.f;
     bool visionEnabled_ = false;

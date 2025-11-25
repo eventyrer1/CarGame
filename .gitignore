@@ -1,3 +1,5 @@
+#A lot of these entries are common for C++ projects using CMake and vcpkg, therefore i included them all even though i do not necessarily use all of them.
+
 # CMake build folders
 cmake-build-*/
 build/

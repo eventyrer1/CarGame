@@ -5,7 +5,6 @@
 #include "HumanDetector.hpp"
 
 bool HumanDetector::detectAll(const cv::Mat& frame, std::vector<cv::Rect>& humans) {
-
     seesHuman = false;
 
     if (frame.empty()) return false;
@@ -26,13 +25,15 @@ bool HumanDetector::detectAll(const cv::Mat& frame, std::vector<cv::Rect>& human
 
     for (auto& c : contours) {
         cv::Rect r = cv::boundingRect(c);
-        if (r.area() > 2000) {
+        if (r.area() > 20) {
             humans.push_back(r);
         }
     }
 
-    if (!humans.empty()) seesHuman = true;
-    return seesHuman;
+    if (!humans.empty()){
+        seesHuman = true;
+        return seesHuman;
+    }
 }
 
 
@@ -70,15 +71,6 @@ bool HumanDetector::detect(const cv::Mat& frame, cv::Rect& outBox, int& centerX,
 
     outBox = humans[bestIdx];
 
-    // --- SHRINK BOX TO AIM AT CENTER OF HUMAN ---
-    int shrinkW = outBox.width * 0.25;     // shrink 25% from both sides
-    outBox.x += shrinkW;
-    outBox.width -= shrinkW * 2;
-
-    int shrinkH = outBox.height * 0.15;    // shrink 15% top/bottom
-    outBox.y += shrinkH;
-    outBox.height -= shrinkH * 2;
-    // -------------------------------------------
 
     centerX = outBox.x + outBox.width  / 2;
     centerY = outBox.y + outBox.height / 2;

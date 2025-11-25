@@ -81,21 +81,28 @@ int main() {
     UiManager ui(static_cast<GLFWwindow *>(canvas.windowPtr()));
     ui.setCar(car.get());
     ui.setController(&controller);
+   // ui.setHumans(&humanSpawner.getObjects());
+
 
 
 
 
 
     // ---- Main loop ----
+    int frameCounter = 0;
+
     canvas.animate([&]() {
+        frameCounter++;
         const auto dt = clock.getDelta();
 
-        // Render FIRST so framebuffer contains the current frame
         renderer.clear();
         renderer.render(*scene, carCamera);
+
         int fbWidth = canvas.size().width();
         int fbHeight = canvas.size().height();
-
+        if (fbWidth <= 0 || fbHeight <= 0) {
+            return;
+        }
         std::vector<unsigned char> pixels(fbWidth * fbHeight * 4);
 
         renderer.readPixels(
@@ -109,10 +116,19 @@ int main() {
         cv::Mat frame;
         cv::cvtColor(rgba, frame, cv::COLOR_RGBA2BGR);
         cv::flip(frame, frame, 0);
+
+        // Downscale for performance
         cv::Mat small;
-        //downscales so that my pc doesn't start a fire
         cv::resize(frame, small, cv::Size(320, 180));
-        controller.updateFromCamera(frame);
+
+        // ----- RUN OPENCV DETECTION ONLY EVERY 10 FRAMES -----
+        if (frameCounter % 10 == 0) {
+
+            // Runs the controller update
+            controller.updateFromCamera(frame);
+
+
+        }
 
         auto [move, turn] = controller.getActions();
         car->update(dt, move, turn);
@@ -123,6 +139,8 @@ int main() {
         ui.renderUI();
         ui.endFrame();
     });
+
+
 
 
     return 0;

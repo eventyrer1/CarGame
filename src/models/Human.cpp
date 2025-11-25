@@ -56,3 +56,16 @@ void Human::handleCollisionResponse(Collidable* /*other*/) {
     }
 
 }
+void Human::reset(float minX, float maxX, float minZ, float maxZ) {
+    hit_ = false;
+
+    // restore default pose
+    this->rotation.set(0, 0, 0);
+    this->position.y = 0;
+
+    // random spawn from SpawnableObject
+    setRandomPosition(minX, maxX, minZ, maxZ);
+
+    updateMatrixWorld(true);
+    computeBoundingBox();
+}
