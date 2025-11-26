@@ -14,6 +14,8 @@ public:
     bool seesHuman = false;
 
 private:
+    cv::Rect lockedHuman_;
+    bool hasLock_ = false;
     cv::Mat hsv_;
     cv::Mat mask_;
 };

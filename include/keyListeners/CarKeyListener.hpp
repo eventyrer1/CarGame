@@ -16,15 +16,16 @@ public:
     std::pair<CarActions::Move, CarActions::Turn> getActions() const override;
 
     void updateFromCamera(const cv::Mat& frame);
-    void setCameraSteeringEnabled(bool e) { cameraSteeringEnabled = e; }
-    bool getCameraSteeringEnabled() const { return cameraSteeringEnabled; }
+    void setCameraSteeringEnabled(bool e) { cameraSteeringEnabled_ = e; }
+    bool getCameraSteeringEnabled() const { return cameraSteeringEnabled_; }
 private:
     std::unordered_set<threepp::Key> pressedKeys;
 
-    bool cameraSteeringEnabled = false;
+    bool cameraSteeringEnabled_ = false;
     HumanDetector detector;
-    float cameraTurnValue = 0.0f; // -1.0 left, +1.0 right
-    bool autoAccelerate = false;
+    float cameraTurnValue_ = 0.0f; // -1.0 left, +1.0 right
+    bool autoAccelerate_ = false;
+    float smoothedTurn_ = 0.0f;
 };
 
 #endif

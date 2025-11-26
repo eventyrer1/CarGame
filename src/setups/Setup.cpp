@@ -8,7 +8,7 @@
 using namespace threepp;
 AssimpLoader loader;
 void setupScene(Scene &scene) {
-
+    scene.background = Color(0.6f, 0.8f, 1.0f); //makes the skybox blue
     auto light1 = HemisphereLight::create();
     light1->intensity = 0.8f;
     scene.add(light1);

@@ -3,29 +3,22 @@
 #define CAR_HPP
 
 #include <memory>
-
 #include "SpawnableObject.hpp"
 #include "threepp/threepp.hpp"
 #include "collision/Collidable.hpp"
 #include "keyListeners/InterfaceCarKeyListener.hpp"
 #include <opencv2/opencv.hpp>
 
-using namespace threepp;
-
-class Car : public SpawnableObject {
+class Car : public threepp::SpawnableObject {
 public:
-    explicit Car(std::shared_ptr<Object3D> model);
-
+    explicit Car(std::shared_ptr<threepp::Object3D> model);
     static std::shared_ptr<Car> create(const std::filesystem::path &path);
 
     void update(double deltaTime, const CarActions::Move move, const CarActions::Turn turn);
+    threepp::PerspectiveCamera &camera();
+    static std::shared_ptr<Car> createDummyCar() { return std::make_shared<Car>(nullptr); }
 
-    PerspectiveCamera &camera();
-
-    static std::shared_ptr<Car> createDummyCar() {
-        return std::make_shared<Car>(nullptr);
-    }
-    void onCollision(Collidable *other) override;
+    void onCollision(Collidable *other) override; // will delegate via double dispatch
 
     void reset();
 
@@ -42,23 +35,30 @@ public:
     void setRotationSpeed(float v) { rotationSpeed_ = v; }
     void setDrag(float v) { drag_ = v; }
 
+    // Power-up API decoupled from Human implementation
+    void applySpeedBoost(float amount, double durationSeconds);
+
 private:
     float speed_ = 0;
-    float maxSpeed_ = 30;
-    float acceleration_ = 5;
-    float rotationSpeed_ = 0.5;
+    float maxSpeed_ = 150;
+    float acceleration_ = 10;
+    float rotationSpeed_ = 1.5;
     float angle_ = 0.0;
-    float drag_ = 10.f;
+    float drag_ = 20.f;
     bool visionEnabled_ = false;
 
-    std::unique_ptr<PerspectiveCamera> camera_;
+    std::unique_ptr<threepp::PerspectiveCamera> camera_;
+    std::shared_ptr<threepp::Mesh> boundingSphereHelper_;
+    threepp::Scene *scene_ = nullptr;
 
-    std::shared_ptr<Mesh> boundingSphereHelper_;
-    Scene *scene_ = nullptr;
+    // Power-up state
+    double boostTimer_ = 0.0f;
+    float originalMaxSpeed_ = 0.0f;
+    float originalAcceleration_ = 0.0f;
 
     void updateBoundingSphere();
-
     void handleCollisionResponse(Collidable *other);
+    void updateBoost(double dt);
 };
 
 #endif // CAR_HPP

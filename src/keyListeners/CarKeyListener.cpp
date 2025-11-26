@@ -18,7 +18,7 @@ std::pair<CarActions::Move, CarActions::Turn> CarKeyListener::getActions() const
     Turn turn = Turn::NOTHING;
 
 
-    if (autoAccelerate==cameraSteeringEnabled) {
+    if (autoAccelerate_==cameraSteeringEnabled_ && cameraSteeringEnabled_==true) {
         move = Move::ACCELERATE;
     }
     // Manual controls override only when autoAccelerate is off
@@ -36,15 +36,20 @@ std::pair<CarActions::Move, CarActions::Turn> CarKeyListener::getActions() const
     else if (pressedKeys.contains(Key::D)) finalTurn += 1.0f;
 
     // camera turn
-    if (cameraSteeringEnabled==true) {
-        finalTurn += cameraTurnValue;
+    if (cameraSteeringEnabled_==true) {
+        finalTurn += cameraTurnValue_;
     }
 
 
-    if (finalTurn > 0.05f)          turn = Turn::TURN_RIGHT;
-    else if (finalTurn < -0.05f)   turn = Turn::TURN_LEFT;
-    else                           turn = Turn::NOTHING;
-
+    if (finalTurn > 0.05f) {
+        turn = Turn::TURN_RIGHT;
+    }
+    else if (finalTurn < -0.05f) {
+        turn = Turn::TURN_LEFT;
+    }
+    else {
+        turn = Turn::NOTHING;
+    }
     return {move, turn};
 }
 
@@ -56,22 +61,38 @@ void CarKeyListener::updateFromCamera(const cv::Mat& frame) {
     int centerX;
     int centerY;
 
-    if (!detector.detect(frame, box, centerX,centerY)) {
-        cameraTurnValue = -1.0f;
-        autoAccelerate = false;       // no human → do NOT accelerate
+    // If no human detected
+    if (!detector.detect(frame, box, centerX, centerY)) {
+        cameraTurnValue_ = -1.0f;
+        autoAccelerate_ = false;
         return;
     }
 
-    autoAccelerate = true;            // human seen → start accelerating
+    // Human detected
+    autoAccelerate_ = true;
 
-    int middle = frame.cols / 2;
-    int offset = centerX - middle;
+    int mid = frame.cols / 2;
+    int offset = centerX - mid;
 
-    float sensitivity = 0.002f;
-    cameraTurnValue = offset * sensitivity;
+    // Base turn strength when looking away from target
+    const float baseSensitivity = 0.02f;
+    float rawTurn = offset * baseSensitivity;
 
-    if (cameraTurnValue > 1.0f) cameraTurnValue = 1.0f;
-    if (cameraTurnValue < -1.0f) cameraTurnValue = -1.0f;
+    // turn damping based on how close we are to "aimed"
+    const float maxOffset = frame.cols * 0.5f;  // full left-right width
+    float normalized = std::abs(offset) / maxOffset; // 0 = centered, 1 = far
+
+
+    const float minFactor = 0.05f;  // never reduce turning below 5%
+    float damping = std::clamp(normalized, minFactor, 1.0f);
+
+    // Apply damping
+    cameraTurnValue_ = rawTurn * damping;
+
+    // Clamp final steering range
+    cameraTurnValue_ = std::clamp(cameraTurnValue_, -1.0f, 1.0f);
 }
+
+
 
 

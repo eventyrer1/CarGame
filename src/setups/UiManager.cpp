@@ -16,8 +16,9 @@ UiManager::~UiManager() {
     ImGui::DestroyContext();
 }
 
-void UiManager::setCar(Car *carPtr) { car = carPtr; }
-//void UiManager::setHuman(std::vector<std::shared_ptr<threepp::Human>>* h) { humans = h; }
+
+
+
 void UiManager::beginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -38,6 +39,11 @@ void UiManager::renderUI() {
         if (ImGui::Button("Reset Car values")) {
             car->reset();
 
+            if (humans) {
+                for (auto& h : *humans) {
+                    h->reset(-50, 50, -50, 50);
+                }
+            }
         }
         float speed = car->getSpeed();
         if (ImGui::SliderFloat("Speed", &speed, 0.0f, car->getMaxSpeed())) {

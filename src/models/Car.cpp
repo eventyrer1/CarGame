@@ -83,6 +83,7 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
     } * static_cast<float>(deltaTime);
 
     updateBoundingSphere();
+    updateBoost(deltaTime);
 }
 
 void Car::updateBoundingSphere() {
@@ -91,8 +92,11 @@ void Car::updateBoundingSphere() {
 }
 
 
-void Car::onCollision(Collidable *other) {
+void Car::onCollision(Collidable* other) {
     handleCollisionResponse(other);
+    if (other) {
+        other->collideWith(*this); // double dispatch
+    }
 }
 
 //TODO Smart måte å få bilen til å vite hvem den kolliderer med
@@ -103,6 +107,24 @@ void Car::handleCollisionResponse(Collidable *other) {
     speed_ *= -0.2f;
     updateBoundingSphere();
 }
+void Car::applySpeedBoost(float amount, double durationSeconds) {
+    if (boostTimer_ > 0.0) return; // already active
+    originalMaxSpeed_ = maxSpeed_;
+    originalAcceleration_ = acceleration_;
+    maxSpeed_ += amount;
+    acceleration_ += amount * 0.2f;
+    boostTimer_ = durationSeconds;
+}
+
+void Car::updateBoost(double dt) {
+    if (boostTimer_ <= 0.0) return;
+    boostTimer_ -= dt;
+    if (boostTimer_ <= 0.0) {
+        maxSpeed_ = originalMaxSpeed_;
+        acceleration_ = originalAcceleration_;
+        boostTimer_ = 0.0;
+    }
+}
 
 void Car::reset() {
     this->position.set(0, 0, 0);
@@ -110,4 +132,9 @@ void Car::reset() {
 
     speed_ = 0;
     angle_ = 0;
+
+    // clear active boost
+    boostTimer_ = 0.0; //this has to be zero otherwise it will start with boost and test will fail
+    maxSpeed_ = (originalMaxSpeed_ ? originalMaxSpeed_ : maxSpeed_);
+    acceleration_ = (originalAcceleration_ ? originalAcceleration_ : acceleration_);
 }

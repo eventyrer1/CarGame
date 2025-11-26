@@ -1,25 +1,29 @@
-#suggested by ai how to use vcpkg with cmake
+message(STATUS "models output: ${CMAKE_BINARY_DIR}/src/models")
+
+# suggested by ai how to use vcpkg with cmake
 if (EXISTS "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
     set(CMAKE_TOOLCHAIN_FILE
             "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
             CACHE STRING "" FORCE)
 endif()
 
-
 cmake_minimum_required(VERSION 4.0)
 project(CarGame)
 set(CMAKE_CXX_STANDARD 20)
 enable_testing()
 
+# Define DATA_DIR once globally before any targets
+set(DATA_DIR "${CMAKE_SOURCE_DIR}/Data")
+add_compile_definitions(DATA_DIR="${DATA_DIR}")
 
-
+# Copy data assets next to runtime output (CarGame executable resides under src build dir)
 file(COPY ${CMAKE_SOURCE_DIR}/Data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 include(FetchContent)
 
-# dont need tests and examples so i dont fetch them
+# External deps
 set(THREEPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(THREEPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
@@ -29,8 +33,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(threepp)
 
-
-set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
@@ -42,7 +44,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(assimp)
 
-
 FetchContent_Declare(
         catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -50,11 +51,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(catch2)
 
-
-
-add_subdirectory(libs)
-add_subdirectory(src)
-add_subdirectory(tests)
-set(DATA_DIR "${CMAKE_SOURCE_DIR}/Data")
-
-target_compile_definitions(CarGame PRIVATE DATA_DIR="${DATA_DIR}")
+# Internal libraries ordering (dependency aware)
+add_subdirectory(libs)          # imgui
+add_subdirectory(src/collision) # collision base used by models
+add_subdirectory(src/models)    # models depends on collision
+add_subdirectory(src/keyListeners)
+add_subdirectory(src/setups)    # setups depends on models/imgui
+add_subdirectory(src)           # executable depends on all libs
+add_subdirectory(tests)         # test targets

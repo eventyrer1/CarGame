@@ -13,8 +13,8 @@ bool HumanDetector::detectAll(const cv::Mat& frame, std::vector<cv::Rect>& human
 
     cv::inRange(
         hsv_,
-        cv::Scalar(0, 0, 130),
-        cv::Scalar(180, 30, 255),
+        cv::Scalar(20, 100, 50),    // lower bound for yellow
+        cv::Scalar(35, 255, 255),   // upper bound for yellow
         mask_
     );
 
@@ -44,18 +44,56 @@ bool HumanDetector::detect(const cv::Mat& frame, cv::Rect& outBox, int& centerX,
 
     std::vector<cv::Rect> humans;
     if (!detectAll(frame, humans)) {
+        hasLock_ = false;
         return false;
     }
 
     int imgCenterX = frame.cols / 2;
 
+    // If we already have a lock, try to keep it
+    if (hasLock_) {
+
+        // Look for a human that overlaps or is close to the old one
+        int bestIdx = -1;
+        int bestDist = 999999;
+
+        for (int i = 0; i < humans.size(); i++) {
+            const cv::Rect& r = humans[i];
+
+            // condition: bbox overlap OR center distance small
+            int cx = r.x + r.width/2;
+            int oldCx = lockedHuman_.x + lockedHuman_.width/2;
+
+            bool overlaps = (r & lockedHuman_).area() > 0;
+            int dist = std::abs(cx - oldCx);
+
+            if (overlaps || dist < 80) { // 80px tolerance
+                bestIdx = i;
+                break;
+            }
+        }
+
+        // If found → keep lock
+        if (bestIdx >= 0) {
+            lockedHuman_ = humans[bestIdx];
+            outBox = lockedHuman_;
+            centerX = lockedHuman_.x + lockedHuman_.width/2;
+            centerY = lockedHuman_.y + lockedHuman_.height/2;
+            seesHuman = true;
+            return true;
+        }
+
+        // Otherwise lock is lost
+        hasLock_ = false;
+    }
+
+    // No lock (new target selection)
     int bestIdx = -1;
     int bestDist = 999999;
 
-    // choose the human closest to center horizontally
     for (int i = 0; i < humans.size(); i++) {
         const cv::Rect& r = humans[i];
-        int cx = r.x + r.width / 2;
+        int cx = r.x + r.width/2;
         int dist = std::abs(cx - imgCenterX);
 
         if (dist < bestDist) {
@@ -65,17 +103,21 @@ bool HumanDetector::detect(const cv::Mat& frame, cv::Rect& outBox, int& centerX,
     }
 
     if (bestIdx < 0) {
-        seesHuman = false;
+        hasLock_ = false;
         return false;
     }
 
-    outBox = humans[bestIdx];
+    // Acquire lock
+    lockedHuman_ = humans[bestIdx];
+    hasLock_ = true;
 
-
-    centerX = outBox.x + outBox.width  / 2;
-    centerY = outBox.y + outBox.height / 2;
-
-
+    outBox = lockedHuman_;
+    centerX = lockedHuman_.x + lockedHuman_.width/2;
+    centerY = lockedHuman_.y + lockedHuman_.height/2;
     seesHuman = true;
+
     return true;
 }
+
+
+

@@ -14,72 +14,82 @@
 #include "setups/ObjectSpawner.hpp"
 #include "collision/CollisionManager.hpp"
 #include "keyListeners/CarKeyListener.hpp"
-#include "UiManager.hpp"
-
+#include "setups/UiManager.hpp"
+#include "setups/Setup.hpp"
 #include <opencv2/opencv.hpp>
+#include <iostream>
 
 using namespace threepp;
 
-Game::Game()
-    : canvas(nullptr), renderer(nullptr), scene(nullptr),
-      car(nullptr), collisionManager(nullptr), treeSpawner(nullptr),
-      humanSpawner(nullptr), controller(nullptr), ui(nullptr),
-      listener(nullptr) {}
+Game::Game() = default;
 
 void Game::setup() {
 
-    canvas = new Canvas(Canvas::Parameters()
+    canvas = std::make_unique<Canvas>(Canvas::Parameters()
                             .title("Car")
                             .size({1280, 720})
                             .antialiasing(8));
 
-    renderer = new GLRenderer(canvas->size());
+    renderer = std::make_unique<GLRenderer>(canvas->size());
     renderer->autoClear = false;
 
     scene = Scene::create();
+    setupScene(*scene);
 
-    PerspectiveCamera camera(60, canvas->aspect(), 0.1f, 10000);
-    camera.position.set(-15, 8, 15);
+    // Fallback camera setup (will use car camera if available)
+    fallbackCamera = std::make_unique<PerspectiveCamera>(60, canvas->aspect(), 0.1f, 10000);
+    fallbackCamera->position.set(-15, 8, 15);
 
-    collisionManager = new CollisionManager();
+    collisionManager = std::make_unique<CollisionManager>();
 
     canvas->onWindowResize([&](const WindowSize& newSize) {
-        camera.aspect = newSize.aspect();
-        camera.updateProjectionMatrix();
+        if (car) {
+            car->camera().aspect = newSize.aspect();
+            car->camera().updateProjectionMatrix();
+        }
+        fallbackCamera->aspect = newSize.aspect();
+        fallbackCamera->updateProjectionMatrix();
         renderer->setSize(newSize);
     });
 
     // ---------------- CAR ----------------
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/Models/Car.dae";
-        car = Car::create(carModelPath).get();
-        car->position.set(0, 0, 0);
+        car = Car::create(carModelPath);
+        if (car) {
+            car->position.set(0, 0, 0);
+            scene->add(car);
+            collisionManager->registerCollidable(car.get());
+        } else {
+            std::cerr << "Failed to create car from path: " << carModelPath << "\n";
+        }
+    } catch (const std::exception& ex) {
+        std::cerr << "Exception while loading car: " << ex.what() << "\n";
+    } catch (...) {
+        std::cerr << "Unknown exception while loading car.\n";
+    }
 
-        scene->add(car);
-        collisionManager->registerCollidable(car);
-    } catch (...) {}
-
-    listener = new AudioListener();
+    listener = std::make_unique<AudioListener>();
+    if (car) { car->camera().add(*listener); }
 
     // ---------------- TREE ----------------
     std::string treeModelPath = std::string(DATA_DIR) + "/Models/CartoonTree.obj";
-    treeSpawner = new ObjectSpawner<Tree>(scene, treeModelPath, 10);
+    treeSpawner = std::make_unique<ObjectSpawner<Tree>>(scene, treeModelPath, 10);
     treeSpawner->spawnObjects(*collisionManager);
 
     // ---------------- HUMAN ----------------
     std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
     std::string splatSoundPath = std::string(DATA_DIR) + "/Sounds/Splat.wav";
-
-    humanSpawner = new ObjectSpawner<Human>(scene, humanModelPath, 10, listener, splatSoundPath);
+    humanSpawner = std::make_unique<ObjectSpawner<Human>>(scene, humanModelPath, 10, listener.get(), splatSoundPath);
     humanSpawner->spawnObjects(*collisionManager);
 
     // ---------------- CONTROL & UI ----------------
-    controller = new CarKeyListener();
+    controller = std::make_unique<CarKeyListener>();
     canvas->addKeyListener(*controller);
 
-    ui = new UiManager(static_cast<GLFWwindow*>(canvas->windowPtr()));
-    ui->setCar(car);
-    ui->setController(controller);
+    ui = std::make_unique<UiManager>(static_cast<GLFWwindow*>(canvas->windowPtr()));
+    ui->setCar(car.get());
+    ui->setController(controller.get());
     ui->setHumans(&humanSpawner->getObjects());
 }
 
@@ -94,7 +104,15 @@ void Game::run() {
         const auto dt = clock.getDelta();
 
         renderer->clear();
-        renderer->render(*scene, car->camera());
+        // Use car camera if car exists, else fallback
+        if (car) {
+            renderer->render(*scene, car->camera());
+        } else {
+            renderer->render(*scene, *fallbackCamera);
+        }
+
+        // If car missing, skip rest to avoid null deref
+        if (!car) return;
 
         int fbWidth = canvas->size().width();
         int fbHeight = canvas->size().height();
@@ -109,9 +127,7 @@ void Game::run() {
         cv::cvtColor(rgba, frame, cv::COLOR_RGBA2BGR);
         cv::flip(frame, frame, 0);
 
-        cv::Mat small;
-        cv::resize(frame, small, cv::Size(320, 180));
-
+        // Downscale only if needed for performance; we operate on original frame for detection
         if (frameCounter % 10 == 0 && controller->getCameraSteeringEnabled()) {
             controller->updateFromCamera(frame);
         }

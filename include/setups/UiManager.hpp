@@ -1,29 +1,32 @@
 #pragma once
 
-#include "Car.hpp"
-#include "Human.hpp"
+#include "models/Car.hpp"
+#include "models/Human.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "keyListeners/CarKeyListener.hpp"
-
+#include <vector>
+#include <memory>
 
 class UiManager {
 private:
-
     CarKeyListener* controller = nullptr;
-    public:
+
+    const std::vector<std::shared_ptr<threepp::Human>>* humans = nullptr;
+
+public:
     Car* car = nullptr;
-//    Human* humans = nullptr;
     bool showDemoWindow = false;
 
     explicit UiManager(GLFWwindow* window);
     ~UiManager();
+
     void setController(CarKeyListener* c) { controller = c; }
-    void setCar(Car* carPtr);
-   // void setHuman(Human* humanptr);
+    void setCar(Car* carPtr) { car = carPtr; }
+    void setHumans(const std::vector<std::shared_ptr<threepp::Human>>* h) { humans = h; }
+
     void beginFrame();
     void renderUI();
     void endFrame();
-
 };

@@ -1,12 +1,16 @@
 #include "models/Human.hpp"
+#include "models/Car.hpp"
 using namespace threepp;
 
 Human::Human(std::shared_ptr<Object3D> model,
              AudioListener* listener,
              const std::string& soundPath) {
-    if (model) this->copy(*model);
+    if (model) {
+        this->copy(*model);
 
-    if (listener) {
+        this->scale.multiplyScalar(2);
+    }
+        if (listener) {
         collisionSound_ = std::make_shared<threepp::PositionalAudio>(*listener, soundPath);
         Object3D::add(*collisionSound_);
     }
@@ -31,6 +35,14 @@ void Human::computeBoundingBox() {
 
 void Human::onCollision(Collidable* other) {
     handleCollisionResponse(other);
+}
+
+void Human::collideWith(Car& car) {
+    // Car interacts with Human as power-up; Car owns logic, but we can flag consumption state.
+    if (!hit_) {
+        handleCollisionResponse(&car);
+        car.applySpeedBoost(50.f, 5.0); // parameters are tunable; decoupled via Car's public API
+    }
 }
 
 void Human::handleCollisionResponse(Collidable* /*other*/) {

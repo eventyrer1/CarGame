@@ -1,9 +1,15 @@
-//
-// Created by evest on 26.11.2025.
-//
-
 #pragma once
+
 #include "threepp/threepp.hpp"
+
+#include "models/Car.hpp"
+#include "models/Tree.hpp"
+#include "models/Human.hpp"
+#include "setups/ObjectSpawner.hpp"
+#include "collision/CollisionManager.hpp"
+#include "keyListeners/CarKeyListener.hpp"
+#include "setups/UiManager.hpp"
+
 #include <memory>
 
 class Game {
@@ -14,19 +20,25 @@ public:
     void run();
 
 private:
-    threepp::Canvas* canvas;
-    threepp::GLRenderer* renderer;
+    // Core systems now managed by smart pointers
+    std::unique_ptr<threepp::Canvas> canvas;
+    std::unique_ptr<threepp::GLRenderer> renderer;
     std::shared_ptr<threepp::Scene> scene;
 
-    // Add all objects you used in main:
-    class Car* car;
-    class CollisionManager* collisionManager;
+    std::shared_ptr<Car> car; // may be null if loading fails
+    std::unique_ptr<CollisionManager> collisionManager;
 
-    class ObjectSpawner<threepp::Tree>* treeSpawner;
-    class ObjectSpawner<threepp::Human>* humanSpawner;
+    std::unique_ptr<ObjectSpawner<Tree>> treeSpawner;
+    std::unique_ptr<ObjectSpawner<Human>> humanSpawner;
 
-    class CarKeyListener* controller;
-    class UiManager* ui;
+    std::unique_ptr<CarKeyListener> controller;
+    std::unique_ptr<UiManager> ui;
 
-    threepp::AudioListener* listener;
+    std::unique_ptr<threepp::AudioListener> listener;
+
+    // Fallback camera used if car failed to load
+    std::unique_ptr<threepp::PerspectiveCamera> fallbackCamera;
+
+    // Helpers
+    void renderFrame();
 };
