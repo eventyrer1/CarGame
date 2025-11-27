@@ -10,7 +10,9 @@ set(models_src_files
         "${MODELS_SRC_DIR}/Tree.cpp"
         "${MODELS_SRC_DIR}/SpawnableObject.cpp"
         "${MODELS_SRC_DIR}/Human.cpp"
+        "${MODELS_SRC_DIR}/Stone.cpp"
 
+        "${MODELS_INC_DIR}/Stone.hpp"
         "${MODELS_INC_DIR}/Car.hpp"
         "${MODELS_INC_DIR}/Tree.hpp"
         "${MODELS_INC_DIR}/SpawnableObject.hpp"
