@@ -17,7 +17,7 @@ void setupScene(Scene &scene) {
 
     const auto geometry = PlaneGeometry::create(200, 200, 1, 1);
     const auto material = MeshStandardMaterial::create();
-    material->color=Color(0.2f, 0.05f, 0.0f);
+    material->color=Color(0.01f, 1.0f, 0.01f);
 
     const auto plane = Mesh::create(geometry, material);
     plane->rotation.x = -math::PI / 2; // make it horizontal
@@ -25,10 +25,4 @@ void setupScene(Scene &scene) {
 
     scene.add(plane);
 
-    /*auto map = loader.load(std::string(DATA_DIR) + "/models/Track.glb");
-
-    scene.add(map);
-    map->scale *= 1;
-
-*/
 }

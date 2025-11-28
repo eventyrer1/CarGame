@@ -33,6 +33,24 @@ void Game::setup() {
     renderer = std::make_unique<GLRenderer>(canvas->size());
     renderer->autoClear = false;
 
+    hud_ = std::make_unique<HUD>(canvas->size());
+
+    FontLoader fontLoader;
+    const auto font = fontLoader.defaultFont();
+
+    TextGeometry::Options textOpts(font, 32, 5); // size=32px, extrude=5
+    scoreText_ = Text2D::create(textOpts, "Score: 0");
+    scoreText_->setColor(Color::white);
+
+    // Top-right corner overlay
+    hud_->add(scoreText_,
+        HUD::Options()
+            .setNormalizedPosition({1.f, 1.f})
+            .setHorizontalAlignment(HUD::HorizontalAlignment::RIGHT)
+            .setVerticalAlignment(HUD::VerticalAlignment::TOP));
+
+
+
     scene = Scene::create();
     setupScene(*scene);
 
@@ -74,13 +92,23 @@ void Game::setup() {
 
     // ---------------- TREE ----------------
     std::string treeModelPath = std::string(DATA_DIR) + "/Models/CartoonTree.obj";
-    treeSpawner = std::make_unique<ObjectSpawner<Tree>>(scene, treeModelPath, 10);
+    treeSpawner = std::make_unique<ObjectSpawner<Tree>>(scene,
+        treeModelPath,
+        10);
+
     treeSpawner->spawnObjects(*collisionManager);
 
     // ---------------- HUMAN ----------------
     std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
     std::string splatSoundPath = std::string(DATA_DIR) + "/Sounds/Splat.wav";
-    humanSpawner = std::make_unique<ObjectSpawner<Human>>(scene, humanModelPath, 10, listener.get(), splatSoundPath);
+    humanSpawner = std::make_unique<ObjectSpawner<Human>>(scene,
+        humanModelPath,
+        10,
+        listener.get(),
+        splatSoundPath,
+        &score_
+        );
+
     humanSpawner->spawnObjects(*collisionManager);
 
     // ---------------- CONTROL & UI ----------------
@@ -111,6 +139,10 @@ void Game::run() {
             renderer->render(*scene, *fallbackCamera);
         }
 
+        if (hud_) {
+            scoreText_->setText("Score: " + std::to_string(score_.humansHit()));
+            hud_->apply(*renderer);
+        }
         // If car missing, skip rest to avoid null deref
         if (!car) return;
 

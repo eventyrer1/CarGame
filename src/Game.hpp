@@ -1,7 +1,7 @@
 #pragma once
 
 #include "threepp/threepp.hpp"
-
+#include "setups/ScoreManager.hpp"
 #include "models/Car.hpp"
 #include "models/Tree.hpp"
 #include "models/Human.hpp"
@@ -9,7 +9,6 @@
 #include "collision/CollisionManager.hpp"
 #include "keyListeners/CarKeyListener.hpp"
 #include "setups/UiManager.hpp"
-
 #include <memory>
 
 class Game {
@@ -35,9 +34,14 @@ private:
     std::unique_ptr<UiManager> ui;
 
     std::unique_ptr<threepp::AudioListener> listener;
+    ScoreManager score_;
+    std::unique_ptr<HUD> hud_;
+    std::shared_ptr<Text2D> scoreText_;
 
     // Fallback camera used if car failed to load
     std::unique_ptr<threepp::PerspectiveCamera> fallbackCamera;
+
+
 
     // Helpers
     void renderFrame();

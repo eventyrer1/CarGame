@@ -3,17 +3,23 @@
 
 #include "SpawnableObject.hpp"
 #include "threepp/audio/Audio.hpp"
-class Car; // forward
+// forwarding to make it lower coupling
+class Car;
+class ScoreManager;
 
 namespace threepp {
     class Human : public SpawnableObject {
     public:
         Human(std::shared_ptr<Object3D> model,
-              AudioListener *listener,
-              const std::string &soundPath);
+              AudioListener* listener,
+              const std::string& soundPath,
+              ScoreManager* scoreManager);
+
+
         static std::shared_ptr<Human> create(std::shared_ptr<Object3D> model,
                                              AudioListener *listener,
-                                             const std::string &soundPath);
+                                             const std::string &soundPath,
+                                             ScoreManager* scoreManager);
         void computeBoundingBox() override;
         void onCollision(::Collidable *other) override; // generic visual flatten
         void reset(float minX, float maxX, float minZ, float maxZ);
@@ -25,6 +31,7 @@ namespace threepp {
         std::shared_ptr<PositionalAudio> collisionSound_;
         bool hit_ = false;
         void handleCollisionResponse(Collidable *other);
+        ScoreManager* scoreManager_ = nullptr;
     };
 }
 

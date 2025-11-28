@@ -1,10 +1,15 @@
 #include "models/Human.hpp"
+
+#include "ScoreManager.hpp"
 #include "models/Car.hpp"
 using namespace threepp;
 
 Human::Human(std::shared_ptr<Object3D> model,
              AudioListener* listener,
-             const std::string& soundPath) {
+             const std::string& soundPath,
+             ScoreManager* scoreManager)
+    : scoreManager_(scoreManager) {
+
     if (model) {
         this->copy(*model);
 
@@ -18,10 +23,11 @@ Human::Human(std::shared_ptr<Object3D> model,
 
 std::shared_ptr<Human> Human::create(std::shared_ptr<Object3D> model,
                                      AudioListener* listener,
-                                     const std::string& soundPath) {
+                                     const std::string& soundPath,
+                                     ScoreManager* scoreManager) {
     if (!model) return nullptr;
 
-    auto human = std::make_shared<Human>(model, listener, soundPath);
+    auto human = std::make_shared<Human>(model, listener, soundPath,scoreManager);
     human->updateMatrixWorld(true);
     human->computeBoundingBox();
     return human;
@@ -65,6 +71,9 @@ void Human::handleCollisionResponse(Collidable* /*other*/) {
 
     if (collisionSound_ && !collisionSound_->isPlaying()) {
         collisionSound_->play();
+    }
+    if (scoreManager_) {
+        scoreManager_->addHit();
     }
 
 }
