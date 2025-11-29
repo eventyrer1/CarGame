@@ -1,9 +1,28 @@
-.idea/
+#A lot of these entries are common for C++ projects using CMake and vcpkg, therefore i included them all even though i do not necessarily use all of them.
+
+# CMake build folders
+cmake-build-*/
 build/
-cmake-build-debug/
-cmake-build-release/
-CMakeFiles/
+out/
+Debug/
+Release/
+
+# CMake generated files
 CMakeCache.txt
-CTestTestfile.cmake
-Makefile
+CMakeFiles/
 cmake_install.cmake
+Makefile
+
+# vcpkg build artifacts
+vcpkg/buildtrees/
+vcpkg/packages/
+vcpkg/downloads/
+vcpkg/installed/
+vcpkg/vcpkg.exe
+
+# VSCode/CLion IDE files
+.idea/
+.vscode/
+*.user
+*.workspace
+*.iml

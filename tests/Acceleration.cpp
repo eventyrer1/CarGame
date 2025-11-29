@@ -1,5 +1,5 @@
 #include "Car.hpp"
-#include "CarActions.hpp"
+
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Car accelerates up to max speed", "[Car]") {

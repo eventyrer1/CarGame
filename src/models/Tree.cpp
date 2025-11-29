@@ -18,9 +18,5 @@ std::shared_ptr<Tree> Tree::create(std::shared_ptr<Object3D> model) {
 
 void Tree::computeBoundingBox() {
     updateMatrixWorld(true);
-
-    Box3 fullBox;
-    fullBox.setFromObject(*this);
-
-    collisionBox_ = std::make_optional<Box3>(fullBox);
+    collisionBox_ = std::make_optional<Box3>(BoundingBoxHelper::computeCollisionBox(*this, 5.0f, 0.5f));
 }

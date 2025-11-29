@@ -1,13 +1,26 @@
 
+set(CMAKE_DEBUG_POSTFIX "")  #have to add this beacuse if not then visual studio adds a d at the end of the lib name
 
-set(keyListener_include_dir "${CMAKE_SOURCE_DIR}/include/keyListeners")
+
+set(KEYLISTENERS_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(KEYLISTENERS_INC_DIR "${CMAKE_SOURCE_DIR}/include/keyListeners")
 
 set(keyListener_files
-        "${keyListener_include_dir}/CarKeyListener.hpp" "CarKeyListener.cpp"
-        "${keyListener_include_dir}/InterfaceCarKeyListener.hpp"
-        "${keyListener_include_dir}/CarActions.hpp"
+        "${KEYLISTENERS_SRC_DIR}/CarKeyListener.cpp"
+
+        "${KEYLISTENERS_INC_DIR}/CarKeyListener.hpp"
+        "${KEYLISTENERS_INC_DIR}/InterfaceCarKeyListener.hpp"
 )
+
 add_library(keyListeners ${keyListener_files})
 
-target_link_libraries(keyListeners PUBLIC threepp::threepp)
-target_include_directories(keyListeners PUBLIC ${keyListener_include_dir})
+find_package(OpenCV REQUIRED)
+
+target_link_libraries(keyListeners PUBLIC
+        threepp::threepp
+        ${OpenCV_LIBS}
+)
+
+target_include_directories(keyListeners PUBLIC
+        ${KEYLISTENERS_INC_DIR}
+)

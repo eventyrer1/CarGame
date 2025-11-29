@@ -4,10 +4,22 @@
 
 #ifndef CARGAME_INTERFACECARKEYLISTENER_HPP
 #define CARGAME_INTERFACECARKEYLISTENER_HPP
-#include "CarActions.hpp"
+
 #include <utility>
 
+struct CarActions {
+    enum class Move {
+        ACCELERATE,
+        DECELERATE,
+        NOTHING,
+    };
 
+    enum class Turn {
+        TURN_LEFT,
+        TURN_RIGHT,
+        NOTHING,
+    };
+};
 
 class InterfaceCarKeyListener {
 public:

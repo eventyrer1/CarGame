@@ -1,16 +1,32 @@
-set(DATA_DIR "${CMAKE_SOURCE_DIR}/Data")
-set(setups_include_dir "${CMAKE_SOURCE_DIR}/include/setups")
+set(CMAKE_DEBUG_POSTFIX "")  #have to add this beacuse if not then visual studio adds a d at the end of the lib name
+
+set(SETUPS_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(SETUPS_INC_DIR "${CMAKE_SOURCE_DIR}/include/setups")
 
 set(setups_files
-        "${setups_include_dir}/Setup.hpp" "Setup.cpp"
-        "${setups_include_dir}/ObjectSpawner.hpp"
-        "UiManager.cpp"
+        "${SETUPS_SRC_DIR}/Setup.cpp"
+        "${SETUPS_SRC_DIR}/UiManager.cpp"
+        "${SETUPS_SRC_DIR}/HumanDetector.cpp"
+
+        "${SETUPS_INC_DIR}/Setup.hpp"
+        "${SETUPS_INC_DIR}/ObjectSpawner.hpp"
+        "${SETUPS_INC_DIR}/UiManager.hpp"
+        "${SETUPS_INC_DIR}/HumanDetector.hpp"
 )
+
 add_library(setups ${setups_files})
 
-target_link_libraries(setups PUBLIC threepp::threepp
+find_package(OpenCV REQUIRED)
+
+target_link_libraries(setups PUBLIC
+        threepp::threepp
         assimp::assimp
+        imgui::imgui
         models
-        imgui::imgui)
-target_include_directories(setups PUBLIC ${setups_include_dir})
-target_compile_definitions(setups PUBLIC DATA_DIR="${DATA_DIR}")
+
+        ${OpenCV_LIBS}
+)
+
+target_include_directories(setups PUBLIC
+        ${SETUPS_INC_DIR}
+)

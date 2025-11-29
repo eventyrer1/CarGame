@@ -13,11 +13,3 @@ target_sources(imgui PRIVATE
 target_link_libraries(imgui PRIVATE glfw)
 target_include_directories(imgui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/imgui")
 
-add_library(bvh)
-add_library(bvh::bvh ALIAS bvh)
-target_sources(bvh PRIVATE
-        "bvh/BVH.cpp"
-        "bvh/BVH.hpp"
-)
-target_link_libraries(bvh PRIVATE threepp)
-target_include_directories(bvh PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/bvh")

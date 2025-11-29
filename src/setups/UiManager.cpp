@@ -1,5 +1,6 @@
 #include "UiManager.hpp"
 #include "models/Car.hpp"
+#include "models/Human.hpp"
 
 UiManager::UiManager(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
@@ -15,7 +16,8 @@ UiManager::~UiManager() {
     ImGui::DestroyContext();
 }
 
-void UiManager::setCar(Car *carPtr) { car = carPtr; }
+
+
 
 void UiManager::beginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
@@ -25,10 +27,23 @@ void UiManager::beginFrame() {
 
 void UiManager::renderUI() {
     ImGui::Begin("Car Controls");
+    if (controller) {
+        bool enabled = controller->getCameraSteeringEnabled();
+        if (ImGui::Checkbox("AI Steering", &enabled)) {
+            controller->setCameraSteeringEnabled(enabled);
+        }
+        ImGui::Separator();
+    }
 
     if (car) {
         if (ImGui::Button("Reset Car values")) {
             car->reset();
+
+            if (humans) {
+                for (auto& h : *humans) {
+                    h->reset(-50, 50, -50, 50);
+                }
+            }
         }
         float speed = car->getSpeed();
         if (ImGui::SliderFloat("Speed", &speed, 0.0f, car->getMaxSpeed())) {
@@ -67,6 +82,7 @@ void UiManager::renderUI() {
 
     ImGui::End();
 }
+
 
 void UiManager::endFrame() {
     ImGui::Render();

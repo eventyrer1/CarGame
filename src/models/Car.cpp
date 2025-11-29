@@ -5,19 +5,20 @@
 using namespace threepp;
 
 Car::Car(std::shared_ptr<Object3D> model) {
-
     if (model) this->copy(*model);
 
     // Create follow camera
     camera_ = std::make_unique<PerspectiveCamera>(65.f, 16.f / 9.f, 0.1f, 100.f);
 
     this->add(*camera_);
-    camera_->position.set(0, 5, -13);
+    camera_->position.x = 0;
+    camera_->position.y = 5;
+    camera_->position.z = -13;
     camera_->lookAt(this->position);
-    Collidable::computeBoundingSphere(0.8f);
+    Collidable::computeBoundingSphere(0.6f);
 }
 
-std::shared_ptr<Car> Car::create(const std::filesystem::path& path) {
+std::shared_ptr<Car> Car::create(const std::filesystem::path &path) {
     AssimpLoader loader;
     auto model = loader.load(path);
     if (!model) {
@@ -30,35 +31,12 @@ std::shared_ptr<Car> Car::create(const std::filesystem::path& path) {
     return car;
 }
 
-PerspectiveCamera& Car::camera() {
+PerspectiveCamera &Car::camera() {
     return *camera_;
 }
 
-/*void Car::setHitboxVisualization(bool enabled, Scene* scene) {
-    scene_ = scene;
-    if (enabled && !boundingSphereHelper_ && scene_) {
-        auto sphereGeometry = SphereGeometry::create(boundingSphere_.radius, 20, 20);
-        auto material = MeshBasicMaterial::create();
-        material->wireframe = true;
-        material->color = Color::blue;
-
-        boundingSphereHelper_ = Mesh::create(sphereGeometry, material);
-        boundingSphereHelper_->position.copy(boundingSphere_.center);
-        scene_->add(boundingSphereHelper_);
-    } else if (!enabled && boundingSphereHelper_ && scene_) {
-        scene_->remove(*boundingSphereHelper_);
-        boundingSphereHelper_.reset();
-    }
-}
-
-void Car::updateHitboxVisualization() {
-    if (boundingSphereHelper_ && scene_) {
-        boundingSphereHelper_->position.copy(boundingSphere_.center);
-    }
-}*/
 
 void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn) {
-
     // Handle movement input
     switch (move) {
         case CarActions::Move::ACCELERATE:
@@ -85,9 +63,18 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
             break;
         default: break;
     }
-
+    if (speed_ >= -10) {
+        camera_->position.z = -13 - speed_ * 0.05f;
+        camera_->position.x = 0;
+        camera_->position.y = 5;
+        camera_->rotation.y = 0;
+//makes the camera look at the car when it reverses
+    } else {
+        camera_->position.z = 14;
+        camera_->position.y = 2;
+        camera_->rotation.y = math::PI;
+    }
     // Update position & rotation
-
     this->setRotationFromAxisAngle(Vector3{0, 1, 0}, angle_);
     this->position += Vector3{
         speed_ * std::sin(angle_),
@@ -96,37 +83,58 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
     } * static_cast<float>(deltaTime);
 
     updateBoundingSphere();
+    updateBoost(deltaTime);
 }
 
 void Car::updateBoundingSphere() {
-
     boundingSphere_.value().center.copy(position);
-    updateHitboxVisualization();
+
 }
 
-/*bool Car::checkCollision(const Collidable& other) const {
-    if (other.getBox()) return boundingSphere_.intersectsBox(*other.getBox());
-    if (other.getSphere()) return boundingSphere_.intersectsSphere(*other.getSphere());
-    return false;
-}*/
 
 void Car::onCollision(Collidable* other) {
     handleCollisionResponse(other);
+    if (other) {
+        other->collideWith(*this); // double dispatch
+    }
 }
 
-void Car::handleCollisionResponse(Collidable* other) {
+//TODO Smart måte å få bilen til å vite hvem den kolliderer med
+void Car::handleCollisionResponse(Collidable *other) {
     Vector3 pushDir = position - other->position;
     pushDir.normalize();
     position.add(pushDir.multiplyScalar(0.1f));
     speed_ *= -0.2f;
     updateBoundingSphere();
 }
+void Car::applySpeedBoost(float amount, double durationSeconds) {
+    if (boostTimer_ > 0.0) return; // already active
+    originalMaxSpeed_ = maxSpeed_;
+    originalAcceleration_ = acceleration_;
+    maxSpeed_ += amount;
+    acceleration_ += amount * 0.2f;
+    boostTimer_ = durationSeconds;
+}
+
+void Car::updateBoost(double dt) {
+    if (boostTimer_ <= 0.0) return;
+    boostTimer_ -= dt;
+    if (boostTimer_ <= 0.0) {
+        maxSpeed_ = originalMaxSpeed_;
+        acceleration_ = originalAcceleration_;
+        boostTimer_ = 0.0;
+    }
+}
 
 void Car::reset() {
-
-   this->position.set(0, 0, 0);
-   this->setRotationFromAxisAngle(Vector3{0, 1, 0}, 0);
+    this->position.set(0, 0, 0);
+    this->setRotationFromAxisAngle(Vector3{0, 1, 0}, 0);
 
     speed_ = 0;
     angle_ = 0;
+
+    // clear active boost
+    boostTimer_ = 0.0; //this has to be zero otherwise it will start with boost and test will fail
+    maxSpeed_ = (originalMaxSpeed_ ? originalMaxSpeed_ : maxSpeed_);
+    acceleration_ = (originalAcceleration_ ? originalAcceleration_ : acceleration_);
 }
