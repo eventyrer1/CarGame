@@ -5,7 +5,7 @@
 The game includes a lightweight computer-vision system that detects humans based on their color.  
 Each rendered frame is captured from the in-game camera and processed using OpenCV to identify yellow human models.
 
-![Human Detector Comparison](data/human_mask.png)
+![Human Detector Comparison](Data/Img/output.png)
 
 #### How It Works
 
