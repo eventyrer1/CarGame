@@ -2,16 +2,15 @@
 
 
 
-The game includes a lightweight computer-vision system that detects humans based on their color.  
-Each rendered frame is captured from the in-game camera and processed using OpenCV to identify yellow human models.
+The game uses OpenCV's colour detection method to determine where the humans are, but before it does that we need to convert the image into somethign the computer understands more easily 
 
 ![Human Detector Comparison](Data/Img/output.png)
 
 #### How It Works
 
-- Capture the current game frame.
-- Convert the frame from BGR to HSV color space.
-- Apply a yellow color filter:
+-  1 Capture the current game frame.
+-  2 Convert the frame from BGR to HSV color space.
+-  3 Apply a yellow color filter:
   ```cpp
   cv::inRange(
       hsv_,
