@@ -84,7 +84,10 @@ void Human::handleCollisionResponse(Collidable* /*other*/) {
 
 void Human::reset(float minX, float maxX, float minZ, float maxZ) {
     hit_ = false;
-
+    if (collisionSound_) {
+        this->remove(*collisionSound_);
+        collisionSound_.reset();
+    }
     this->rotation.set(0, 0, 0);
     this->position.y = 0;
 
