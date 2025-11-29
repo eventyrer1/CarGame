@@ -1,36 +1,36 @@
+
+
 ![CarGame Title](Data/Img/Tittel.png)
 ![CarGameIMGTitle](Data/Img/oopProsjektTittel.png)
 
+## Project Overview
+Auto Slaughter is a 3D driving game that combines classis WASD-controls with a computer-vision-based human detection system.
+
+## Key Features
+- **Driving gameplay**: Accelerate, brake, and steer a car through the environment with responsive keyboard controls.
+- **Human detection**: OpenCV-based colour detection highlights humans and make the car automaticly target the closest human
 
 
-
-
-
-### Human Detection System
-
-
-
-The game uses OpenCV's colour detection method to determine where the humans are, but before it does that we need to convert the image into somethign the computer understands more easily 
+## Human Detection System
+The game uses OpenCV's colour detection method to determine where the humans are, converting frames into a format the computer can parse easily.
 
 ![Human Detector Comparison](Data/Img/output.png)
 
-#### How It Works
+### How It Works
+1. Capture the current game frame.
+2. Convert the frame from BGR to HSV colour space.
+3. Apply a yellow colour filter to isolate humans:
+   ```cpp
+   cv::inRange(
+       hsv_,
+       cv::Scalar(20, 100, 50),
+       cv::Scalar(35, 255, 255),
+       mask_
+   );
+   ```
+4. Extract contours from the mask and compute bounding boxes.
+5. Select the human whose bounding box centre is closest to the screen centre as the active target.
 
--  1 Capture the current game frame.
--  2 Convert the frame from BGR to HSV color space.
--  3 Apply a yellow color filter:
-  ```cpp
-  cv::inRange(
-      hsv_,
-      cv::Scalar(20, 100, 50),
-      cv::Scalar(35, 255, 255),
-      mask_
-  );
-- The mask keeps only yellow pixels (the human models) and discards everything else.
-- Extract contours from the mask and compute bounding boxes.
-- Select the human whose bounding box center is closest to the center of the screen as the active target.
-
-  
 ### Kilder:
 Jon aksel for kode hjelp/tips
 Magnus For Fjeset sitt og kræsj lyder
