@@ -1,4 +1,5 @@
-![CarGame Title](Data/Img/oopProsjektTittel.png)
+![CarGame Title](Data/Img/Tittel.png)
+![CarGameIMGTitle](Data/Img/oopProsjektTittel.png)
 
 
 
