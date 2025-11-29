@@ -14,27 +14,31 @@ template<typename T>
 struct ObjectTraits {
     static constexpr bool hasAudio = false;
 };
+
 //TODO check this: REALLY UNSURE IF THIS IS WISE SINCE THIS INCREASES COUPLING
 template<>
 struct ObjectTraits<threepp::Human> {
     static constexpr bool hasAudio = true;
 };
+
 template<typename T>
 class ObjectSpawner {
 public:
     ObjectSpawner(std::shared_ptr<threepp::Scene> scene,
-              const std::string &modelPath,
-              int numObjects,
-              threepp::AudioListener* listener = nullptr,
-              const std::string &soundPath = "",
-              ScoreManager* scoreManager = nullptr)
+                  const std::string &modelPath,
+                  int numObjects,
+                  threepp::AudioListener *listener = nullptr,
+                  const std::vector<std::string> &soundPaths = {},
+
+                  ScoreManager *scoreManager = nullptr)
         : scene_(scene),
           modelPath_(modelPath),
           listener_(listener),
-          soundPath_(soundPath),
+          soundPaths_(soundPaths),
           numObjects_(numObjects),
           scoreManager_(scoreManager),
-          objectGroup_(threepp::Group::create()) {}
+          objectGroup_(threepp::Group::create()) {
+    }
 
 
     void spawnObjects(CollisionManager &collisionManager) {
@@ -49,7 +53,7 @@ public:
             std::shared_ptr<T> obj;
             if constexpr (ObjectTraits<T>::hasAudio) {
                 // only Humans use sound and since this is already created i also use it for scores
-                obj = T::create(model, listener_, soundPath_, scoreManager_);
+                obj = T::create(model, listener_, soundPaths_, scoreManager_);
             } else {
                 // All other objects use normal creation
                 obj = T::create(model);
@@ -70,12 +74,13 @@ public:
 private:
     std::shared_ptr<threepp::Scene> scene_;
     std::string modelPath_;
-    threepp::AudioListener* listener_;
-    std::string soundPath_;
+    threepp::AudioListener *listener_;
+    std::vector<std::string> soundPaths_;
+
     int numObjects_;
     std::shared_ptr<threepp::Group> objectGroup_;
     std::vector<std::shared_ptr<T> > objects_;
-    ScoreManager* scoreManager_;
+    ScoreManager *scoreManager_;
 };
 
 #endif // CARGAME_OBJECTSPAWNER_HPP

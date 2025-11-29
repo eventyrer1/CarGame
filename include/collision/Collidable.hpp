@@ -8,7 +8,7 @@ class Car;
 // Avoid using-directive in headers to reduce coupling/pollution.
 class Collidable : public threepp::Object3D, public std::enable_shared_from_this<Collidable> {
 public:
-    // Generic world-space bounding box
+    /// Generic world-space bounding box
     virtual void computeBoundingBox() {
         updateMatrixWorld(true);
         collisionBox_ = std::make_optional<threepp::Box3>();

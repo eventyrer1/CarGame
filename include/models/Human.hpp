@@ -3,36 +3,42 @@
 
 #include "SpawnableObject.hpp"
 #include "threepp/audio/Audio.hpp"
-// forwarding to make it lower coupling
+
 class Car;
 class ScoreManager;
 
 namespace threepp {
+
     class Human : public SpawnableObject {
     public:
         Human(std::shared_ptr<Object3D> model,
               AudioListener* listener,
-              const std::string& soundPath,
+              const std::vector<std::string>& soundPaths,
               ScoreManager* scoreManager);
 
-
         static std::shared_ptr<Human> create(std::shared_ptr<Object3D> model,
-                                             AudioListener *listener,
-                                             const std::string &soundPath,
+                                             AudioListener* listener,
+                                             const std::vector<std::string>& soundPaths,
                                              ScoreManager* scoreManager);
-        void computeBoundingBox() override;
-        void onCollision(::Collidable *other) override; // generic visual flatten
-        void reset(float minX, float maxX, float minZ, float maxZ);
 
-        // Double-dispatch handler for Car power-up consumption
+        void computeBoundingBox() override;
+        void onCollision(::Collidable* other) override;
+        void reset(float minX, float maxX, float minZ, float maxZ);
         void collideWith(Car& car) override;
+
         bool isConsumed() const { return hit_; }
+
     private:
-        std::shared_ptr<PositionalAudio> collisionSound_;
+        AudioListener* listener_ = nullptr;                         // ← REQUIRED
+        std::shared_ptr<threepp::PositionalAudio> collisionSound_;
         bool hit_ = false;
-        void handleCollisionResponse(Collidable *other);
         ScoreManager* scoreManager_ = nullptr;
+
+        std::vector<std::string> soundPaths_;                       // ← CORRECT
+
+        void handleCollisionResponse(Collidable* other);
     };
+
 }
 
-#endif // CARGAME_HUMAN_HPP
+#endif

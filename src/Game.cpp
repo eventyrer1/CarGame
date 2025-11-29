@@ -18,6 +18,9 @@
 #include "setups/Setup.hpp"
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <filesystem>
+#include <random>
+#include <algorithm>
 
 using namespace threepp;
 
@@ -45,8 +48,8 @@ void Game::setup() {
     // Top-right corner overlay
     hud_->add(scoreText_,
         HUD::Options()
-            .setNormalizedPosition({1.f, 1.f})
-            .setHorizontalAlignment(HUD::HorizontalAlignment::RIGHT)
+            .setNormalizedPosition({0.f, 1.f})
+            .setHorizontalAlignment(HUD::HorizontalAlignment::LEFT)
             .setVerticalAlignment(HUD::VerticalAlignment::TOP));
 
 
@@ -98,18 +101,74 @@ void Game::setup() {
 
     treeSpawner->spawnObjects(*collisionManager);
 
-    // ---------------- HUMAN ----------------
-    std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
-    std::string splatSoundPath = std::string(DATA_DIR) + "/Sounds/Splat.wav";
-    humanSpawner = std::make_unique<ObjectSpawner<Human>>(scene,
-        humanModelPath,
-        10,
-        listener.get(),
-        splatSoundPath,
-        &score_
-        );
+   // ---------------- HUMAN (Random selection of sound files done by ai) ----------------
 
-    humanSpawner->spawnObjects(*collisionManager);
+// Build a list of candidate sound files using plain string concatenation
+std::vector<std::string> soundPaths;
+std::string soundsDir = std::string(DATA_DIR) + "/Sounds";
+
+// Allowed audio formats
+static const std::vector<std::string> allowedExt = {
+    ".wav",
+    ".m4a",
+    ".mp3",
+    ".ogg"
+};
+
+namespace fs = std::filesystem;
+
+try {
+    if (fs::exists(soundsDir) && fs::is_directory(soundsDir)) {
+
+        for (const auto& entry : fs::directory_iterator(soundsDir)) {
+            if (!entry.is_regular_file()) continue;
+
+            // Extract extension
+            std::string extLower = entry.path().extension().string();
+            std::transform(extLower.begin(), extLower.end(), extLower.begin(), ::tolower);
+
+            // Accept file if extension matches
+            if (std::find(allowedExt.begin(), allowedExt.end(), extLower) != allowedExt.end()) {
+                // Force forward slashes in final string
+                std::string full = entry.path().generic_string();
+                soundPaths.emplace_back(full);
+            }
+        }
+    }
+}
+catch (const std::exception& ex) {
+    std::cerr << "Error scanning sounds directory: " << ex.what() << "\n";
+}
+
+// Fallback
+if (soundPaths.empty()) {
+    soundPaths.emplace_back(std::string(DATA_DIR) + "/Sounds/Splat.wav");
+    std::cerr << "None found >:| !\n";
+}
+
+// Pick one at random
+std::mt19937 rng(std::random_device{}());
+std::uniform_int_distribution<size_t> dist(0, soundPaths.size() - 1);
+std::string splatSoundPath = soundPaths[dist(rng)];
+
+std::cout << "Playing sound: " << splatSoundPath << "\n";
+
+// Load model path just like the tree code
+std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
+
+humanSpawner = std::make_unique<ObjectSpawner<Human>>(
+    scene,
+    humanModelPath,
+    10,
+    listener.get(),
+    soundPaths,
+    &score_
+);
+
+humanSpawner->spawnObjects(*collisionManager);
+
+
+
 
     // ---------------- CONTROL & UI ----------------
     controller = std::make_unique<CarKeyListener>();
