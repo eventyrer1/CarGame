@@ -7,17 +7,18 @@
 #include "collision/Collidable.hpp"
 #include "keyListeners/InterfaceCarKeyListener.hpp"
 #include <opencv2/opencv.hpp>
+#include <threepp/audio/Audio.hpp>
 
 class Car : public SpawnableObject {
 
 public:
 
-    explicit Car(std::shared_ptr<Object3D> model);
-    static std::shared_ptr<Car> create(const std::filesystem::path &path);
+    explicit Car(std::shared_ptr<Object3D> model, AudioListener *listener, const std::string &audioPath);
+    static std::shared_ptr<Car> create(const std::filesystem::path &path, AudioListener *listener, const std::string &audioPath);
 
     void update(double deltaTime, const CarActions::Move move, const CarActions::Turn turn);
     PerspectiveCamera &camera();
-    static std::shared_ptr<Car> createDummyCar() { return std::make_shared<Car>(nullptr); }
+    static std::shared_ptr<Car> createDummyCar() { return std::make_shared<Car>(nullptr, nullptr, ""); }
 
     void onCollision(Collidable *other) override;
     void reset();
@@ -66,6 +67,7 @@ private:
     std::unique_ptr<PerspectiveCamera> camera_;
     std::shared_ptr<Mesh> boundingSphereHelper_;
     Scene* scene_ = nullptr;
+    std::shared_ptr<Audio> engineSound_;
 
     double boostTimer_ = 0.0f;
     float originalMaxSpeed_ = 0.0f;

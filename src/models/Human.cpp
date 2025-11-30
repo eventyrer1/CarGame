@@ -71,8 +71,7 @@ void Human::handleCollisionResponse(Collidable* /*other*/) {
         std::string chosen = soundPaths_[idx];
 
         collisionSound_ = std::make_shared<threepp::PositionalAudio>(*listener_, chosen);
-        collisionSound_->setVolume(8.0f);
-        Object3D::add(*collisionSound_);
+        collisionSound_->setVolume(32.0f);
         collisionSound_->play();
     }
 
@@ -85,7 +84,6 @@ void Human::handleCollisionResponse(Collidable* /*other*/) {
 void Human::reset(float minX, float maxX, float minZ, float maxZ) {
     hit_ = false;
     if (collisionSound_) {
-        this->remove(*collisionSound_);
         collisionSound_.reset();
     }
     this->rotation.set(0, 0, 0);
