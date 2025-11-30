@@ -43,7 +43,7 @@ void Human::onCollision(Collidable* other) {
 void Human::collideWith(Car& car) {
     if (!hit_) {
         handleCollisionResponse(&car);
-        car.applySpeedBoost(50.f, 5.0f);
+        car.applyRotationChanger(0.5f, 1.0f);
     }
 }
 

@@ -37,7 +37,7 @@ public:
     void setRotationSpeed(float v) { rotationSpeed_ = v; }
     void setDrag(float v) { drag_ = v; }
 
-    void applySpeedBoost(float amount, double durationSeconds);
+    void applyRotationChanger(float amount, double durationSeconds);
 
 
 Vector3 getForwardVector() const;
@@ -70,8 +70,8 @@ private:
     std::shared_ptr<Audio> engineSound_;
 
     double boostTimer_ = 0.0f;
-    float originalMaxSpeed_ = 0.0f;
-    float originalAcceleration_ = 0.0f;
+    float originalTurnSpeed_ = 0.0f;
+
 
     void updateBoundingSphere();
     void handleCollisionResponse(Collidable *other);

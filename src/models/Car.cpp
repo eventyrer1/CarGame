@@ -7,7 +7,7 @@ using namespace threepp;
 
 Car::Car(std::shared_ptr<Object3D> model, AudioListener *listener, const std::string &audioPath) {
     if (model) this->copy(*model);
-
+    originalTurnSpeed_ = rotationSpeed_;
     // Create follow camera
     camera_ = std::make_unique<PerspectiveCamera>(65.f, 16.f / 9.f, 0.1f, 100.f);
 
@@ -120,20 +120,20 @@ void Car::onCollision(Collidable* other) {
     }
 }
 
-//TODO Smart måte å få bilen til å vite hvem den kolliderer med
+
 void Car::handleCollisionResponse(Collidable *other) {
+    float rebound = -0.2f;
     Vector3 pushDir = position - other->position;
     pushDir.normalize();
     position.add(pushDir.multiplyScalar(0.1f));
-    speed_ *= -0.2f;
+    speed_ *= rebound;
     updateBoundingSphere();
 }
-void Car::applySpeedBoost(float amount, double durationSeconds) {
-    if (boostTimer_ > 0.0) return; // already active
-    originalMaxSpeed_ = maxSpeed_;
-    originalAcceleration_ = acceleration_;
-    maxSpeed_ += amount;
-    acceleration_ += amount * 0.2f;
+void Car::applyRotationChanger(float amount, double durationSeconds) {
+    if (boostTimer_ > 0.0) return;
+    originalTurnSpeed_ = rotationSpeed_;
+    rotationSpeed_ *= amount;
+
     boostTimer_ = durationSeconds;
 }
 
@@ -141,8 +141,7 @@ void Car::updateBoost(double dt) {
     if (boostTimer_ <= 0.0) return;
     boostTimer_ -= dt;
     if (boostTimer_ <= 0.0) {
-        maxSpeed_ = originalMaxSpeed_;
-        acceleration_ = originalAcceleration_;
+        rotationSpeed_ = originalTurnSpeed_;
         boostTimer_ = 0.0;
     }
 }
@@ -156,6 +155,6 @@ void Car::reset() {
 
     // clear active boost
     boostTimer_ = 0.0; //this has to be zero otherwise it will start with boost and test will fail
-    maxSpeed_ = (originalMaxSpeed_ ? originalMaxSpeed_ : maxSpeed_);
-    acceleration_ = (originalAcceleration_ ? originalAcceleration_ : acceleration_);
+    rotationSpeed_=originalTurnSpeed_;
+
 }

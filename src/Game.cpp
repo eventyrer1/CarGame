@@ -6,11 +6,6 @@
 #include "threepp/threepp.hpp"
 #include "threepp/helpers/CameraHelper.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-
-#include "models/Car.hpp"
-#include "models/Tree.hpp"
-#include "models/Human.hpp"
-
 #include "setups/ObjectSpawner.hpp"
 #include "collision/CollisionManager.hpp"
 #include "keyListeners/CarKeyListener.hpp"
@@ -22,16 +17,16 @@
 #include <random>
 #include <algorithm>
 
+
 using namespace threepp;
 
 Game::Game() = default;
 
 void Game::setup() {
-
     canvas = std::make_unique<Canvas>(Canvas::Parameters()
-                            .title("Car")
-                            .size({1280, 720})
-                            .antialiasing(8));
+        .title("Car")
+        .size({1280, 720})
+        .antialiasing(8));
 
     renderer = std::make_unique<GLRenderer>(canvas->size());
     renderer->autoClear = false;
@@ -47,11 +42,10 @@ void Game::setup() {
 
     // Top-right corner overlay
     hud_->add(scoreText_,
-        HUD::Options()
-            .setNormalizedPosition({0.f, 1.f})
-            .setHorizontalAlignment(HUD::HorizontalAlignment::LEFT)
-            .setVerticalAlignment(HUD::VerticalAlignment::TOP));
-
+              HUD::Options()
+              .setNormalizedPosition({0.f, 1.f})
+              .setHorizontalAlignment(HUD::HorizontalAlignment::LEFT)
+              .setVerticalAlignment(HUD::VerticalAlignment::TOP));
 
 
     scene = Scene::create();
@@ -63,7 +57,7 @@ void Game::setup() {
 
     collisionManager = std::make_unique<CollisionManager>();
 
-    canvas->onWindowResize([&](const WindowSize& newSize) {
+    canvas->onWindowResize([&](const WindowSize &newSize) {
         if (car) {
             car->camera().aspect = newSize.aspect();
             car->camera().updateProjectionMatrix();
@@ -79,104 +73,117 @@ void Game::setup() {
         std::string carModelPath = std::string(DATA_DIR) + "/Models/Car.dae";
         car = Car::create(carModelPath, listener.get(), std::string(DATA_DIR) + "/Sounds/CARSOUND.wav");
         if (car) {
+            car->camera().add(*listener);
             car->position.set(0, 0, 0);
             scene->add(car);
             collisionManager->registerCollidable(car.get());
         } else {
             std::cerr << "Failed to create car from path: " << carModelPath << "\n";
         }
-    } catch (const std::exception& ex) {
+    } catch (const std::exception &ex) {
         std::cerr << "Exception while loading car: " << ex.what() << "\n";
     } catch (...) {
         std::cerr << "Unknown exception while loading car.\n";
     }
 
-    if (car) { car->camera().add(*listener); }
 
     // ---------------- TREE ----------------
     std::string treeModelPath = std::string(DATA_DIR) + "/Models/CartoonTree.obj";
-    treeSpawner = std::make_unique<ObjectSpawner<Tree>>(scene,
+    treeSpawner = std::make_unique<ObjectSpawner<Tree> >(
+        scene,
         treeModelPath,
-        10);
+        10,
+        -75.0f, 75.0f,
+        -75.0f, 75.0f
+    );
 
     treeSpawner->spawnObjects(*collisionManager);
 
-   // ---------------- HUMAN (Random selection of sound files done by ai) ----------------
+    // ---------------- STONE ----------------
+    std::string stoneModelPath = std::string(DATA_DIR) + "/Models/Stone.glb";
+    stoneSpawner = std::make_unique<ObjectSpawner<Stone> >(
+        scene,
+        stoneModelPath,
+        10,
+        -50.0f, 50.0f,
+        -50.0f, 50.0f
+    );
 
-// Build a list of candidate sound files using plain string concatenation
-std::vector<std::string> soundPaths;
-std::string soundsDir = std::string(DATA_DIR) + "/Sounds";
+    stoneSpawner->spawnObjects(*collisionManager);
 
-// Allowed audio formats
-static const std::vector<std::string> allowedExt = {
-    ".wav",
-    ".m4a",
-    ".mp3",
-    ".ogg"
-};
+    // ---------------- HUMAN (Random selection of sound files done by ai) ----------------
 
-namespace fs = std::filesystem;
+    // Build a list of candidate sound files using plain string concatenation
+    std::vector<std::string> soundPaths;
+    std::string soundsDir = std::string(DATA_DIR) + "/Sounds";
 
-try {
-    if (fs::exists(soundsDir) && fs::is_directory(soundsDir)) {
 
-        for (const auto& entry : fs::directory_iterator(soundsDir)) {
-            if (!entry.is_regular_file()) continue;
+    static const std::vector<std::string> allowedExt = {
+        ".wav",
+        ".m4a",
+        ".mp3",
+        ".ogg"
+    };
 
-            // Extract extension
-            std::string extLower = entry.path().extension().string();
-            std::transform(extLower.begin(), extLower.end(), extLower.begin(), ::tolower);
+    namespace fs = std::filesystem;
 
-            // Accept file if extension matches
-            if (std::find(allowedExt.begin(), allowedExt.end(), extLower) != allowedExt.end()) {
-                // Force forward slashes in final string
-                if (entry.path().filename() != "CARSOUND.wav") {
-                    std::string full = entry.path().generic_string();
-                    soundPaths.emplace_back(full);
+    try {
+        if (fs::exists(soundsDir) && fs::is_directory(soundsDir)) {
+            for (const auto &entry: fs::directory_iterator(soundsDir)) {
+                if (!entry.is_regular_file()) continue;
+
+                // Extract extension
+                std::string extLower = entry.path().extension().string();
+                std::transform(extLower.begin(), extLower.end(), extLower.begin(), ::tolower);
+
+                // Accept file if extension matches
+                if (std::find(allowedExt.begin(), allowedExt.end(), extLower) != allowedExt.end()) {
+                    if (entry.path().filename() != "CARSOUND.wav") {
+                        std::string full = entry.path().generic_string();
+                        soundPaths.emplace_back(full);
+                    }
                 }
             }
         }
+    } catch (const std::exception &ex) {
+        std::cerr << "Error scanning sounds directory: " << ex.what() << "\n";
     }
-}
-catch (const std::exception& ex) {
-    std::cerr << "Error scanning sounds directory: " << ex.what() << "\n";
-}
 
-// Fallback
-if (soundPaths.empty()) {
-    soundPaths.emplace_back(std::string(DATA_DIR) + "/Sounds/Splat.wav");
-    std::cerr << "None found >:| !\n";
-}
-
-// Pick one at random
-std::mt19937 rng(std::random_device{}());
-std::uniform_int_distribution<size_t> dist(0, soundPaths.size() - 1);
-std::string splatSoundPath = soundPaths[dist(rng)];
-
-std::cout << "Playing sound: " << splatSoundPath << "\n";
-
-// Load model path just like the tree code
-std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
-
-humanSpawner = std::make_unique<ObjectSpawner<Human>>(
-    scene,
-    humanModelPath,
-    10,
-    listener.get(),
-    soundPaths,
-    &score_
-);
-
-humanSpawner->spawnObjects(*collisionManager);
+    // Fallback
+    if (soundPaths.empty()) {
+        soundPaths.emplace_back(std::string(DATA_DIR) + "/Sounds/Splat.wav");
+        std::cerr << "None found >:| !\n";
+    }
 
 
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<size_t> dist(0, soundPaths.size() - 1);
+    std::string splatSoundPath = soundPaths[dist(rng)];
+
+
+
+    std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
+
+    humanSpawner = std::make_unique<ObjectSpawner<Human> >(
+        scene,
+        humanModelPath,
+        10,
+        -50.0f, 50.0f,
+        -50.0f, 50.0f,
+        listener.get(),
+        soundPaths,
+        &score_
+    );
+
+
+    humanSpawner->spawnObjects(*collisionManager);
 
 
     // ---------------- CONTROL & UI ----------------
     controller = std::make_unique<CarKeyListener>();
     canvas->addKeyListener(*controller);
 
-    ui = std::make_unique<UiManager>(static_cast<GLFWwindow*>(canvas->windowPtr()));
+    ui = std::make_unique<UiManager>(static_cast<GLFWwindow *>(canvas->windowPtr()));
     ui->setCar(car.get());
     ui->setController(controller.get());
     ui->setHumans(&humanSpawner->getObjects());
@@ -184,7 +191,6 @@ humanSpawner->spawnObjects(*collisionManager);
 }
 
 void Game::run() {
-
     Clock clock;
     int frameCounter = 0;
 
@@ -202,8 +208,13 @@ void Game::run() {
         }
 
         if (hud_) {
+            if (score_.humansHit()<10){
             scoreText_->setText("Score: " + std::to_string(score_.humansHit()));
             hud_->apply(*renderer);
+        } else {
+            scoreText_->setText("^_^ You win! You monster! ^_^");
+            hud_->apply(*renderer);
+            }
         }
         // If car missing, skip rest to avoid null deref
         if (!car) return;
@@ -230,7 +241,9 @@ void Game::run() {
         car->update(dt, move, turn);
 
         collisionManager->checkCollisions();
-
+        for (auto &stone: stoneSpawner->getObjects()) {
+            stone->update(dt);
+        }
         ui->beginFrame();
         ui->renderUI();
         ui->endFrame();

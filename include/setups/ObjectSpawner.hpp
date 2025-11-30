@@ -27,6 +27,8 @@ public:
     ObjectSpawner(std::shared_ptr<threepp::Scene> scene,
                   const std::string &modelPath,
                   int numObjects,
+                  float minX, float maxX,
+                  float minZ, float maxZ,
                   threepp::AudioListener *listener = nullptr,
                   const std::vector<std::string> &soundPaths = {},
 
@@ -37,6 +39,10 @@ public:
           soundPaths_(soundPaths),
           numObjects_(numObjects),
           scoreManager_(scoreManager),
+          minX_(minX),
+          maxX_(maxX),
+          minZ_(minZ),
+          maxZ_(maxZ),
           objectGroup_(threepp::Group::create()) {
     }
 
@@ -59,7 +65,7 @@ public:
                 obj = T::create(model);
             }
 
-            obj->setRandomPosition(-50.0f, 50.0f, -50.0f, 50.0f);
+            obj->setRandomPosition(minX_, maxX_, minZ_, maxZ_);
             collisionManager.registerCollidable(obj.get());
             objects_.emplace_back(obj);
             objectGroup_->add(obj);
@@ -81,6 +87,10 @@ private:
     std::shared_ptr<threepp::Group> objectGroup_;
     std::vector<std::shared_ptr<T> > objects_;
     ScoreManager *scoreManager_;
+    float minX_;
+    float maxX_;
+    float minZ_;
+    float maxZ_;
 };
 
 #endif // CARGAME_OBJECTSPAWNER_HPP

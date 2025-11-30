@@ -14,7 +14,7 @@ TEST_CASE ("Speed boost increases max speed and acceleration temporarily", "[Car
     float baseMax = car->getMaxSpeed();
     float baseAcc = car->getAcceleration();
 
-    car->applySpeedBoost(50.f, 1.0);
+    car->applyRotationChanger(50.f, 1.0);
     CHECK(approxEqual(car->getMaxSpeed(), baseMax + 50.f));
     CHECK(approxEqual(car->getAcceleration(), baseAcc + 10.f)); // 0.2 * 50
 
@@ -72,7 +72,7 @@ TEST_CASE("Reset clears movement and boost state", "[Car][Reset]") {
     REQUIRE(car != nullptr);
 
     car->setSpeed(100.0f);
-    car->applySpeedBoost(80.f, 2.0);
+    car->applyRotationChanger(80.f, 2.0);
     car->update(0.5, CarActions::Move::ACCELERATE, CarActions::Turn::TURN_LEFT);
 
     car->reset();
@@ -81,7 +81,7 @@ TEST_CASE("Reset clears movement and boost state", "[Car][Reset]") {
     float baseMax = car->getMaxSpeed();
     float baseAcc = car->getAcceleration();
 
-    car->applySpeedBoost(20.f, 0.5);
+    car->applyRotationChanger(20.f, 0.5);
     CHECK(approxEqual(car->getMaxSpeed(), baseMax + 20.f));
     CHECK(approxEqual(car->getAcceleration(), baseAcc + 4.f));
 }

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "models/Stone.hpp""
 #include "threepp/threepp.hpp"
 #include "setups/ScoreManager.hpp"
 #include "models/Car.hpp"
@@ -29,7 +29,7 @@ private:
 
     std::unique_ptr<ObjectSpawner<Tree>> treeSpawner;
     std::unique_ptr<ObjectSpawner<Human>> humanSpawner;
-
+    std::unique_ptr<ObjectSpawner<Stone>> stoneSpawner;
     std::unique_ptr<CarKeyListener> controller;
     std::unique_ptr<UiManager> ui;
 

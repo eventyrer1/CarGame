@@ -1,7 +1,7 @@
 //
 // Created by evest on 20.11.2025.
 //
-//much ai was used here
+
 #include "HumanDetector.hpp"
 
 bool HumanDetector::detectAll(const cv::Mat& frame, std::vector<cv::Rect>& humans) {
@@ -19,7 +19,7 @@ bool HumanDetector::detectAll(const cv::Mat& frame, std::vector<cv::Rect>& human
     );
 
     cv::erode(mask_, mask_, cv::Mat(), cv::Point(-1,-1), 1);
-
+//the idea of using contours and much of how to do it was done by AI
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask_, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 

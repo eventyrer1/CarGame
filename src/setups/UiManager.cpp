@@ -35,10 +35,11 @@ void UiManager::renderUI() {
         ImGui::Separator();
     }
 
-    if (car) {
-        if (ImGui::Button("Reset Car values")) {
-            car->reset();
 
+        if (ImGui::Button("Reset")) {
+            if (car) {
+                car->reset();
+            }
             if (humans) {
                 for (auto& h : *humans) {
                     h->reset(-50, 50, -50, 50);
@@ -77,7 +78,7 @@ void UiManager::renderUI() {
 
         auto pos = car->position;
         ImGui::Text("Current Position: (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z);
-    }
+
 
     if (showDemoWindow) {
         ImGui::ShowDemoWindow(&showDemoWindow);
