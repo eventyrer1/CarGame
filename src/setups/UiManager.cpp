@@ -1,6 +1,6 @@
 #include "UiManager.hpp"
-#include "models/Car.hpp"
-#include "models/Human.hpp"
+
+
 
 UiManager::UiManager(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
@@ -43,6 +43,9 @@ void UiManager::renderUI() {
                 for (auto& h : *humans) {
                     h->reset(-50, 50, -50, 50);
                 }
+            }
+            if (scoreManager) {
+                scoreManager->resetHumansHit();
             }
         }
         float speed = car->getSpeed();

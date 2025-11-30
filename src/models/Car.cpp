@@ -2,9 +2,10 @@
 #include "threepp/loaders/AssimpLoader.hpp"
 #include "BoundingBoxHelper.hpp"
 #include <iostream>
+#include <threepp/audio/Audio.hpp>
 using namespace threepp;
 
-Car::Car(std::shared_ptr<Object3D> model) {
+Car::Car(std::shared_ptr<Object3D> model, AudioListener *listener, const std::string &audioPath) {
     if (model) this->copy(*model);
 
     // Create follow camera
@@ -16,9 +17,14 @@ Car::Car(std::shared_ptr<Object3D> model) {
     camera_->position.z = -13;
     camera_->lookAt(this->position);
     Collidable::computeBoundingSphere(0.6f);
+    if (listener && !audioPath.empty()) {
+        engineSound_ = std::make_shared<Audio>(*listener, audioPath);
+        engineSound_->setLooping(true);
+        engineSound_->setVolume(0.5f);
+    }
 }
 
-std::shared_ptr<Car> Car::create(const std::filesystem::path &path) {
+std::shared_ptr<Car> Car::create(const std::filesystem::path &path, AudioListener *listener, const std::string &audioPath) {
     AssimpLoader loader;
     auto model = loader.load(path);
     if (!model) {
@@ -26,7 +32,7 @@ std::shared_ptr<Car> Car::create(const std::filesystem::path &path) {
         return nullptr;
     }
     model->scale.multiplyScalar(1.0f);
-    auto car = std::make_shared<Car>(model);
+    auto car = std::make_shared<Car>(model, listener, audioPath);
     car->reset();
     return car;
 }
@@ -42,14 +48,23 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
         case CarActions::Move::ACCELERATE:
             speed_ += acceleration_ * deltaTime;
             if (speed_ > maxSpeed_) speed_ = maxSpeed_;
+            if (engineSound_) {
+                engineSound_->play();
+            }
             break;
         case CarActions::Move::DECELERATE:
             speed_ -= acceleration_ * deltaTime;
             if (speed_ < -maxSpeed_ / 2) speed_ = -maxSpeed_ / 2;
+            if (engineSound_) {
+                engineSound_->stop();
+            }
             break;
         case CarActions::Move::NOTHING:
             speed_ *= 1 - drag_ * deltaTime * 0.1f;
             if (std::abs(speed_) < 0.1f) speed_ = 0;
+            if (engineSound_ && speed_ <= 5) {
+                engineSound_->stop();
+            }
             break;
     }
 
@@ -57,9 +72,15 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
     switch (turn) {
         case CarActions::Turn::TURN_LEFT:
             angle_ += rotationSpeed_ * deltaTime;
+            if (engineSound_ && speed_ > 5) {
+                engineSound_->play();
+            }
             break;
         case CarActions::Turn::TURN_RIGHT:
             angle_ -= rotationSpeed_ * deltaTime;
+            if (engineSound_ && speed_ > 5) {
+                engineSound_->play();
+            }
             break;
         default: break;
     }

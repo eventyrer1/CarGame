@@ -74,9 +74,10 @@ void Game::setup() {
     });
 
     // ---------------- CAR ----------------
+    listener = std::make_unique<AudioListener>();
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/Models/Car.dae";
-        car = Car::create(carModelPath);
+        car = Car::create(carModelPath, listener.get(), std::string(DATA_DIR) + "/Sounds/CARSOUND.wav");
         if (car) {
             car->position.set(0, 0, 0);
             scene->add(car);
@@ -90,7 +91,6 @@ void Game::setup() {
         std::cerr << "Unknown exception while loading car.\n";
     }
 
-    listener = std::make_unique<AudioListener>();
     if (car) { car->camera().add(*listener); }
 
     // ---------------- TREE ----------------
@@ -130,8 +130,10 @@ try {
             // Accept file if extension matches
             if (std::find(allowedExt.begin(), allowedExt.end(), extLower) != allowedExt.end()) {
                 // Force forward slashes in final string
-                std::string full = entry.path().generic_string();
-                soundPaths.emplace_back(full);
+                if (entry.path().filename() != "CARSOUND.wav") {
+                    std::string full = entry.path().generic_string();
+                    soundPaths.emplace_back(full);
+                }
             }
         }
     }
@@ -178,6 +180,7 @@ humanSpawner->spawnObjects(*collisionManager);
     ui->setCar(car.get());
     ui->setController(controller.get());
     ui->setHumans(&humanSpawner->getObjects());
+    ui->setScoreManager(&score_);
 }
 
 void Game::run() {
