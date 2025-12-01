@@ -16,23 +16,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # ---- Install CMake 4 on all platforms ----
       - name: Install CMake 4
         uses: jwlawson/actions-setup-cmake@v2
         with:
           cmake-version: '4.0.0'
 
-      # ---- Setup vcpkg (manifest mode auto-detects vcpkg.json) ----
+      # ---- Enable MSVC toolchain on Windows ----
+      - name: Setup MSVC (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      # ---- Setup vcpkg ----
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          # Use your current vcpkg baseline:
           vcpkgGitCommitId: 2ad7bd06128280e02bfe02361d8ffd7d465cfcf0
 
       # ---- Install Linux-only dependencies ----
       - name: Linux extra dependencies
         if: matrix.os == 'ubuntu-22.04'
         run: |
+        # these where suggested by AI
           sudo apt-get update && sudo apt-get install -y \
             libxinerama-dev \
             libxcursor-dev \
