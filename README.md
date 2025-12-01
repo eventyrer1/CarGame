@@ -15,6 +15,13 @@ The game is primarily a Tech demo, so I am very aware it is a terrible game, but
 
 
 # Code information
+## UML Diagram
+
+![UML Diagram](Data/Img/UML.png)
+<div align="center">
+(White classes are external classes that i did not create)
+</div>
+
 ## Notes
 **Foreword:** A lot of stuff in this project is done in a weird or unneeded way. Often the reason behind this was that I wanted to show/learn that I can do it, or as a wise man once said:<br>
 **"But, but why?** <br>
