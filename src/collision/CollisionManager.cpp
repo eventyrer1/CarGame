@@ -1,13 +1,11 @@
-
 #include "collision/CollisionManager.hpp"
 #include <algorithm>
 
-void CollisionManager::registerCollidable(Collidable* object) {
+void CollisionManager::registerCollidable(Collidable *object) {
     if (object && std::find(collidables_.begin(), collidables_.end(), object) == collidables_.end()) {
         collidables_.push_back(object);
     }
 }
-
 
 
 void CollisionManager::checkCollisions() {
@@ -23,14 +21,12 @@ void CollisionManager::checkCollisions() {
 }
 
 
-
-std::vector<Collidable*> CollisionManager::getCollisions(Collidable* object) const {
-    std::vector<Collidable*> collisions;
-    for (auto* other : collidables_) {
+std::vector<Collidable *> CollisionManager::getCollisions(Collidable *object) const {
+    std::vector<Collidable *> collisions;
+    for (auto *other: collidables_) {
         if (other != object && object->checkCollision(*other)) {
             collisions.push_back(other);
         }
     }
     return collisions;
 }
-

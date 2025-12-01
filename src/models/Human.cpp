@@ -5,13 +5,12 @@
 using namespace threepp;
 
 Human::Human(std::shared_ptr<Object3D> model,
-             AudioListener* listener,
-             const std::vector<std::string>& soundPaths,
-             ScoreManager* scoreManager)
+             AudioListener *listener,
+             const std::vector<std::string> &soundPaths,
+             ScoreManager *scoreManager)
     : listener_(listener),
       soundPaths_(soundPaths),
       scoreManager_(scoreManager) {
-
     if (model) {
         this->copy(*model);
         this->scale.multiplyScalar(2);
@@ -19,10 +18,9 @@ Human::Human(std::shared_ptr<Object3D> model,
 }
 
 std::shared_ptr<Human> Human::create(std::shared_ptr<Object3D> model,
-                                     AudioListener* listener,
-                                     const std::vector<std::string>& soundPaths,
-                                     ScoreManager* scoreManager) {
-
+                                     AudioListener *listener,
+                                     const std::vector<std::string> &soundPaths,
+                                     ScoreManager *scoreManager) {
     if (!model) return nullptr;
 
     auto human = std::make_shared<Human>(model, listener, soundPaths, scoreManager);
@@ -36,18 +34,18 @@ void Human::computeBoundingBox() {
     collisionBox_ = std::make_optional<Box3>(BoundingBoxHelper::computeCollisionBox(*this));
 }
 
-void Human::onCollision(Collidable* other) {
+void Human::onCollision(Collidable *other) {
     handleCollisionResponse(other);
 }
 
-void Human::collideWith(Car& car) {
+void Human::collideWith(Car &car) {
     if (!hit_) {
         handleCollisionResponse(&car);
         car.applyRotationChanger(0.5f, 1.0f);
     }
 }
 
-void Human::handleCollisionResponse(Collidable* /*other*/) {
+void Human::handleCollisionResponse(Collidable * /*other*/) {
     if (hit_) return;
     hit_ = true;
 
@@ -66,7 +64,6 @@ void Human::handleCollisionResponse(Collidable* /*other*/) {
 
     // PLAY RANDOM SOUND (Originally made by ai but edited a lot by me)
     if (listener_ && !soundPaths_.empty()) {
-
         int idx = rand() % soundPaths_.size();
         std::string chosen = soundPaths_[idx];
 

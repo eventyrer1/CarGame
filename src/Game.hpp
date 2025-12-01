@@ -12,10 +12,11 @@
 #include <memory>
 
 class Game {
-
 public:
     Game();
+
     void setup();
+
     void run();
 
 private:
@@ -27,9 +28,9 @@ private:
     std::shared_ptr<Car> car; // may be null if loading fails
     std::unique_ptr<CollisionManager> collisionManager;
 
-    std::unique_ptr<ObjectSpawner<Tree>> treeSpawner;
-    std::unique_ptr<ObjectSpawner<Human>> humanSpawner;
-    std::unique_ptr<ObjectSpawner<Stone>> stoneSpawner;
+    std::unique_ptr<ObjectSpawner<Tree> > treeSpawner;
+    std::unique_ptr<ObjectSpawner<Human> > humanSpawner;
+    std::unique_ptr<ObjectSpawner<Stone> > stoneSpawner;
     std::unique_ptr<CarKeyListener> controller;
     std::unique_ptr<UiManager> ui;
 
@@ -40,7 +41,6 @@ private:
 
     // Fallback camera used if car failed to load
     std::unique_ptr<threepp::PerspectiveCamera> fallbackCamera;
-
 
 
     // Helpers

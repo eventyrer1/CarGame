@@ -14,7 +14,7 @@ The game is primarily a Tech demo, so I am very aware it is a terrible game, but
 - Press the Reset button to restart the game
 
 
-# Code information
+
 ## UML Diagram
 
 ![UML Diagram](Data/Img/UML.png)
@@ -22,17 +22,28 @@ The game is primarily a Tech demo, so I am very aware it is a terrible game, but
 (White classes are external classes that i did not create)
 </div>
 
-## Notes
-**Foreword:** A lot of stuff in this project is done in a weird or unneeded way. Often the reason behind this was that I wanted to show/learn that I can do it, or as a wise man once said:<br>
+## Features
+- Dynamic movement of the car 
+- AI mode that detects humans and drives over them
+- Reset button to restart the game
+- Powerup when driving over a human (decreases the turn speed of the car)
+- Sound effects by Magnus Evenstuen
+
+
+
+# Code information
+
+### Foreword: 
+A lot of stuff in this project is done in a weird or unneeded way. Often the reason behind this was that I wanted to show/learn that I can do it, or as a wise man once said:<br>
 **"But, but why?** <br>
 **Because fun."**
 
-
+### Notes:
 - ImGui’s setup is more complicated than necessary because it was implemented before discovering threepp’s built-in ImGui integration. But since it doesn't affect the project negatively, I left it as is.
+  <br/><br/>
+- Why are some libraries fetched using CMake FetchContent and others using external libraries? while OpenCV uses vcpkg <br>
+  - Because I wanted to show that I can use all these methods. And OpenCV has too large files for GitHub so I had to use vcpkg.
 
-- Why are some libraries fetched using CMake FetchContent and others using external libraries? while OpenCv uses vcpkg <br>
-  - Because I wanted to show that I can all these methods. And OpenCV has such large files that it would take forever to download using FetchContent, and it was too big for GitHub to handle 
-- 
 
 
 
@@ -63,6 +74,6 @@ Coding examples for OpenCV were found here: https://github.com/opencv/opencv/tre
 Magnus Evenstuen for voicing all sounds in the game, and for using his face in the human model
 
 
-"Lowpoly Human Reff" (https://skfb.ly/ot8Cu) by fadhlisl is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+"Lowpoly Human Reff" (https://skfb.ly/ot8Cu) by fadhlisl is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Edited by me to include the Face
 3D model "Low-Poly Car" by wufudufu — downloaded from Free3D (https://free3d.com/3d-model/low-poly-car-40967.html), accessed 15.10.2025.
-"Prism Stone - Magical Energy Stone" (https://skfb.ly/6S6oL) by ENOMIC is licensed under CC Attribution-NonCommercial-ShareAlike (http://creativecommons.org/licenses/by-nc-sa/4.0/).
+"Prism Stone - Magical Energy Stone" (https://skfb.ly/6S6oL) by ENOMIC is licensed under CC Attribution-NonCommercial-ShareAlike (http://creativecommons.org/licenses/by-nc-sa/4.0/). Edited by me to change the texture to black and blue

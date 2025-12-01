@@ -161,7 +161,6 @@ void Game::setup() {
     std::string splatSoundPath = soundPaths[dist(rng)];
 
 
-
     std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
 
     humanSpawner = std::make_unique<ObjectSpawner<Human> >(
@@ -208,12 +207,12 @@ void Game::run() {
         }
 
         if (hud_) {
-            if (score_.humansHit()<10){
-            scoreText_->setText("Score: " + std::to_string(score_.humansHit()));
-            hud_->apply(*renderer);
-        } else {
-            scoreText_->setText("^_^ You win! You monster! ^_^");
-            hud_->apply(*renderer);
+            if (score_.humansHit() < 10) {
+                scoreText_->setText("Score: " + std::to_string(score_.humansHit()));
+                hud_->apply(*renderer);
+            } else {
+                scoreText_->setText("^_^ You win! You monster! ^_^");
+                hud_->apply(*renderer);
             }
         }
         // If car missing, skip rest to avoid null deref

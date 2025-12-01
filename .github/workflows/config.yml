@@ -1,6 +1,8 @@
+#This code was made by AI and then debugged by me to hell and back
+
 name: CarGame
 
-on: [ push, workflow_dispatch ]
+on: [ workflow_dispatch ]
 
 jobs:
   build:
@@ -49,9 +51,19 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: ./vcpkg/bootstrap-vcpkg.sh
 
+      - name: Install Ninja (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            sudo apt-get install -y ninja-build
+          else
+            brew install ninja
+          fi
+
       - name: Configure CMake
         run: >
           cmake -B build
+          -G "Ninja"
           -DCMAKE_BUILD_TYPE=Release
           .
 

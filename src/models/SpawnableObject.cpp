@@ -16,5 +16,4 @@ void SpawnableObject::setRandomPosition(float minX, float maxX, float minZ, floa
 
     updateMatrixWorld(true);
     computeBoundingBox();
-
 }

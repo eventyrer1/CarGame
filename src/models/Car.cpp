@@ -24,7 +24,8 @@ Car::Car(std::shared_ptr<Object3D> model, AudioListener *listener, const std::st
     }
 }
 
-std::shared_ptr<Car> Car::create(const std::filesystem::path &path, AudioListener *listener, const std::string &audioPath) {
+std::shared_ptr<Car> Car::create(const std::filesystem::path &path, AudioListener *listener,
+                                 const std::string &audioPath) {
     AssimpLoader loader;
     auto model = loader.load(path);
     if (!model) {
@@ -89,7 +90,7 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
         camera_->position.x = 0;
         camera_->position.y = 5;
         camera_->rotation.y = 0;
-//makes the camera look at the car when it reverses
+        //makes the camera look at the car when it reverses
     } else {
         camera_->position.z = 14;
         camera_->position.y = 2;
@@ -109,11 +110,10 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
 
 void Car::updateBoundingSphere() {
     boundingSphere_.value().center.copy(position);
-
 }
 
 
-void Car::onCollision(Collidable* other) {
+void Car::onCollision(Collidable *other) {
     handleCollisionResponse(other);
     if (other) {
         other->collideWith(*this); // double dispatch
@@ -129,6 +129,7 @@ void Car::handleCollisionResponse(Collidable *other) {
     speed_ *= rebound;
     updateBoundingSphere();
 }
+
 void Car::applyRotationChanger(float amount, double durationSeconds) {
     if (boostTimer_ > 0.0) return;
     originalTurnSpeed_ = rotationSpeed_;
@@ -155,6 +156,5 @@ void Car::reset() {
 
     // clear active boost
     boostTimer_ = 0.0; //this has to be zero otherwise it will start with boost and test will fail
-    rotationSpeed_=originalTurnSpeed_;
-
+    rotationSpeed_ = originalTurnSpeed_;
 }
