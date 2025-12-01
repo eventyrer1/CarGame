@@ -80,7 +80,7 @@ public:
 private:
     std::shared_ptr<threepp::Scene> scene_;
     std::string modelPath_;
-    threepp::AudioListener *listener_;
+    AudioListener *listener_;
     std::vector<std::string> soundPaths_;
 
     int numObjects_;

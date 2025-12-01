@@ -7,26 +7,24 @@ inline bool approxEqual(float a, float b, float eps = EPS) {
     return std::fabs(a - b) < eps;
 }
 
-TEST_CASE ("Speed boost increases max speed and acceleration temporarily", "[Car][Boost]") {
+TEST_CASE ("Turn speed decreases temporarily during boost", "[Car][Boost]") {
     auto car = Car::createDummyCar();
     REQUIRE(car != nullptr);
 
-    float baseMax = car->getMaxSpeed();
-    float baseAcc = car->getAcceleration();
+    float baseTurn = car->getRotationSpeed();
 
     car->applyRotationChanger(50.f, 1.0);
-    CHECK(approxEqual(car->getMaxSpeed(), baseMax + 50.f));
-    CHECK(approxEqual(car->getAcceleration(), baseAcc + 10.f)); // 0.2 * 50
+    CHECK(approxEqual(car->getRotationSpeed(), baseTurn * 50.f));
 
     // advance time less than duration
     car->update(0.5, CarActions::Move::NOTHING, CarActions::Turn::NOTHING);
-    CHECK(approxEqual(car->getMaxSpeed(), baseMax + 50.f));
+    CHECK(approxEqual(car->getRotationSpeed(), baseTurn * 50.f));
 
     // advance past duration to revert
     car->update(0.6, CarActions::Move::NOTHING, CarActions::Turn::NOTHING);
-    CHECK(approxEqual(car->getMaxSpeed(), baseMax));
-    CHECK(approxEqual(car->getAcceleration(), baseAcc));
+    CHECK(approxEqual(car->getRotationSpeed(), baseTurn));
 }
+
 
 TEST_CASE("Turning left/right adjusts angle and affects movement direction", "[Car][Turn]") {
     auto car = Car::createDummyCar();
@@ -78,10 +76,9 @@ TEST_CASE("Reset clears movement and boost state", "[Car][Reset]") {
     car->reset();
     CHECK(approxEqual(car->getSpeed(), 0.0f));
 
-    float baseMax = car->getMaxSpeed();
-    float baseAcc = car->getAcceleration();
+    float baseTurn = car->getRotationSpeed();
 
     car->applyRotationChanger(20.f, 0.5);
-    CHECK(approxEqual(car->getMaxSpeed(), baseMax + 20.f));
-    CHECK(approxEqual(car->getAcceleration(), baseAcc + 4.f));
+    CHECK(approxEqual(car->getRotationSpeed(), baseTurn * 20.f));
 }
+

@@ -44,15 +44,6 @@ Vector3 getForwardVector() const;
    Vector3 getRightVector() const;
  Vector3 getSensorOrigin() const;
 
-    // Raycast callback (correct namespace)
-    void setRaycastFunction(
-        const std::function<float(const Vector3&,
-                                  const Vector3&,
-                                  float)>& fn)
-    {
-        raycastFunc_ = fn;
-    }
-
 private:
 
     float speed_ = 0;
@@ -61,26 +52,19 @@ private:
     float rotationSpeed_ = 1.5;
     float angle_ = 0.0;
     float drag_ = 20.f;
-
     bool visionEnabled_ = false;
+    double boostTimer_ = 0.0f;
+    float originalTurnSpeed_ = 0.0f;
 
     std::unique_ptr<PerspectiveCamera> camera_;
     std::shared_ptr<Mesh> boundingSphereHelper_;
     Scene* scene_ = nullptr;
     std::shared_ptr<Audio> engineSound_;
 
-    double boostTimer_ = 0.0f;
-    float originalTurnSpeed_ = 0.0f;
-
-
     void updateBoundingSphere();
     void handleCollisionResponse(Collidable *other);
     void updateBoost(double dt);
 
-    // callback function stored here
-    std::function<float(const Vector3& origin,
-                        const Vector3& dir,
-                        float maxDist)> raycastFunc_;
 };
 
 #endif // CAR_HPP
