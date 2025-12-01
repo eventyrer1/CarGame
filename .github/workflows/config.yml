@@ -36,7 +36,7 @@ jobs:
       - name: Linux extra dependencies
         if: matrix.os == 'ubuntu-22.04'
         run: |
-        # these where suggested by AI
+          # these where suggested by AI
           sudo apt-get update && sudo apt-get install -y \
             libxinerama-dev \
             libxcursor-dev \
