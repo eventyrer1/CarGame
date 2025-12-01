@@ -1,6 +1,3 @@
-message(STATUS "models output: ${CMAKE_BINARY_DIR}/src/models")
-
-# suggested by ai how to use vcpkg with cmake
 
 cmake_minimum_required(VERSION 4.0)
 
