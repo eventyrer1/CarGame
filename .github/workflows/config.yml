@@ -1,6 +1,6 @@
 name: CarGame
 
-on: [push,workflow_dispatch]
+on: [ push, workflow_dispatch ]
 
 jobs:
   build:
@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-latest, windows-latest]
+        os: [ ubuntu-22.04, macos-latest, windows-latest ]
 
     steps:
       - name: Checkout
@@ -21,22 +21,13 @@ jobs:
         with:
           cmake-version: '4.0.0'
 
-      # ---- Enable MSVC toolchain on Windows ----
       - name: Setup MSVC (Windows)
         if: matrix.os == 'windows-latest'
         uses: ilammy/msvc-dev-cmd@v1
 
-      # ---- Setup vcpkg ----
-      - name: Setup vcpkg
-        uses: lukka/run-vcpkg@v11
-        with:
-          vcpkgGitCommitId: 2ad7bd06128280e02bfe02361d8ffd7d465cfcf0
-
-      # ---- Install Linux-only dependencies ----
       - name: Linux extra dependencies
         if: matrix.os == 'ubuntu-22.04'
         run: |
-          # these where suggested by AI
           sudo apt-get update && sudo apt-get install -y \
             libxinerama-dev \
             libxcursor-dev \
@@ -46,19 +37,27 @@ jobs:
             libglfw3 \
             libglfw3-dev
 
-      # ---- Configure CMake using vcpkg toolchain ----
+      # ---- Setup vcpkg (your submodule) ----
+      - name: Init vcpkg submodule
+        run: git submodule update --init --recursive
+
+      - name: Bootstrap vcpkg (Windows)
+        if: matrix.os == 'windows-latest'
+        run: .\vcpkg\bootstrap-vcpkg.bat
+
+      - name: Bootstrap vcpkg (Unix)
+        if: matrix.os != 'windows-latest'
+        run: ./vcpkg/bootstrap-vcpkg.sh
+
       - name: Configure CMake
         run: >
           cmake -B build
           -DCMAKE_BUILD_TYPE=Release
-          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
           .
 
-      # ---- Build ----
       - name: Build
         run: cmake --build build --config Release --parallel
 
-      # ---- Run tests ----
       - name: Run tests
         run: |
           cd build/tests
