@@ -26,5 +26,5 @@ private:
     std::vector<Collidable*> collidables_;
     CollisionCallback collisionCallback_;
 
-    //bool checkCollisionPair(const Collidable& a, const Collidable& b) const;
+
 };

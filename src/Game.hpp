@@ -13,7 +13,7 @@
 
 class Game {
 public:
-    Game();
+    Game() = default;
 
     void setup();
 
@@ -35,6 +35,8 @@ private:
     std::unique_ptr<UiManager> ui;
 
     std::unique_ptr<threepp::AudioListener> listener;
+    std::unique_ptr<threepp::Audio> victorySound_;
+    bool victorySoundPLayed_ = false;
     ScoreManager score_;
     std::unique_ptr<HUD> hud_;
     std::shared_ptr<Text2D> scoreText_;

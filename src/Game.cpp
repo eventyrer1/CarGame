@@ -20,7 +20,9 @@
 
 using namespace threepp;
 
-Game::Game() = default;
+
+
+
 
 void Game::setup() {
     canvas = std::make_unique<Canvas>(Canvas::Parameters()
@@ -138,7 +140,7 @@ void Game::setup() {
 
                 // Accept file if extension matches
                 if (std::find(allowedExt.begin(), allowedExt.end(), extLower) != allowedExt.end()) {
-                    if (entry.path().filename() != "CARSOUND.wav") {
+                    if (entry.path().filename() != "CARSOUND.wav" && entry.path().filename() != "Victory.wav") {
                         std::string full = entry.path().generic_string();
                         soundPaths.emplace_back(full);
                     }
@@ -187,6 +189,8 @@ void Game::setup() {
     ui->setController(controller.get());
     ui->setHumans(&humanSpawner->getObjects());
     ui->setScoreManager(&score_);
+
+    victorySound_               = std::make_unique<Audio>(*listener, std::string(DATA_DIR) + "/Sounds/Victory.wav");
 }
 
 void Game::run() {
@@ -207,10 +211,18 @@ void Game::run() {
         }
 
         if (hud_) {
+
             if (score_.humansHit() < 10) {
+
+                victorySoundPLayed_ = false; //lazy fix for sound playing again if you restart
                 scoreText_->setText("Score: " + std::to_string(score_.humansHit()));
                 hud_->apply(*renderer);
             } else {
+                if (!victorySoundPLayed_) {
+                    victorySound_->play();
+                    victorySoundPLayed_ = true;
+                }
+
                 scoreText_->setText("^_^ You win! You monster! ^_^");
                 hud_->apply(*renderer);
             }

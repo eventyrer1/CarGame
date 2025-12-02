@@ -1,6 +1,10 @@
 
+<div align="center">
 
 ![CarGame Title](Data/Img/Tittel.png)
+
+
+</div>
 ![CarGameIMGTitle](Data/Img/oopProsjektTittel.png)
 
 ## Project Overview
@@ -19,7 +23,7 @@ The game is primarily a Tech demo, so I am very aware it is a terrible game, but
 
 ![UML Diagram](Data/Img/UML.png)
 <div align="center">
-(White classes are external classes that i did not create)
+(White classes are classes that i did not create)
 </div>
 
 ## Features
@@ -42,9 +46,9 @@ A lot of stuff in this project is done in a weird or unneeded way. Often the rea
 - ImGui’s setup is more complicated than necessary because it was implemented before discovering threepp’s built-in ImGui integration. But since it doesn't affect the project negatively, I left it as is.
   <br/><br/>
 - Why are some libraries fetched using CMake FetchContent and others using external libraries? while OpenCV uses vcpkg <br>
-  - Because I wanted to show that I can use all these methods. And OpenCV has too large files for GitHub so I had to use vcpkg.
-
-
+  -Because I wanted to show that I can use all these methods. And OpenCV has too large files for GitHub so I had to use vcpkg.
+  <br/><br/>
+- Each time you clone this project vcpkg will be downloaded and installed automatically. This makes it waaay slower if you already have vcpkg installed, but it makes it more deterministic. I don't trust people to be able to install vcpkg on their own.
 
 
 
@@ -70,7 +74,7 @@ The game uses OpenCV's colour detection method to determine where the humans are
 
 ### Sources:
 
-Coding examples for OpenCV were found here: https://github.com/opencv/opencv/tree/4.x/samples/cpp/example_cmake
+Coding examples for OpenCV were found here: https://github.com/opencv/opencv/tree/4.x/samples/cpp/example_cmake<br>
 Magnus Evenstuen for voicing all sounds in the game, and for using his face in the human model
 
 

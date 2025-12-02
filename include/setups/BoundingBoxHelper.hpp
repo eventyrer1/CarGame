@@ -45,7 +45,5 @@ public:
         box.setFromObject(object);
     }
 
-    static std::shared_ptr<Box3Helper> createHelper(const Box3& box, const Color& color = Color::green) {
-        return Box3Helper::create(box, color);
-    }
+
 };
