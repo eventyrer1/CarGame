@@ -1,5 +1,6 @@
 #pragma once
-
+#include <functional>
+#include <memory>
 #include "Collidable.hpp"
 #include <vector>
 
@@ -12,7 +13,7 @@ public:
     using CollisionCallback = std::function<void(Collidable*, Collidable*)>;
 
     // Register objects for collision detection
-    void registerCollidable(Collidable* object);
+    void registerCollidable(const std::shared_ptr<Collidable>& object);
 
 
     // Check all collisions and trigger callbacks
@@ -20,10 +21,9 @@ public:
 
 
     // Get all objects colliding with a specific object
-    std::vector<Collidable*> getCollisions(Collidable* object) const;
-
+    std::vector<std::shared_ptr<Collidable>> getCollisions(const std::shared_ptr<Collidable>& object) const;
 private:
-    std::vector<Collidable*> collidables_;
+    std::vector<std::weak_ptr<Collidable>> collidables_; //weak pointer was suggested by ai
     CollisionCallback collisionCallback_;
 
 

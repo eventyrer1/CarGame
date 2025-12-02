@@ -8,10 +8,10 @@
 
 class Stone : public SpawnableObject {
 public:
-    Stone(std::shared_ptr<Object3D> model);
+    Stone(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene);
     using SpawnableObject::SpawnableObject;
 
-    static std::shared_ptr<Stone> create(std::shared_ptr<Object3D> model);
+    static std::shared_ptr<Stone> create(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene);
 
     void computeBoundingBox() override;
     void update(float dt);

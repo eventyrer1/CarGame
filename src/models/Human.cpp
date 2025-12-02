@@ -1,14 +1,16 @@
 #include "models/Human.hpp"
 #include "ScoreManager.hpp"
 #include "models/Car.hpp"
-
+#include <utility>
 using namespace threepp;
 
 Human::Human(std::shared_ptr<Object3D> model,
-             AudioListener *listener,
+             std::shared_ptr<threepp::Scene> scene,
+             std::shared_ptr<threepp::AudioListener> listener,
              const std::vector<std::string> &soundPaths,
-             ScoreManager *scoreManager)
-    : listener_(listener),
+             std::shared_ptr<ScoreManager> scoreManager)
+    : SpawnableObject(std::move(scene)),
+      listener_(listener),
       soundPaths_(soundPaths),
       scoreManager_(scoreManager) {
     if (model) {
@@ -18,12 +20,14 @@ Human::Human(std::shared_ptr<Object3D> model,
 }
 
 std::shared_ptr<Human> Human::create(std::shared_ptr<Object3D> model,
-                                     AudioListener *listener,
+                                     std::shared_ptr<threepp::Scene> scene,
+
+                                     std::shared_ptr<threepp::AudioListener> listener,
                                      const std::vector<std::string> &soundPaths,
-                                     ScoreManager *scoreManager) {
+                                     std::shared_ptr<ScoreManager> scoreManager) {
     if (!model) return nullptr;
 
-    auto human = std::make_shared<Human>(model, listener, soundPaths, scoreManager);
+    auto human = std::make_shared<Human>(model, std::move(scene), listener, soundPaths, scoreManager);
     human->updateMatrixWorld(true);
     human->computeBoundingBox();
     return human;

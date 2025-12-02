@@ -2,8 +2,6 @@
 <div align="center">
 
 ![CarGame Title](Data/Img/Tittel.png)
-
-
 </div>
 
 ![CarGameIMGTitle](Data/Img/oopProsjektTittel.png)
@@ -15,9 +13,9 @@ The game is primarily a Tech demo, so I am very aware it is a terrible game, but
 ## Controls
 - WASD to move
 - Press "AI Steering" button to toggle Auto detection<br>
-![AI button](Data/Img/AI-Mode.png)
 - Press the Reset button to restart the game
-
+- Change the sliders to change the properties of the car
+![AI button](Data/Img/AI-Mode.png)
 
 
 ## UML Diagram

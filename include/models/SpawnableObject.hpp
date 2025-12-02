@@ -16,8 +16,11 @@ namespace threepp {
 
 
     protected:
-        SpawnableObject() = default;
-        Scene* scene_ = nullptr;
+        explicit SpawnableObject(std::shared_ptr<threepp::Scene> scene = nullptr)
+     : scene_(std::move(scene)) {}
+
+        std::weak_ptr<threepp::Scene> scene_;
+
         std::shared_ptr<Object3D> visualBounds_;
 };
 

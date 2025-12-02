@@ -25,15 +25,15 @@ using namespace threepp;
 
 
 void Game::setup() {
-    canvas = std::make_unique<Canvas>(Canvas::Parameters()
+    canvas_ = std::make_unique<Canvas>(Canvas::Parameters()
         .title("Car")
         .size({1280, 720})
         .antialiasing(8));
 
-    renderer = std::make_unique<GLRenderer>(canvas->size());
-    renderer->autoClear = false;
+    renderer_ = std::make_unique<GLRenderer>(canvas_->size());
+    renderer_->autoClear = false;
 
-    hud_ = std::make_unique<HUD>(canvas->size());
+    hud_ = std::make_unique<HUD>(canvas_->size());
 
     FontLoader fontLoader;
     const auto font = fontLoader.defaultFont();
@@ -50,35 +50,38 @@ void Game::setup() {
               .setVerticalAlignment(HUD::VerticalAlignment::TOP));
 
 
-    scene = Scene::create();
-    setupScene(*scene);
+    scene_ = Scene::create();
+    setupScene(*scene_);
 
     // Fallback camera setup (will use car camera if available)
-    fallbackCamera = std::make_unique<PerspectiveCamera>(60, canvas->aspect(), 0.1f, 10000);
-    fallbackCamera->position.set(-15, 8, 15);
+    fallbackCamera_ = std::make_unique<PerspectiveCamera>(60, canvas_->aspect(), 0.1f, 10000);
+    fallbackCamera_->position.set(-15, 8, 15);
 
     collisionManager = std::make_unique<CollisionManager>();
+    score_ = std::make_shared<ScoreManager>();
 
-    canvas->onWindowResize([&](const WindowSize &newSize) {
-        if (car) {
-            car->camera().aspect = newSize.aspect();
-            car->camera().updateProjectionMatrix();
+    canvas_->onWindowResize([&](const WindowSize &newSize) {
+        if (car_) {
+            car_->camera().aspect = newSize.aspect();
+            car_->camera().updateProjectionMatrix();
         }
-        fallbackCamera->aspect = newSize.aspect();
-        fallbackCamera->updateProjectionMatrix();
-        renderer->setSize(newSize);
+        fallbackCamera_->aspect = newSize.aspect();
+        fallbackCamera_->updateProjectionMatrix();
+        renderer_->setSize(newSize);
     });
 
     // ---------------- CAR ----------------
-    listener = std::make_unique<AudioListener>();
+    listener_ = std::make_shared<AudioListener>();
+
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/Models/Car.dae";
-        car = Car::create(carModelPath, listener.get(), std::string(DATA_DIR) + "/Sounds/CARSOUND.wav");
-        if (car) {
-            car->camera().add(*listener);
-            car->position.set(0, 0, 0);
-            scene->add(car);
-            collisionManager->registerCollidable(car.get());
+        car_ = Car::create(carModelPath, scene, listener.get(), std::string(DATA_DIR) + "/Sounds/CARSOUND.wav");
+        if (car_) {
+            car_->camera().add(*listener_);
+            car_->position.set(0, 0, 0);
+            scene_->add(car_);
+            collisionManager->registerCollidable(car_);
+
         } else {
             std::cerr << "Failed to create car from path: " << carModelPath << "\n";
         }
@@ -91,27 +94,27 @@ void Game::setup() {
 
     // ---------------- TREE ----------------
     std::string treeModelPath = std::string(DATA_DIR) + "/Models/CartoonTree.obj";
-    treeSpawner = std::make_unique<ObjectSpawner<Tree> >(
-        scene,
+    treeSpawner_ = std::make_unique<ObjectSpawner<Tree> >(
+        scene_,
         treeModelPath,
         10,
         -75.0f, 75.0f,
         -75.0f, 75.0f
     );
 
-    treeSpawner->spawnObjects(*collisionManager);
+    treeSpawner_->spawnObjects(*collisionManager);
 
     // ---------------- STONE ----------------
     std::string stoneModelPath = std::string(DATA_DIR) + "/Models/Stone.glb";
-    stoneSpawner = std::make_unique<ObjectSpawner<Stone> >(
-        scene,
+    stoneSpawner_ = std::make_unique<ObjectSpawner<Stone> >(
+        scene_,
         stoneModelPath,
         10,
         -50.0f, 50.0f,
         -50.0f, 50.0f
     );
 
-    stoneSpawner->spawnObjects(*collisionManager);
+    stoneSpawner_->spawnObjects(*collisionManager);
 
     // ---------------- HUMAN (Random selection of sound files done by ai) ----------------
 
@@ -165,78 +168,78 @@ void Game::setup() {
 
     std::string humanModelPath = std::string(DATA_DIR) + "/Models/Human.glb";
 
-    humanSpawner = std::make_unique<ObjectSpawner<Human> >(
-        scene,
+    humanSpawner_ = std::make_unique<ObjectSpawner<Human> >(
+        scene_,
         humanModelPath,
         10,
         -50.0f, 50.0f,
         -50.0f, 50.0f,
-        listener.get(),
+        listener_,
         soundPaths,
-        &score_
+        score_
     );
 
 
-    humanSpawner->spawnObjects(*collisionManager);
+    humanSpawner_->spawnObjects(*collisionManager);
 
 
     // ---------------- CONTROL & UI ----------------
-    controller = std::make_unique<CarKeyListener>();
-    canvas->addKeyListener(*controller);
+    controller_ = std::make_unique<CarKeyListener>();
+    canvas_->addKeyListener(*controller_);
 
-    ui = std::make_unique<UiManager>(static_cast<GLFWwindow *>(canvas->windowPtr()));
-    ui->setCar(car.get());
-    ui->setController(controller.get());
-    ui->setHumans(&humanSpawner->getObjects());
-    ui->setScoreManager(&score_);
+    ui_ = std::make_unique<UiManager>(static_cast<GLFWwindow *>(canvas_->windowPtr()));
+    ui_->setCar(car_.get());
+    ui_->setController(controller_.get());
+    ui_->setHumans(&humanSpawner_->getObjects());
+    ui_->setScoreManager(score_);
 
-    victorySound_               = std::make_unique<Audio>(*listener, std::string(DATA_DIR) + "/Sounds/Victory.wav");
+    victorySound_               = std::make_unique<Audio>(*listener_, std::string(DATA_DIR) + "/Sounds/Victory.wav");
 }
 
 void Game::run() {
     Clock clock;
     int frameCounter = 0;
 
-    canvas->animate([&]() {
+    canvas_->animate([&]() {
         frameCounter++;
 
         const auto dt = clock.getDelta();
 
-        renderer->clear();
+        renderer_->clear();
         // Use car camera if car exists, else fallback
-        if (car) {
-            renderer->render(*scene, car->camera());
+        if (car_) {
+            renderer_->render(*scene_, car_->camera());
         } else {
-            renderer->render(*scene, *fallbackCamera);
+            renderer_->render(*scene_, *fallbackCamera_);
         }
 
         if (hud_) {
 
-            if (score_.humansHit() < 10) {
+            if (score_->humansHit() < 10) {
 
-                victorySoundPLayed_ = false; //lazy fix for sound playing again if you restart
-                scoreText_->setText("Score: " + std::to_string(score_.humansHit()));
-                hud_->apply(*renderer);
+                victorySoundPlayed_ = false; //lazy fix for sound playing again if you restart
+                scoreText_->setText("Score: " + std::to_string(score_->humansHit()));
+                hud_->apply(*renderer_);
             } else {
-                if (!victorySoundPLayed_) {
+                if (!victorySoundPlayed_) {
                     victorySound_->play();
-                    victorySoundPLayed_ = true;
+                    victorySoundPlayed_ = true;
                 }
 
                 scoreText_->setText("^_^ You win! You monster! ^_^");
-                hud_->apply(*renderer);
+                hud_->apply(*renderer_);
             }
         }
         // If car missing, skip rest to avoid null deref
-        if (!car) return;
+        if (!car_) return;
 
-        int fbWidth = canvas->size().width();
-        int fbHeight = canvas->size().height();
+        int fbWidth = canvas_->size().width();
+        int fbHeight = canvas_->size().height();
         if (fbWidth <= 0 || fbHeight <= 0) return;
 
         std::vector<unsigned char> pixels(fbWidth * fbHeight * 4);
 
-        renderer->readPixels({0, 0}, {fbWidth, fbHeight}, Format::RGBA, pixels.data());
+        renderer_->readPixels({0, 0}, {fbWidth, fbHeight}, Format::RGBA, pixels.data());
 
         cv::Mat rgba(fbHeight, fbWidth, CV_8UC4, pixels.data());
         cv::Mat frame;
@@ -244,19 +247,19 @@ void Game::run() {
         cv::flip(frame, frame, 0);
 
         // Downscale only if needed for performance; we operate on original frame for detection
-        if (frameCounter % 10 == 0 && controller->getCameraSteeringEnabled()) {
-            controller->updateFromCamera(frame);
+        if (frameCounter % 10 == 0 && controller_->getCameraSteeringEnabled()) {
+            controller_->updateFromCamera(frame);
         }
 
-        auto [move, turn] = controller->getActions();
-        car->update(dt, move, turn);
+        auto [move, turn] = controller_->getActions();
+        car_->update(dt, move, turn);
 
         collisionManager->checkCollisions();
-        for (auto &stone: stoneSpawner->getObjects()) {
+        for (auto &stone: stoneSpawner_->getObjects()) {
             stone->update(dt);
         }
-        ui->beginFrame();
-        ui->renderUI();
-        ui->endFrame();
+        ui_->beginFrame();
+        ui_->renderUI();
+        ui_->endFrame();
     });
 }

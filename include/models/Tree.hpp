@@ -7,9 +7,11 @@ namespace threepp {
 
     class Tree : public SpawnableObject {
     public:
-        Tree(std::shared_ptr<Object3D> model);
+        Tree(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene);
+
         using SpawnableObject::SpawnableObject;
-        static std::shared_ptr<Tree> create(std::shared_ptr<Object3D> model);
+        static std::shared_ptr<Tree> create(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene);
+
         void computeBoundingBox() override;
     };
 

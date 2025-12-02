@@ -8,37 +8,40 @@ class Car;
 class ScoreManager;
 
 namespace threepp {
-
     class Human : public SpawnableObject {
     public:
         Human(std::shared_ptr<Object3D> model,
-              AudioListener* listener,
-              const std::vector<std::string>& soundPaths,
-              ScoreManager* scoreManager);
+              std::shared_ptr<threepp::Scene> scene,
+              std::shared_ptr<threepp::AudioListener> listener,
+              const std::vector<std::string> &soundPaths,
+              std::shared_ptr<ScoreManager> scoreManager);
 
         static std::shared_ptr<Human> create(std::shared_ptr<Object3D> model,
-                                             AudioListener* listener,
-                                             const std::vector<std::string>& soundPaths,
-                                             ScoreManager* scoreManager);
+                                             std::shared_ptr<threepp::Scene> scene,
+                                             std::shared_ptr<threepp::AudioListener> listener,
+                                             const std::vector<std::string> &soundPaths,
+                                             std::shared_ptr<ScoreManager> scoreManager);
 
         void computeBoundingBox() override;
-        void onCollision(::Collidable* other) override;
+
+        void onCollision(::Collidable *other) override;
+
         void reset(float minX, float maxX, float minZ, float maxZ);
-        void collideWith(Car& car) override;
+
+        void collideWith(Car &car) override;
 
         bool isConsumed() const { return hit_; }
 
     private:
-        AudioListener* listener_ = nullptr;                         // ← REQUIRED
+        std::shared_ptr<threepp::AudioListener> listener_;
         std::shared_ptr<threepp::PositionalAudio> collisionSound_;
         bool hit_ = false;
-        ScoreManager* scoreManager_ = nullptr;
+        std::shared_ptr<ScoreManager> scoreManager_;
 
-        std::vector<std::string> soundPaths_;                       // ← CORRECT
+        std::vector<std::string> soundPaths_; // ← CORRECT
 
-        void handleCollisionResponse(Collidable* other);
+        void handleCollisionResponse(Collidable *other);
     };
-
 }
 
 #endif

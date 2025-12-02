@@ -3,9 +3,11 @@
 #include "BoundingBoxHelper.hpp"
 #include <iostream>
 #include <threepp/audio/Audio.hpp>
+#include <utility>
 using namespace threepp;
 
-Car::Car(std::shared_ptr<Object3D> model, AudioListener *listener, const std::string &audioPath) {
+Car::Car(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene, AudioListener *listener, const std::string &audioPath)
+    : SpawnableObject(std::move(scene)) {
     if (model) this->copy(*model);
     originalTurnSpeed_ = rotationSpeed_;
     // Create follow camera
@@ -24,7 +26,7 @@ Car::Car(std::shared_ptr<Object3D> model, AudioListener *listener, const std::st
     }
 }
 
-std::shared_ptr<Car> Car::create(const std::filesystem::path &path, AudioListener *listener,
+std::shared_ptr<Car> Car::create(const std::filesystem::path &path, std::shared_ptr<threepp::Scene> scene, AudioListener *listener,
                                  const std::string &audioPath) {
     AssimpLoader loader;
     auto model = loader.load(path);
@@ -33,7 +35,7 @@ std::shared_ptr<Car> Car::create(const std::filesystem::path &path, AudioListene
         return nullptr;
     }
     model->scale.multiplyScalar(1.0f);
-    auto car = std::make_shared<Car>(model, listener, audioPath);
+    auto car = std::make_shared<Car>(model, std::move(scene), listener, audioPath);
     car->reset();
     return car;
 }
@@ -51,6 +53,7 @@ void Car::update(double deltaTime, CarActions::Move move, CarActions::Turn turn)
             if (speed_ > maxSpeed_) speed_ = maxSpeed_;
             if (engineSound_) {
                 engineSound_->play();
+                engineSound_->setVolume(0.5f + speed_ / 100);
             }
             break;
         case CarActions::Move::DECELERATE:
@@ -126,7 +129,7 @@ void Car::handleCollisionResponse(Collidable *other) {
     Vector3 pushDir = position - other->position;
     pushDir.normalize();
     position.add(pushDir.multiplyScalar(0.1f));
-    speed_ *= rebound;
+    speed_ *= rebound; //makes the car "bounce" back a bit
     updateBoundingSphere();
 }
 

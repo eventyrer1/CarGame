@@ -5,6 +5,7 @@
 #include "SpawnableObject.hpp"
 #include "threepp/threepp.hpp"
 #include "collision/Collidable.hpp"
+#include <utility>
 #include "keyListeners/InterfaceCarKeyListener.hpp"
 #include <opencv2/opencv.hpp>
 #include <threepp/audio/Audio.hpp>
@@ -13,13 +14,14 @@ class Car : public SpawnableObject {
 
 public:
 
-    explicit Car(std::shared_ptr<Object3D> model, AudioListener *listener, const std::string &audioPath);
-    static std::shared_ptr<Car> create(const std::filesystem::path &path, AudioListener *listener, const std::string &audioPath);
+    explicit Car(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene, AudioListener *listener, const std::string &audioPath);
+    static std::shared_ptr<Car> create(const std::filesystem::path &path, std::shared_ptr<threepp::Scene> scene,
+        AudioListener *listener,
+        const std::string &audioPath);
 
     void update(double deltaTime, const CarActions::Move move, const CarActions::Turn turn);
     PerspectiveCamera &camera();
-    static std::shared_ptr<Car> createDummyCar() { return std::make_shared<Car>(nullptr, nullptr, ""); }
-
+    static std::shared_ptr<Car> createDummyCar(std::shared_ptr<threepp::Scene> scene = nullptr) { return std::make_shared<Car>(nullptr, std::move(scene), nullptr, ""); }
     void onCollision(Collidable *other) override;
     void reset();
 
@@ -58,7 +60,7 @@ private:
 
     std::unique_ptr<PerspectiveCamera> camera_;
     std::shared_ptr<Mesh> boundingSphereHelper_;
-    Scene* scene_ = nullptr;
+    std::weak_ptr<threepp::Scene> scene_;
     std::shared_ptr<Audio> engineSound_;
 
     void updateBoundingSphere();

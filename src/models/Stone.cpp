@@ -1,9 +1,11 @@
 #include "models/Stone.hpp"
+#include <utility>
 
 
 using namespace threepp;
 
-Stone::Stone(std::shared_ptr<Object3D> model) {
+Stone::Stone(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene)
+    : SpawnableObject(std::move(scene)) {
     if (model) {
         this->copy(*model);
         baseY_ = position.y; // store original height
@@ -12,9 +14,10 @@ Stone::Stone(std::shared_ptr<Object3D> model) {
     }
 }
 
-std::shared_ptr<Stone> Stone::create(std::shared_ptr<Object3D> model) {
+std::shared_ptr<Stone> Stone::create(std::shared_ptr<Object3D> model,
+                                     std::shared_ptr<threepp::Scene> scene) {
     if (model) {
-        auto stone = std::make_shared<Stone>(model);
+        auto stone = std::make_shared<Stone>(model, std::move(scene));
         stone->updateMatrixWorld(true);
         stone->computeBoundingBox();
         return stone;

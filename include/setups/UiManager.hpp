@@ -13,7 +13,7 @@
 class UiManager {
 private:
     CarKeyListener* controller = nullptr;
-    ScoreManager* scoreManager = nullptr;
+    std::shared_ptr<ScoreManager> scoreManager = nullptr;
     const std::vector<std::shared_ptr<threepp::Human>>* humans = nullptr;
 
 public:
@@ -22,7 +22,7 @@ public:
 
     explicit UiManager(GLFWwindow* window);
     ~UiManager();
-    void setScoreManager(ScoreManager* sm) { scoreManager = sm; }
+    void setScoreManager(const std::shared_ptr<ScoreManager>& sm) { scoreManager = sm; }
     void setController(CarKeyListener* c) { controller = c; }
     void setCar(Car* carPtr) { car = carPtr; }
     void setHumans(const std::vector<std::shared_ptr<threepp::Human>>* h) { humans = h; }

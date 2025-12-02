@@ -15,7 +15,7 @@ struct ObjectTraits {
     static constexpr bool hasAudio = false;
 };
 
-//TODO check this: REALLY UNSURE IF THIS IS WISE SINCE THIS INCREASES COUPLING
+
 template<>
 struct ObjectTraits<threepp::Human> {
     static constexpr bool hasAudio = true;
@@ -29,10 +29,10 @@ public:
                   int numObjects,
                   float minX, float maxX,
                   float minZ, float maxZ,
-                  threepp::AudioListener *listener = nullptr,
+                  std::shared_ptr<threepp::AudioListener> listener = nullptr,
                   const std::vector<std::string> &soundPaths = {},
 
-                  ScoreManager *scoreManager = nullptr)
+                  std::shared_ptr<ScoreManager> scoreManager = nullptr)
         : scene_(scene),
           modelPath_(modelPath),
           listener_(listener),
@@ -58,15 +58,17 @@ public:
             // Choose a correct creation path depending on if i want it to use audio or not
             std::shared_ptr<T> obj;
             if constexpr (ObjectTraits<T>::hasAudio) {
-                // only Humans use sound and since this is already created i also use it for scores
-                obj = T::create(model, listener_, soundPaths_, scoreManager_);
+                // only Humans use sound, and since this is already created I also use it for scores
+                obj = T::create(model, scene_, listener_, soundPaths_, scoreManager_);
+
             } else {
                 // All other objects use normal creation
-                obj = T::create(model);
+                obj = T::create(model, scene_);
+
             }
 
             obj->setRandomPosition(minX_, maxX_, minZ_, maxZ_);
-            collisionManager.registerCollidable(obj.get());
+            collisionManager.registerCollidable(obj);
             objects_.emplace_back(obj);
             objectGroup_->add(obj);
         }
@@ -80,13 +82,13 @@ public:
 private:
     std::shared_ptr<threepp::Scene> scene_;
     std::string modelPath_;
-    AudioListener *listener_;
+    std::shared_ptr<threepp::AudioListener> listener_;
     std::vector<std::string> soundPaths_;
 
     int numObjects_;
     std::shared_ptr<threepp::Group> objectGroup_;
     std::vector<std::shared_ptr<T> > objects_;
-    ScoreManager *scoreManager_;
+    std::shared_ptr<ScoreManager> scoreManager_;
     float minX_;
     float maxX_;
     float minZ_;
