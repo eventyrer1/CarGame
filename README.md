@@ -28,7 +28,7 @@ The game is primarily a Tech demo, so I am very aware it is a terrible game, but
 - Press "AI Steering" button to toggle Auto detection<br>
 - Press the Reset button to restart the game
 - Change the sliders to change the properties of the car<br>
-  ![AI button](Data/Img/AI-mode.png)
+  ![AI button](Data/Img/AI-Mode.png)
 
 
 ## UML Diagram
