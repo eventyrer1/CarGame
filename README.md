@@ -7,6 +7,18 @@
 ![CarGameIMGTitle](Data/Img/oopProsjektTittel.png)
 <br/><br/>
 **candidate number: [10054]**
+
+# Installation Instructions
+
+
+**IMPORTANT**
+ since I use vcpkg as a submodule, you need to clone the repository. **That means that the game wont compile if you dont clone it.** <br>
+    To clone the repository with the submodules, use this command: <br>
+- __git clone --recursive https://github.com/eventyrer1/CarGame.git__
+- Then stuff **SHOULD** compile as normal 
+- if there are issues try using the command:<br>
+- __git submodule update --init --recursive__
+
 ## Project Overview
 Auto-Slaughter is a "game" where the goal is to drive over every human. The game can be controlled classically with keyboard inputs but also has an AI mode where the car drives itself and hunts down humans using computer vision.
 The game is primarily a Tech demo, so I am very aware it is a terrible game, but rather a demonstration of my skills in C++ and computer vision using OpenCV.
