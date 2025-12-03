@@ -11,14 +11,22 @@
 # Installation Instructions
 
 
-**IMPORTANT**
+**IMPORTANT**<br>
  since I use vcpkg as a submodule, you need to clone the repository. **That means that the game wont compile if you dont clone it.** <br>
     To clone the repository with the submodules, use this command: <br>
-- __git clone --recursive https://github.com/eventyrer1/CarGame.git__
+```
+git clone --recursive https://github.com/eventyrer1/CarGame.git
+```
 - Then stuff **SHOULD** compile as normal 
 - if there are issues try using the command:<br>
-- __git submodule update --init --recursive__
-
+```
+git submodule update --init --recursive 
+```
+I am quite certain that it works with Windows and Mac, but with Linux the could be problems. It should install, but i have had mixed results and i really dont know why. it may have something to do with not having GNU Bison installed, so if it wont compile try using 
+```
+sudo apt install bison
+```
+<br/><br/>
 ## Project Overview
 Auto-Slaughter is a "game" where the goal is to drive over every human. The game can be controlled classically with keyboard inputs but also has an AI mode where the car drives itself and hunts down humans using computer vision.
 The game is primarily a Tech demo, so I am very aware it is a terrible game, but rather a demonstration of my skills in C++ and computer vision using OpenCV.
@@ -90,6 +98,7 @@ The game uses OpenCV's colour detection method to determine where the humans are
 ### What works wel
 
     - AI detection pipeline reliably highlights yellow targets and feeds the steering logic clean bounding boxes thanks to the HSV mask and contour filtering.
+    - Deterministic installation of the program
   
 
 <br/><br/>
