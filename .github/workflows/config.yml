@@ -53,7 +53,7 @@ jobs:
 
       # Global Ninja install for all platforms
       - name: Install Ninja
-        uses: seanmiddleditch/gha-setup-ninja@v1
+        uses: actions/setup-ninja@v1
 
       - name: Configure CMake
         run: >
