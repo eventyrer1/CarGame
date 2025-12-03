@@ -10,6 +10,9 @@
 #include "keyListeners/CarKeyListener.hpp"
 #include "setups/UiManager.hpp"
 #include <memory>
+#include <optional>
+#include <opencv2/core.hpp>
+#include <utility>
 
 class Game {
 public:
@@ -18,6 +21,11 @@ public:
     void setup();
 
     void run();
+
+    struct RenderOutput {
+        bool carAvailable{false};
+        std::optional<cv::Mat> capturedFrame;
+    };
 
 private:
     // Core systems now managed by smart pointers
@@ -46,5 +54,7 @@ private:
 
 
     // Helpers
-    void renderFrame();
+    RenderOutput renderFrame(bool captureFrame);
+    void sampleAICamera(const RenderOutput &renderOutput, int frameCounter) const;
+    void simulateFrame(float dt, const std::pair<CarActions::Move, CarActions::Turn> &actions) const;
 };

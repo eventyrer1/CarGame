@@ -10,8 +10,7 @@
  */
 class CollisionManager {
 public:
-    using CollisionCallback = std::function<void(Collidable*, Collidable*)>;
-
+    using CollisionCallback = std::function<void(std::shared_ptr<Collidable>, std::shared_ptr<Collidable>)>;
     // Register objects for collision detection
     void registerCollidable(const std::shared_ptr<Collidable>& object);
 

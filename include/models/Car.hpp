@@ -14,15 +14,19 @@ class Car : public SpawnableObject {
 
 public:
 
-    explicit Car(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene, AudioListener *listener, const std::string &audioPath);
-    static std::shared_ptr<Car> create(const std::filesystem::path &path, std::shared_ptr<threepp::Scene> scene,
-        AudioListener *listener,
+    explicit Car(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene,
+            const std::shared_ptr<threepp::AudioListener> &listener,
+            const std::string &audioPath);
+
+    static std::shared_ptr<Car> create(const std::filesystem::path &path,
+        std::shared_ptr<threepp::Scene> scene,
+        const std::shared_ptr<threepp::AudioListener> &listener,
         const std::string &audioPath);
 
     void update(double deltaTime, const CarActions::Move move, const CarActions::Turn turn);
-    PerspectiveCamera &camera();
+    PerspectiveCamera &camera() const;
     static std::shared_ptr<Car> createDummyCar(std::shared_ptr<threepp::Scene> scene = nullptr) { return std::make_shared<Car>(nullptr, std::move(scene), nullptr, ""); }
-    void onCollision(Collidable *other) override;
+    void onCollision(const std::shared_ptr<Collidable>& other) override;
     void reset();
 
     // ----- Getters -----
@@ -64,7 +68,7 @@ private:
     std::shared_ptr<Audio> engineSound_;
 
     void updateBoundingSphere();
-    void handleCollisionResponse(Collidable *other);
+    void handleCollisionResponse(const std::shared_ptr<Collidable>& other);
     void updateBoost(double dt);
 
 };

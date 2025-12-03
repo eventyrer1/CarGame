@@ -6,14 +6,17 @@
 #include <utility>
 using namespace threepp;
 
-Car::Car(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene, AudioListener *listener, const std::string &audioPath)
+Car::Car(std::shared_ptr<Object3D> model,
+         std::shared_ptr<threepp::Scene> scene,
+         const std::shared_ptr<threepp::AudioListener> &listener,
+         const std::string &audioPath)
     : SpawnableObject(std::move(scene)) {
-    if (model) this->copy(*model);
+    if (model) this->Object3D::copy(*model);
     originalTurnSpeed_ = rotationSpeed_;
     // Create follow camera
-    camera_ = std::make_unique<PerspectiveCamera>(65.f, 16.f / 9.f, 0.1f, 100.f);
+    camera_ = std::make_unique<PerspectiveCamera>(65.0f, 16.f / 9.f, 0.1f, 100.f);
 
-    this->add(*camera_);
+    this->Object3D::add(*camera_);
     camera_->position.x = 0;
     camera_->position.y = 5;
     camera_->position.z = -13;
@@ -26,8 +29,11 @@ Car::Car(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene,
     }
 }
 
-std::shared_ptr<Car> Car::create(const std::filesystem::path &path, std::shared_ptr<threepp::Scene> scene, AudioListener *listener,
-                                 const std::string &audioPath) {
+std::shared_ptr<Car> Car::create( const std::filesystem::path &path,
+    std::shared_ptr<threepp::Scene> scene,
+    const std::shared_ptr<threepp::AudioListener> &listener,
+    const std::string &audioPath) {
+
     AssimpLoader loader;
     auto model = loader.load(path);
     if (!model) {
@@ -35,12 +41,15 @@ std::shared_ptr<Car> Car::create(const std::filesystem::path &path, std::shared_
         return nullptr;
     }
     model->scale.multiplyScalar(1.0f);
-    auto car = std::make_shared<Car>(model, std::move(scene), listener, audioPath);
+    auto car = std::make_shared<Car>(model,
+                                     std::move(scene),
+                                     std::shared_ptr<threepp::AudioListener>(listener),
+                                     audioPath);
     car->reset();
     return car;
 }
 
-PerspectiveCamera &Car::camera() {
+PerspectiveCamera &Car::camera() const {
     return *camera_;
 }
 
@@ -116,17 +125,24 @@ void Car::updateBoundingSphere() {
 }
 
 
-void Car::onCollision(Collidable *other) {
-    handleCollisionResponse(other);
-    if (other) {
-        other->collideWith(*this); // double dispatch
+void Car::onCollision(const std::shared_ptr<Collidable> &other) {
+    if (!other) {
+        return;
     }
+
+    handleCollisionResponse(other);
+    other->collideWith(*this); // double dispatch
 }
 
 
-void Car::handleCollisionResponse(Collidable *other) {
+void Car::handleCollisionResponse(const std::shared_ptr<Collidable> &other) {
+    if (!other) {
+        return;
+    }
+
     float rebound = -0.2f;
     Vector3 pushDir = position - other->position;
+    updateBoundingSphere();
     pushDir.normalize();
     position.add(pushDir.multiplyScalar(0.1f));
     speed_ *= rebound; //makes the car "bounce" back a bit

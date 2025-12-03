@@ -24,7 +24,7 @@ namespace threepp {
 
         void computeBoundingBox() override;
 
-        void onCollision(::Collidable *other) override;
+        void onCollision(const std::shared_ptr<::Collidable>& other) override;
 
         void reset(float minX, float maxX, float minZ, float maxZ);
 
@@ -40,7 +40,7 @@ namespace threepp {
 
         std::vector<std::string> soundPaths_; // ← CORRECT
 
-        void handleCollisionResponse(Collidable *other);
+        void handleCollisionResponse(const std::shared_ptr<Collidable>& other);
     };
 }
 

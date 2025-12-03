@@ -1,6 +1,8 @@
 #pragma once
-#include <threepp/threepp.hpp>
+
 #include <optional>
+#include <memory>
+#include <threepp/threepp.hpp>
 
 // Forward declaration to avoid circular include
 class Car;
@@ -23,12 +25,11 @@ public:
         boundingSphere_.value().radius *= radiusScale;
     }
 
-    // Single-dispatch collision notification (existing)
-    virtual void onCollision(Collidable* /*other*/) {}
+    // Called when a collision is detected with another Collidable
+    virtual void onCollision(const std::shared_ptr<Collidable>&) {}
 
-    // Double-dispatch entry point for Car-specific interactions.
-    // Default no-op keeps low coupling: only classes that care override.
-    virtual void collideWith(Car& /*car*/) {}
+
+    virtual void collideWith(Car&) {}
 
     virtual bool checkCollision(const Collidable& other) const {
         if (other.boundingSphere_.has_value()) {

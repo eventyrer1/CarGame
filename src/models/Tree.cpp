@@ -1,14 +1,17 @@
 #include "models/Tree.hpp"
+#include <utility>
+
 
 using namespace threepp;
 
-Tree::Tree(std::shared_ptr<Object3D> model) {
-    if (model) this->copy(*model);
+Tree::Tree(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene)
+    : SpawnableObject(std::move(scene)) {
+    if (model) this->Object3D::copy(*model);
 }
 
-std::shared_ptr<Tree> Tree::create(std::shared_ptr<Object3D> model) {
+std::shared_ptr<Tree> Tree::create(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene) {
     if (model) {
-        auto tree = std::make_shared<Tree>(model);
+        auto tree = std::make_shared<Tree>(model, std::move(scene));
         tree->updateMatrixWorld(true);
         tree->computeBoundingBox();
         return tree;

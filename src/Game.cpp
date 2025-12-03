@@ -4,7 +4,6 @@
 #include "Game.hpp"
 
 #include "threepp/threepp.hpp"
-#include "threepp/helpers/CameraHelper.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
 #include "setups/ObjectSpawner.hpp"
 #include "collision/CollisionManager.hpp"
@@ -54,7 +53,7 @@ void Game::setup() {
     setupScene(*scene_);
 
     // Fallback camera setup (will use car camera if available)
-    fallbackCamera_ = std::make_unique<PerspectiveCamera>(60, canvas_->aspect(), 0.1f, 10000);
+    fallbackCamera_ = std::make_unique<PerspectiveCamera>(60.0f, canvas_->aspect(), 0.1f, 10000.0f);
     fallbackCamera_->position.set(-15, 8, 15);
 
     collisionManager = std::make_unique<CollisionManager>();
@@ -75,7 +74,7 @@ void Game::setup() {
 
     try {
         std::string carModelPath = std::string(DATA_DIR) + "/Models/Car.dae";
-        car_ = Car::create(carModelPath, scene, listener.get(), std::string(DATA_DIR) + "/Sounds/CARSOUND.wav");
+        car_ = Car::create(carModelPath, scene_, listener_, std::string(DATA_DIR) + "/Sounds/CARSOUND.wav");
         if (car_) {
             car_->camera().add(*listener_);
             car_->position.set(0, 0, 0);
@@ -139,10 +138,10 @@ void Game::setup() {
 
                 // Extract extension
                 std::string extLower = entry.path().extension().string();
-                std::transform(extLower.begin(), extLower.end(), extLower.begin(), ::tolower);
+                std::ranges::transform(extLower, extLower.begin(), ::tolower);
 
-                // Accept file if extension matches
-                if (std::find(allowedExt.begin(), allowedExt.end(), extLower) != allowedExt.end()) {
+                // Accept a file if the extension matches
+                if (std::ranges::find(allowedExt, extLower) != allowedExt.end()) {
                     if (entry.path().filename() != "CARSOUND.wav" && entry.path().filename() != "Victory.wav") {
                         std::string full = entry.path().generic_string();
                         soundPaths.emplace_back(full);
@@ -180,6 +179,7 @@ void Game::setup() {
     );
 
 
+
     humanSpawner_->spawnObjects(*collisionManager);
 
 
@@ -204,62 +204,91 @@ void Game::run() {
         frameCounter++;
 
         const auto dt = clock.getDelta();
+        const bool captureFrame = controller_ && controller_->getCameraSteeringEnabled() && frameCounter % 10 == 0;
+        const auto renderOutput = renderFrame(captureFrame);
 
-        renderer_->clear();
-        // Use car camera if car exists, else fallback
-        if (car_) {
-            renderer_->render(*scene_, car_->camera());
+        if (!renderOutput.carAvailable) return;
+
+        sampleAICamera(renderOutput, frameCounter);
+
+        const auto actions = controller_ ? controller_->getActions()
+                                         : std::pair<CarActions::Move, CarActions::Turn>{
+                                               CarActions::Move::NOTHING, CarActions::Turn::NOTHING};
+        simulateFrame(dt, actions);
+    });
+}
+
+Game::RenderOutput Game::renderFrame(bool captureFrame) {
+    RenderOutput output{};
+
+    renderer_->clear();
+    // Use car camera if car exists, else fallback
+    if (car_) {
+        renderer_->render(*scene_, car_->camera());
+        output.carAvailable = true;
+    } else {
+        renderer_->render(*scene_, *fallbackCamera_);
+    }
+
+    if (captureFrame && output.carAvailable) {
+        const int fbWidth = canvas_->size().width();
+        const int fbHeight = canvas_->size().height();
+        if (fbWidth > 0 && fbHeight > 0) {
+            std::vector<unsigned char> pixels(fbWidth * fbHeight * 4);
+
+            renderer_->readPixels({0, 0}, {fbWidth, fbHeight}, Format::RGBA, pixels.data());
+
+            cv::Mat rgba(fbHeight, fbWidth, CV_8UC4, pixels.data());
+            cv::Mat frame;
+            cv::cvtColor(rgba, frame, cv::COLOR_RGBA2BGR);
+            cv::flip(frame, frame, 0);
+            output.capturedFrame = frame;
+        }
+    }
+
+    if (hud_) {
+
+        if (score_->humansHit() < 10) {
+
+            victorySoundPlayed_ = false; //lazy fix for sound playing again if you restart
+            scoreText_->setText("Score: " + std::to_string(score_->humansHit()));
+            hud_->apply(*renderer_);
         } else {
-            renderer_->render(*scene_, *fallbackCamera_);
-        }
-
-        if (hud_) {
-
-            if (score_->humansHit() < 10) {
-
-                victorySoundPlayed_ = false; //lazy fix for sound playing again if you restart
-                scoreText_->setText("Score: " + std::to_string(score_->humansHit()));
-                hud_->apply(*renderer_);
-            } else {
-                if (!victorySoundPlayed_) {
-                    victorySound_->play();
-                    victorySoundPlayed_ = true;
-                }
-
-                scoreText_->setText("^_^ You win! You monster! ^_^");
-                hud_->apply(*renderer_);
+            if (!victorySoundPlayed_) {
+                victorySound_->play();
+                victorySoundPlayed_ = true;
             }
+
+            scoreText_->setText("^_^ You win! You monster! ^_^");
+            hud_->apply(*renderer_);
         }
-        // If car missing, skip rest to avoid null deref
-        if (!car_) return;
+    }
 
-        int fbWidth = canvas_->size().width();
-        int fbHeight = canvas_->size().height();
-        if (fbWidth <= 0 || fbHeight <= 0) return;
-
-        std::vector<unsigned char> pixels(fbWidth * fbHeight * 4);
-
-        renderer_->readPixels({0, 0}, {fbWidth, fbHeight}, Format::RGBA, pixels.data());
-
-        cv::Mat rgba(fbHeight, fbWidth, CV_8UC4, pixels.data());
-        cv::Mat frame;
-        cv::cvtColor(rgba, frame, cv::COLOR_RGBA2BGR);
-        cv::flip(frame, frame, 0);
-
-        // Downscale only if needed for performance; we operate on original frame for detection
-        if (frameCounter % 10 == 0 && controller_->getCameraSteeringEnabled()) {
-            controller_->updateFromCamera(frame);
-        }
-
-        auto [move, turn] = controller_->getActions();
-        car_->update(dt, move, turn);
-
-        collisionManager->checkCollisions();
-        for (auto &stone: stoneSpawner_->getObjects()) {
-            stone->update(dt);
-        }
+    if (ui_) {
         ui_->beginFrame();
         ui_->renderUI();
         ui_->endFrame();
-    });
+    }
+
+    return output;
+}
+
+void Game::sampleAICamera(const RenderOutput &renderOutput, int frameCounter) const {
+    if (!renderOutput.carAvailable) return;
+    if (!controller_ || !controller_->getCameraSteeringEnabled()) return;
+    if (frameCounter % 10 != 0) return;
+    if (!renderOutput.capturedFrame.has_value()) return;
+
+    controller_->updateFromCamera(*renderOutput.capturedFrame);
+}
+
+void Game::simulateFrame(float dt, const std::pair<CarActions::Move, CarActions::Turn> &actions) const {
+    if (!car_) return;
+
+    car_->update(dt, actions.first, actions.second);
+
+    collisionManager->checkCollisions();
+    for (auto &stone: stoneSpawner_->getObjects()) {
+        stone->update(dt);
+    }
 }

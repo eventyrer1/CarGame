@@ -2,7 +2,7 @@
 #include "ScoreManager.hpp"
 #include "models/Car.hpp"
 #include <utility>
-using namespace threepp;
+
 
 Human::Human(std::shared_ptr<Object3D> model,
              std::shared_ptr<threepp::Scene> scene,
@@ -14,7 +14,7 @@ Human::Human(std::shared_ptr<Object3D> model,
       soundPaths_(soundPaths),
       scoreManager_(scoreManager) {
     if (model) {
-        this->copy(*model);
+        this->Object3D::copy(*model);
         this->scale.multiplyScalar(2);
     }
 }
@@ -38,18 +38,22 @@ void Human::computeBoundingBox() {
     collisionBox_ = std::make_optional<Box3>(BoundingBoxHelper::computeCollisionBox(*this));
 }
 
-void Human::onCollision(Collidable *other) {
+void Human::onCollision(const std::shared_ptr<Collidable>& other) {
+    if (!other) {
+        return;
+    }
+
     handleCollisionResponse(other);
 }
 
 void Human::collideWith(Car &car) {
     if (!hit_) {
-        handleCollisionResponse(&car);
+        handleCollisionResponse(car.shared_from_this()); //shared_from_this suggested by ai
         car.applyRotationChanger(0.5f, 1.0f);
     }
 }
 
-void Human::handleCollisionResponse(Collidable * /*other*/) {
+void Human::handleCollisionResponse(const std::shared_ptr<Collidable>& /*other*/) {
     if (hit_) return;
     hit_ = true;
 
@@ -76,7 +80,7 @@ void Human::handleCollisionResponse(Collidable * /*other*/) {
         collisionSound_->play();
     }
 
-    // add score once
+    // Update score
     if (scoreManager_) {
         scoreManager_->addHit();
     }

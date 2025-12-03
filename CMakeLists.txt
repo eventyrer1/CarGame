@@ -43,8 +43,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(threepp)
 
-
-set(ASSIMP_IGNORE_DIsR_IN_ZIP TRUE)
+set(ASSIMP_IGNORE_DIsR_IN_ZIP TRUE) #Suggested by ai, the code sometimes shit itself when it wasnt there
 set(ASSIMP_BUILD_ZLIB OFF)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
@@ -63,11 +62,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(catch2)
 
-# Internal libraries ordering (dependency aware)
-add_subdirectory(libs)          # imgui
-add_subdirectory(src/collision) # collision base used by models
-add_subdirectory(src/models)    # models depends on collision
+
+add_subdirectory(libs)  # imgui
+add_subdirectory(src/collision)
+add_subdirectory(src/models)
 add_subdirectory(src/keyListeners)
-add_subdirectory(src/setups)    # setups depends on models/imgui
-add_subdirectory(src)           # executable depends on all libs
-add_subdirectory(tests)         # test targets
+add_subdirectory(src/setups)
+add_subdirectory(src)
+add_subdirectory(tests)

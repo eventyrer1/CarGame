@@ -38,8 +38,8 @@ void CollisionManager::checkCollisions() {
 
             if (first->checkCollision(*second)) {
                 // Notify both objects that they have collided
-                first->onCollision(second.get());
-                second->onCollision(first.get());
+                first->onCollision(second);
+                second->onCollision(first);
             }
         }
     }

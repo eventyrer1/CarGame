@@ -1,6 +1,4 @@
-//
-// Created by evest on 20.11.2025.
-//
+
 
 #include "HumanDetector.hpp"
 
@@ -34,6 +32,7 @@ bool HumanDetector::detectAll(const cv::Mat& frame, std::vector<cv::Rect>& human
         seesHuman = true;
         return seesHuman;
     }
+
 }
 
 
@@ -60,7 +59,7 @@ bool HumanDetector::detect(const cv::Mat& frame, cv::Rect& outBox, int& centerX,
         for (int i = 0; i < humans.size(); i++) {
             const cv::Rect& r = humans[i];
 
-            // condition: bbox overlap OR center distance small
+            // this was done by AI because of laziness
             int cx = r.x + r.width/2;
             int oldCx = lockedHuman_.x + lockedHuman_.width/2;
 

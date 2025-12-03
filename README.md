@@ -47,8 +47,7 @@ A lot of stuff in this project is done in a weird or unneeded way. Often the rea
 - Why are some libraries fetched using CMake FetchContent and others using external libraries? while OpenCV uses vcpkg <br>
   -Because I wanted to show that I can use all these methods. And OpenCV has too large files for GitHub so I had to use vcpkg.
   <br/><br/>
-- Each time you clone this project vcpkg will be downloaded and installed automatically. This makes it waaay slower if you already have vcpkg installed, but it makes it more deterministic. I don't trust people to be able to install vcpkg on their own.
-
+- Each time you clone this project, vcpkg will be downloaded and installed automatically. This makes it waaay slower if you already have vcpkg installed, but it makes it more deterministic, and I don't trust people to be able to install vcpkg on their own.
 
 
 ## Human Detection System
