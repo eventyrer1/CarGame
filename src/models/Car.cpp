@@ -1,10 +1,10 @@
 #include "models/Car.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"
-#include "BoundingBoxHelper.hpp"
+
 #include <iostream>
 #include <threepp/audio/Audio.hpp>
 #include <utility>
-using namespace threepp;
+
 
 Car::Car(std::shared_ptr<Object3D> model,
          std::shared_ptr<threepp::Scene> scene,

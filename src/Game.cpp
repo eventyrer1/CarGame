@@ -117,7 +117,7 @@ void Game::setup() {
 
     // ---------------- HUMAN (Random selection of sound files done by ai) ----------------
 
-    // Build a list of candidate sound files using plain string concatenation
+
     std::vector<std::string> soundPaths;
     std::string soundsDir = std::string(DATA_DIR) + "/Sounds";
 

@@ -2,7 +2,7 @@
 
 
 using namespace threepp;
-
+// Set a random position and rotation within specified bounds
 void SpawnableObject::setRandomPosition(float minX, float maxX, float minZ, float maxZ) {
     static std::random_device rd;
     static std::mt19937 gen(rd());

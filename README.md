@@ -5,7 +5,8 @@
 </div>
 
 ![CarGameIMGTitle](Data/Img/oopProsjektTittel.png)
-
+<br/><br/>
+**candidate number: [10054]**
 ## Project Overview
 Auto-Slaughter is a "game" where the goal is to drive over every human. The game can be controlled classically with keyboard inputs but also has an AI mode where the car drives itself and hunts down humans using computer vision.
 The game is primarily a Tech demo, so I am very aware it is a terrible game, but rather a demonstration of my skills in C++ and computer vision using OpenCV.
@@ -14,8 +15,8 @@ The game is primarily a Tech demo, so I am very aware it is a terrible game, but
 - WASD to move
 - Press "AI Steering" button to toggle Auto detection<br>
 - Press the Reset button to restart the game
-- Change the sliders to change the properties of the car
-![AI button](Data/Img/AI-Mode.png)
+- Change the sliders to change the properties of the car<br>
+  ![AI button](Data/Img/AI-mode.png)
 
 
 ## UML Diagram
@@ -30,7 +31,8 @@ The game is primarily a Tech demo, so I am very aware it is a terrible game, but
 - AI mode that detects humans and drives over them
 - Reset button to restart the game
 - Powerup when driving over a human (decreases the turn speed of the car)
-- Sound effects by Magnus Evenstuen
+- Entertaining(?) sound effects
+- ImGui interface for changing car properties in real-time
 
 
 
@@ -70,12 +72,28 @@ The game uses OpenCV's colour detection method to determine where the humans are
 4. Extract contours from the mask and compute bounding boxes.
 5. Select the human whose bounding box centre is closest to the screen centre as the active target.
 
+## Reflection
+
+### What works wel
+
+    - AI detection pipeline reliably highlights yellow targets and feeds the steering logic clean bounding boxes thanks to the HSV mask and contour filtering.
+  
+
+<br/><br/>
+### What needs improvement
+
+    - SoC principles could be better applied; separating visual and logic in for example Car could be done better, by for example splitting it into CarLogic and CarVisual classes.
+    - Testing coverage was done as a afterthought; more and better testing practices could be implemented to ensure better code quality from the start.
+    - The AI steering controller can oscillate at high speeds; implementing a PID controller with clamped outputs
+  
+
 ### Sources:
 
 Coding examples for OpenCV were found here: https://github.com/opencv/opencv/tree/4.x/samples/cpp/example_cmake<br>
-Magnus Evenstuen for voicing all sounds in the game, and for using his face in the human model
+Magnus Evenstuen for voicing all sounds in the game and for using his face in the human model
 
 
-"Lowpoly Human Reff" (https://skfb.ly/ot8Cu) by fadhlisl is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Edited by me to include the Face
-3D model "Low-Poly Car" by wufudufu — downloaded from Free3D (https://free3d.com/3d-model/low-poly-car-40967.html), accessed 15.10.2025.
-"Prism Stone - Magical Energy Stone" (https://skfb.ly/6S6oL) by ENOMIC is licensed under CC Attribution-NonCommercial-ShareAlike (http://creativecommons.org/licenses/by-nc-sa/4.0/). Edited by me to change the texture to black and blue
+"Lowpoly Human Reff" (https://skfb.ly/ot8Cu) by fadhlisl is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Edited by me to include the Face   <br/><br/>
+ 3D model "Low-Poly Car" by wufudufu — downloaded from Free3D (https://free3d.com/3d-model/low-poly-car-40967.html), accessed 15.10.2025.  <br/><br/>
+"Prism Stone - Magical Energy Stone" (https://skfb.ly/6S6oL) by ENOMIC is licensed under CC Attribution-NonCommercial-ShareAlike (http://creativecommons.org/licenses/by-nc-sa/4.0/). Edited by me to change the texture to black and blue <br/><br/>
+Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=82807">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=82807">Pixabay</a>
