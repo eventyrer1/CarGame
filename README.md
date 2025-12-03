@@ -6,7 +6,7 @@
 
 ![CarGameIMGTitle](Data/Img/oopProsjektTittel.png)
 <br/><br/>
-**candidate number: [10054]**
+**candidate number: [10003]**
 
 # Installation Instructions
 
@@ -95,7 +95,7 @@ The game uses OpenCV's colour detection method to determine where the humans are
 
 ## Reflection
 
-### What works wel
+### What works well
 
     - AI detection pipeline reliably highlights yellow targets and feeds the steering logic clean bounding boxes thanks to the HSV mask and contour filtering.
     - Deterministic installation of the program
