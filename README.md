@@ -44,6 +44,7 @@ A lot of stuff in this project is done in a weird or unneeded way. Often the rea
 **Because fun."**
 
 ### Notes:
+
 - ImGui’s setup is more complicated than necessary because it was implemented before discovering threepp’s built-in ImGui integration. But since it doesn't affect the project negatively, I left it as is.
   <br/><br/>
 - Why are some libraries fetched using CMake FetchContent and others using external libraries? while OpenCV uses vcpkg <br>
@@ -93,7 +94,7 @@ The game uses OpenCV's colour detection method to determine where the humans are
 Coding examples for OpenCV were found here: https://github.com/opencv/opencv/tree/4.x/samples/cpp/example_cmake<br>
 Magnus Evenstuen for voicing all sounds in the game and for using his face in the human model
 
-d
+Developed using threepp,OpenCV, ImGui,vcpkg, CMake
 
 "Lowpoly Human Reff" (https://skfb.ly/ot8Cu) by fadhlisl is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Edited by me to include the Face   <br/><br/>
  3D model "Low-Poly Car" by wufudufu — downloaded from Free3D (https://free3d.com/3d-model/low-poly-car-40967.html), accessed 15.10.2025.  <br/><br/>
