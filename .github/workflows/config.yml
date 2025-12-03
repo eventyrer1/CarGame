@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-22.04, macos-latest, windows-latest ]
+        os: [ macos-latest, windows-latest ]
 
     steps:
       - name: Checkout
@@ -27,18 +27,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Linux extra dependencies
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          sudo apt-get update && sudo apt-get install -y \
-            libxinerama-dev \
-            libxcursor-dev \
-            xorg-dev \
-            libglu1-mesa-dev \
-            pkg-config \
-            libglfw3 \
-            libglfw3-dev
-
       # ---- Setup vcpkg (your submodule) ----
       - name: Init vcpkg submodule
         run: git submodule update --init --recursive
@@ -47,13 +35,18 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: .\vcpkg\bootstrap-vcpkg.bat
 
-      - name: Bootstrap vcpkg (Unix)
-        if: matrix.os != 'windows-latest'
+      - name: Bootstrap vcpkg (macOS)
+        if: matrix.os == 'macos-latest'
         run: ./vcpkg/bootstrap-vcpkg.sh
 
-      # Global Ninja install for all platforms
-      - name: Install Ninja
-        uses: ashutoshvarma/setup-ninja@v1
+      # Install Ninja (needed for -G Ninja)
+      - name: Install Ninja (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install ninja
+
+      - name: Install Ninja (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install ninja --yes
 
       - name: Configure CMake
         run: >
@@ -61,7 +54,6 @@ jobs:
           -G "Ninja"
           -DCMAKE_BUILD_TYPE=Release
           .
-
 
       - name: Build
         run: cmake --build build --config Release --parallel
