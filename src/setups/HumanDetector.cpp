@@ -33,6 +33,7 @@ bool HumanDetector::detectAll(const cv::Mat& frame, std::vector<cv::Rect>& human
         return seesHuman;
     }
 
+    return false;
 }
 
 
@@ -54,7 +55,7 @@ bool HumanDetector::detect(const cv::Mat& frame, cv::Rect& outBox, int& centerX,
 
         // Look for a human that overlaps or is close to the old one
         int bestIdx = -1;
-        int bestDist = 999999;
+
 
         for (int i = 0; i < humans.size(); i++) {
             const cv::Rect& r = humans[i];

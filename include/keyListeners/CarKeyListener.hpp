@@ -18,7 +18,6 @@ public:
     void updateFromCamera(const cv::Mat& frame);
     void setCameraSteeringEnabled(bool e) { cameraSteeringEnabled_ = e; }
     bool getCameraSteeringEnabled() const { return cameraSteeringEnabled_; }
-    void setObstacleData(float leftHit, float rightHit, float centerHit);
 private:
     std::unordered_set<threepp::Key> pressedKeys;
 

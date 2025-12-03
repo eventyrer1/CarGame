@@ -24,26 +24,26 @@ struct ObjectTraits<threepp::Human> {
 template<typename T>
 class ObjectSpawner {
 public:
-    ObjectSpawner(std::shared_ptr<threepp::Scene> const scene,
+    ObjectSpawner(std::shared_ptr<threepp::Scene> const &scene,
                   const std::string &modelPath,
                   int numObjects,
                   float minX, float maxX,
                   float minZ, float maxZ,
-                  std::shared_ptr<threepp::AudioListener> const listener = nullptr,
+                  std::shared_ptr<threepp::AudioListener> const &listener = nullptr,
                   const std::vector<std::string> &soundPaths = {},
 
-                  std::shared_ptr<ScoreManager> const scoreManager = nullptr)
+                  std::shared_ptr<ScoreManager> const &scoreManager = nullptr)
         : scene_(scene),
           modelPath_(modelPath),
           listener_(listener),
           soundPaths_(soundPaths),
           numObjects_(numObjects),
+          objectGroup_(threepp::Group::create()),
           scoreManager_(scoreManager),
           minX_(minX),
           maxX_(maxX),
           minZ_(minZ),
-          maxZ_(maxZ),
-          objectGroup_(threepp::Group::create()) {
+          maxZ_(maxZ) {
     }
 
 

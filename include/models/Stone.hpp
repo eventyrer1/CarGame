@@ -8,7 +8,7 @@
 
 class Stone : public SpawnableObject {
 public:
-    Stone(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene);
+    Stone(const std::shared_ptr<Object3D> &model, std::shared_ptr<threepp::Scene> scene);
     using SpawnableObject::SpawnableObject;
 
     static std::shared_ptr<Stone> create(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene);

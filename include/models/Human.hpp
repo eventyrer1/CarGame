@@ -10,11 +10,11 @@ class ScoreManager;
 namespace threepp {
     class Human : public SpawnableObject {
     public:
-        Human(std::shared_ptr<Object3D> model,
+        Human(const std::shared_ptr<Object3D> &model,
               std::shared_ptr<threepp::Scene> scene,
-              std::shared_ptr<threepp::AudioListener> listener,
+              const std::shared_ptr<threepp::AudioListener> &listener,
               const std::vector<std::string> &soundPaths,
-              std::shared_ptr<ScoreManager> scoreManager);
+              const std::shared_ptr<ScoreManager> &scoreManager);
 
         static std::shared_ptr<Human> create(std::shared_ptr<Object3D> model,
                                              std::shared_ptr<threepp::Scene> scene,

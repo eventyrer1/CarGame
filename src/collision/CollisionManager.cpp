@@ -7,11 +7,11 @@ void CollisionManager::registerCollidable(const std::shared_ptr<Collidable> &obj
         return;
     }
 
-    collidables_.erase(std::remove_if(collidables_.begin(), collidables_.end(), [](const auto &weakPtr) {
+    std::erase_if(collidables_, [](const auto &weakPtr) {
         return weakPtr.expired();
-    }), collidables_.end());
+    });
 
-    const auto alreadyRegistered = std::find_if(collidables_.begin(), collidables_.end(), [&](const auto &weakPtr) {
+    const auto alreadyRegistered = std::ranges::find_if(collidables_, [&](const auto &weakPtr) {
         auto locked = weakPtr.lock();
         return locked && locked.get() == object.get();
     });
@@ -23,9 +23,9 @@ void CollisionManager::registerCollidable(const std::shared_ptr<Collidable> &obj
 
 
 void CollisionManager::checkCollisions() {
-    collidables_.erase(std::remove_if(collidables_.begin(), collidables_.end(), [](const auto &weakPtr) {
+    std::erase_if(collidables_, [](const auto &weakPtr) {
         return weakPtr.expired();
-    }), collidables_.end());
+    });
 
     for (size_t i = 0; i < collidables_.size(); ++i) {
         auto first = collidables_[i].lock();

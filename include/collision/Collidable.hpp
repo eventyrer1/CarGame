@@ -18,7 +18,7 @@ public:
     }
 
     // Generic bounding sphere optionally scaled
-    virtual void computeBoundingSphere(float radiusScale = 1.0f) {
+    virtual void computeBoundingSphere(const float radiusScale) {
         computeBoundingBox();
         boundingSphere_ = std::make_optional<threepp::Sphere>();
         collisionBox_.value().getBoundingSphere(boundingSphere_.value());

@@ -4,7 +4,7 @@
 
 using namespace threepp;
 
-Tree::Tree(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene)
+Tree::Tree(const std::shared_ptr<Object3D> &model, std::shared_ptr<threepp::Scene> scene)
     : SpawnableObject(std::move(scene)) {
     if (model) this->Object3D::copy(*model);
 }

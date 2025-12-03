@@ -85,6 +85,7 @@ The game uses OpenCV's colour detection method to determine where the humans are
     - SoC principles could be better applied; separating visual and logic in for example Car could be done better, by for example splitting it into CarLogic and CarVisual classes.
     - Testing coverage was done as a afterthought; more and better testing practices could be implemented to ensure better code quality from the start.
     - The AI steering controller can oscillate at high speeds; implementing a PID controller with clamped outputs
+    - Commenting and readabilty could be done way better, but this was something that i didnt focus on during development (which i now regret) 
   
 
 ### Sources:
@@ -92,6 +93,7 @@ The game uses OpenCV's colour detection method to determine where the humans are
 Coding examples for OpenCV were found here: https://github.com/opencv/opencv/tree/4.x/samples/cpp/example_cmake<br>
 Magnus Evenstuen for voicing all sounds in the game and for using his face in the human model
 
+d
 
 "Lowpoly Human Reff" (https://skfb.ly/ot8Cu) by fadhlisl is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Edited by me to include the Face   <br/><br/>
  3D model "Low-Poly Car" by wufudufu — downloaded from Free3D (https://free3d.com/3d-model/low-poly-car-40967.html), accessed 15.10.2025.  <br/><br/>

@@ -6,7 +6,7 @@
 #include <utility>
 
 
-Car::Car(std::shared_ptr<Object3D> model,
+Car::Car(const std::shared_ptr<Object3D> &model,
          std::shared_ptr<threepp::Scene> scene,
          const std::shared_ptr<threepp::AudioListener> &listener,
          const std::string &audioPath)

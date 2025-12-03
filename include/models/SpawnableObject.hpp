@@ -3,7 +3,7 @@
 
 #include "threepp/threepp.hpp"
 #include "collision/Collidable.hpp"
-#include "setups/BoundingBoxHelper.hpp"
+#include "setups/BoundingBoxHelper.hpp" //this has to be here
 #include <memory>
 #include <random>
 

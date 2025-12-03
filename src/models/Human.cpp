@@ -4,15 +4,15 @@
 #include <utility>
 
 
-Human::Human(std::shared_ptr<Object3D> model,
+Human::Human(const std::shared_ptr<Object3D> &model,
              std::shared_ptr<threepp::Scene> scene,
-             std::shared_ptr<threepp::AudioListener> listener,
+             const std::shared_ptr<threepp::AudioListener> &listener,
              const std::vector<std::string> &soundPaths,
-             std::shared_ptr<ScoreManager> scoreManager)
+             const std::shared_ptr<ScoreManager> &scoreManager)
     : SpawnableObject(std::move(scene)),
       listener_(listener),
-      soundPaths_(soundPaths),
-      scoreManager_(scoreManager) {
+      scoreManager_(scoreManager),
+      soundPaths_(soundPaths) {
     if (model) {
         this->Object3D::copy(*model);
         this->scale.multiplyScalar(2);

@@ -2,9 +2,7 @@
 
 #include "models/Car.hpp"
 #include "models/Human.hpp"
-#include "imgui.h"
 #include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 #include "keyListeners/CarKeyListener.hpp"
 #include <vector>
 #include <memory>
@@ -27,7 +25,7 @@ public:
     void setCar(Car* carPtr) { car = carPtr; }
     void setHumans(const std::vector<std::shared_ptr<threepp::Human>>* h) { humans = h; }
 
-    void beginFrame();
+    static void beginFrame();
     void renderUI();
-    void endFrame();
+    static void endFrame();
 };

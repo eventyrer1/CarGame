@@ -1,6 +1,6 @@
 #include "UiManager.hpp"
-
-
+#include "imgui_impl_opengl3.h"
+#include "imgui.h"
 
 UiManager::UiManager(GLFWwindow *window) {
     IMGUI_CHECKVERSION();

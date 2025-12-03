@@ -1,5 +1,7 @@
 
-cmake_minimum_required(VERSION 4.0)
+
+
+cmake_minimum_required(VERSION 3.28)
 
 # ----------------------------------------------------------
 # vcpkg auto-init section (Done by AI)

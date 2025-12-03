@@ -1,7 +1,11 @@
 //
 // Created by evest on 06.10.2025.
-//
 
+/*
+ this was originally done before i hade a game.cpp and game.hpp and everything in there was in main.cpp
+ so I wanted to have a separate file for setting up the scene so that main.cpp was cleaner, but now it could be either removed or utilised more,
+ but it doesn't impact functionality or readability (in my opinion) so im leaving it as is
+*/
 #include "Setup.hpp"
 #include "threepp/threepp.hpp"
 #include "threepp/loaders/AssimpLoader.hpp"

@@ -23,6 +23,7 @@ struct CarActions {
 
 class InterfaceCarKeyListener {
 public:
+    virtual ~InterfaceCarKeyListener() = default;
 
     virtual std::pair<CarActions::Move, CarActions::Turn> getActions() const = 0;
 };

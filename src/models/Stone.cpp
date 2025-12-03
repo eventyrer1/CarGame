@@ -4,10 +4,10 @@
 
 using namespace threepp;
 
-Stone::Stone(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene)
+Stone::Stone(const std::shared_ptr<Object3D> &model, std::shared_ptr<threepp::Scene> scene)
     : SpawnableObject(std::move(scene)) {
     if (model) {
-        this->copy(*model);
+        this->Object3D::copy(*model);
         baseY_ = position.y; // store original height
         time_ = position.z;
         //makes it so that the stone will vary where on the sinus curve it is depending where it is located in the z axis
@@ -35,8 +35,8 @@ void Stone::computeBoundingBox() {
 void Stone::update(float dt) {
     time_ += dt;
 
-    const float amplitude = 1.0f; // height of bobbing
-    const float speed = 2.0f; // speed of movement
+    constexpr float amplitude = 1.0f; // height of bobbing
+    constexpr float speed = 2.0f; // speed of movement
 
     position.y = baseY_ + std::sinf(time_ * speed) * amplitude;
 

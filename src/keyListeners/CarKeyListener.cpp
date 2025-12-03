@@ -1,5 +1,5 @@
 #include "CarKeyListener.hpp"
-#include <iostream>
+
 using namespace threepp;
 
 void CarKeyListener::onKeyPressed(KeyEvent evt) {
@@ -18,7 +18,7 @@ std::pair<CarActions::Move, CarActions::Turn> CarKeyListener::getActions() const
     Turn turn = Turn::NOTHING;
 
 
-    if (autoAccelerate_ == cameraSteeringEnabled_ && cameraSteeringEnabled_ == true) {
+    if (autoAccelerate_ == cameraSteeringEnabled_ && cameraSteeringEnabled_) {
         move = Move::ACCELERATE;
     }
     // Manual controls override only when autoAccelerate is off
@@ -71,7 +71,7 @@ void CarKeyListener::updateFromCamera(const cv::Mat &frame) {
     int offset = centerX - mid;
 
     // Base turn strength when looking away from target
-    const float baseSensitivity = 0.02f;
+    constexpr float baseSensitivity = 0.02f;
     float rawTurn = offset * baseSensitivity;
 
     // turn damping based on how close we are to "aimed"
@@ -79,8 +79,8 @@ void CarKeyListener::updateFromCamera(const cv::Mat &frame) {
     float normalized = std::abs(offset) / maxOffset; // 0 = centered, 1 = far
 
 
-    const float minFactor = 0.05f; // never reduce turning below 5%
-    float damping = std::clamp(normalized, minFactor, 1.0f);
+    constexpr float minFactor = 0.05f; // never reduce turning below 5%
+    const float damping = std::clamp(normalized, minFactor, 1.0f);
 
     // Apply damping
     cameraTurnValue_ = rawTurn * damping;

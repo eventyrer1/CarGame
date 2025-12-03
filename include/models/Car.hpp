@@ -14,7 +14,7 @@ class Car : public SpawnableObject {
 
 public:
 
-    explicit Car(std::shared_ptr<Object3D> model, std::shared_ptr<threepp::Scene> scene,
+    explicit Car(const std::shared_ptr<Object3D> &model, std::shared_ptr<threepp::Scene> scene,
             const std::shared_ptr<threepp::AudioListener> &listener,
             const std::string &audioPath);
 
@@ -46,9 +46,7 @@ public:
     void applyRotationChanger(float amount, double durationSeconds);
 
 
-Vector3 getForwardVector() const;
-   Vector3 getRightVector() const;
- Vector3 getSensorOrigin() const;
+
 
 private:
 
