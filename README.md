@@ -22,7 +22,7 @@ git clone --recursive https://github.com/eventyrer1/CarGame.git
 ```
 git submodule update --init --recursive 
 ```
-I am quite certain that it works with Windows and Mac, but with Linux the could be problems. It should install, but i have had mixed results and i really dont know why. it may have something to do with not having GNU Bison installed, so if it wont compile try using 
+It should work with both Windows and Mac, but the could be a problem with Linux. It should install, but i have had mixed results and i really dont know why. it may have something to do with not having GNU Bison installed, so if it wont compile try using 
 ```
 sudo apt install bison
 ```
